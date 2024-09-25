@@ -1,4 +1,3 @@
-// Оборачиваем весь код в обработчик события DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
     // Проверяем, доступен ли Telegram Web Apps SDK
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
