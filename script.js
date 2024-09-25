@@ -1,23 +1,24 @@
 // Оборачиваем весь код в обработчик события DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Проверяем, доступен ли Telegram Game SDK
-    if (typeof window.TelegramGameProxy !== 'undefined' && window.TelegramGameProxy.init) {
-        window.TelegramGameProxy.init();
-
-        // Получаем данные пользователя
-        const initData = window.TelegramGameProxy.initParams || {};
-        const tgUser = initData.user;
-
-        if (tgUser) {
-            console.log(`Добро пожаловать, ${tgUser.first_name}!`);
-            // Можете использовать tgUser для идентификации игрока
-        } else {
-            console.log('Информация о пользователе недоступна.');
-        }
+    // Проверяем, доступен ли Telegram Web Apps SDK
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+        const tg = window.Telegram.WebApp;
+        const tgUser = tg.initDataUnsafe.user;
+        console.log(`Добро пожаловать, ${tgUser.first_name}!`);
+        // Здесь можете использовать tgUser для идентификации игрока
+        initGame(tgUser);
     } else {
-        console.log('Telegram Game SDK недоступен. Игра запущена вне Telegram.');
-        // Вы можете показать сообщение пользователю или перенаправить на другую страницу
+        console.log('Игра запущена вне Telegram.');
+        // Для локального тестирования создадим тестового пользователя
+        const tgUser = {
+            id: 123456789,
+            first_name: 'TestUser',
+            username: 'testuser'
+        };
+        initGame(tgUser);
     }
+});
+
 
     // Основной код игры начинается здесь
 
