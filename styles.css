@@ -188,7 +188,7 @@ footer .icon {
 }
 
 #prediction-title {
-    font-family: 'Dancing Script', cursive;
+    font-family: 'SpanB', sans-serif; /* Используем подключённый шрифт */
     font-size: 36px;
     font-weight: bold;
     margin-top: 20px;
@@ -440,4 +440,53 @@ footer .icon {
     height: 100%;
     pointer-events: none;
     z-index: 250;
+}
+
+/* Дополнительные стили для мини-игры */
+.pulsate {
+    animation: pulsate 0.5s ease-out;
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.replay-btn, .exit-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 10px;
+}
+
+.replay-btn {
+    background-color: #32CD32;
+    color: white;
+    animation: pulseReplay 2s infinite;
+}
+
+.exit-btn {
+    background-color: #FF0000;
+    color: white;
+}
+
+@keyframes pulseReplay {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
