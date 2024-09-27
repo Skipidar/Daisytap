@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #000000;
-    font-family: 'SpanB', sans-serif;
+    font-family: 'Press Start 2P', cursive; /* Аркадный шрифт */
     color: #FFD700;
     overflow: hidden;
 }
@@ -23,7 +23,7 @@ body {
     justify-content: space-between;
     width: 90%;
     padding: 10px;
-    font-size: 24px;
+    font-size: 16px; /* Уменьшил размер шрифта для аркадного шрифта */
     font-weight: bold;
 }
 
@@ -97,7 +97,7 @@ footer {
 footer button {
     background: none;
     border: none;
-    font-size: 16px;
+    font-size: 14px; /* Уменьшил размер шрифта для аркадного стиля */
     font-weight: bold;
     color: #FFD700;
     cursor: pointer;
@@ -188,8 +188,8 @@ footer .icon {
 }
 
 #prediction-title {
-    font-family: 'SpanB', sans-serif; /* Используем подключённый шрифт */
-    font-size: 36px;
+    font-family: 'Press Start 2P', cursive; /* Используем аркадный шрифт */
+    font-size: 24px; /* Уменьшил размер шрифта для лучшей читаемости */
     font-weight: bold;
     margin-top: 20px;
     color: #FFD700;
@@ -221,7 +221,7 @@ footer .icon {
     border: none;
     border-radius: 5px;
     color: white;
-    font-size: 16px;
+    font-size: 14px; /* Уменьшил размер шрифта для аркадного стиля */
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -253,7 +253,7 @@ footer .icon {
 }
 
 .history-date {
-    font-size: 14px;
+    font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
     color: #aaa;
 }
 
@@ -300,7 +300,7 @@ footer .icon {
     border-radius: 10px;
     border: none;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 16px; /* Уменьшил размер шрифта для аркадного стиля */
     margin-top: 20px;
     animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
@@ -337,6 +337,8 @@ footer .icon {
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
+    font-family: 'Press Start 2P', cursive; /* Аркадный шрифт */
+    font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
 }
 
 .shop-tab.active, .shop-tab:hover {
@@ -371,6 +373,7 @@ footer .icon {
 .skin-price {
     margin-top: 5px;
     font-weight: bold;
+    font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
 }
 
 /* Мини-игра "Защити цветок" */
@@ -398,7 +401,7 @@ footer .icon {
     top: 10px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 36px;
+    font-size: 24px; /* Уменьшил размер шрифта для аркадного стиля */
     color: #FFFFFF;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
 }
@@ -421,7 +424,7 @@ footer .icon {
     left: 10px;
     display: flex;
     align-items: center;
-    font-size: 24px;
+    font-size: 18px; /* Уменьшил размер шрифта для аркадного стиля */
     color: #FFFFFF;
 }
 
@@ -464,7 +467,7 @@ footer .icon {
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 14px; /* Уменьшил размер шрифта для аркадного стиля */
     margin: 10px;
 }
 

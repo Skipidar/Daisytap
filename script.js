@@ -62,8 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
         const udarSound = new Audio('assets/sounds/udar.mp3');
 
-        // Фоновая музыка
-        backgroundMusic.play();
+        // Фоновая музыка будет запускаться после взаимодействия пользователя
 
         // Обработка кнопки отключения звука
         soundToggle.addEventListener('click', () => {
@@ -88,6 +87,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Обработчик кнопки "Играть"
         playButton.addEventListener('click', () => {
             if (playerHasTicket()) {
+                // Запускаем фоновую музыку после клика
+                if (soundEnabled) {
+                    backgroundMusic.play().catch(error => {
+                        console.warn('Автоматическое воспроизведение музыки заблокировано:', error);
+                    });
+                }
                 startProtectFlowerGame();
             } else {
                 alert('У вас нет билетов для входа в мини-игру. Попробуйте позже.');
@@ -440,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
             startProtectFlowerCountdown();
             initProtectFlowerGame();
             backgroundMusic.pause(); // Останавливаем фоновую музыку
-            oneLevelMusic.play(); // Запускаем музыку для мини-игры
+            if (soundEnabled) oneLevelMusic.play(); // Запускаем музыку для мини-игры
             oneLevelMusic.loop = true;
         }
 
@@ -476,6 +481,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
             flower.image.src = 'assets/images/PodsolnuhBEE.webp';
+            flower.image.onload = () => {
+                flower.draw();
+            };
 
             let bees = [];
             let beeInterval;
