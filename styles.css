@@ -41,15 +41,6 @@ body {
     margin-right: 5px;
 }
 
-.secondary-coin {
-    font-size: 16px;
-    margin-left: 5px;
-}
-
-.energy {
-    font-size: 16px;
-}
-
 .chamomile-container {
     position: relative;
     width: 300px;
@@ -121,50 +112,17 @@ footer .icon {
     margin-right: 5px;
 }
 
-/* Кнопка "Играть" */
-#play-button {
-    background-color: #32CD32;
-    color: white;
-    padding: 20px 40px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px; /* Уменьшил размер шрифта для аркадного стиля */
-    margin-top: 20px;
-    margin-bottom: 20px;
-    animation: pulsePlayButton 2s infinite;
-    transition: background-color 0.3s;
-}
-
-#play-button:hover {
-    background-color: #28a428;
-}
-
-@keyframes pulsePlayButton {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Бустер */
 #booster {
     background-color: #32CD32;
     color: white;
-    padding: 15px 30px; /* Увеличил размер для соответствия новым требованиям */
+    padding: 10px 20px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
-    font-size: 14px; /* Уменьшил размер шрифта для аркадного стиля */
+    font-size: 14px;
     margin-top: 20px;
     margin-bottom: 20px;
     transition: background-color 0.3s;
-    position: relative;
 }
 
 #booster:hover {
@@ -316,7 +274,6 @@ footer .icon {
 #loading-screen img {
     width: 50%;
     max-width: 300px;
-    height: auto; /* Избежим искажения */
 }
 
 /* Кнопка отключения звука */
@@ -328,7 +285,6 @@ footer .icon {
     border: none;
     cursor: pointer;
     z-index: 150;
-    transform: scale(1.5); /* Увеличиваем размер кнопки */
 }
 
 #sound-toggle img {
@@ -336,7 +292,35 @@ footer .icon {
     height: 40px;
 }
 
-/* Кнопка "Играть" уже настроена выше */
+/* Кнопка "Играть" */
+#play-button {
+    background-color: #32CD32;
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px; /* Уменьшил размер шрифта для аркадного стиля */
+    margin-top: 20px;
+    animation: pulsePlayButton 2s infinite;
+    transition: background-color 0.3s;
+}
+
+#play-button:hover {
+    background-color: #28a428;
+}
+
+@keyframes pulsePlayButton {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 
 /* Магазин */
 .shop-tabs {
@@ -369,17 +353,11 @@ footer .icon {
 
 .skin-item {
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 50%; /* Делает изображение круговым */
+    border-radius: 10px;
     padding: 10px;
     text-align: center;
     cursor: pointer;
     transition: transform 0.2s;
-    width: 120px;
-    height: 120px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .skin-item:hover {
@@ -390,18 +368,12 @@ footer .icon {
     width: 60px;
     height: 60px;
     object-fit: contain;
-    border-radius: 50%; /* Убедимся, что изображения круговые */
 }
 
 .skin-price {
     margin-top: 5px;
     font-weight: bold;
     font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
-}
-
-.skin-item img#lpodsolnuh {
-    width: 180px; /* Увеличиваем размер изображения в 3 раза */
-    height: 180px;
 }
 
 /* Мини-игра "Защити цветок" */
@@ -462,37 +434,6 @@ footer .icon {
     margin-right: 5px;
 }
 
-/* Кнопка "Начать игру" */
-#start-game-button {
-    position: absolute;
-    bottom: 50px;
-    padding: 15px 30px;
-    background-color: #FF4500;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 14px;
-    animation: pulseStartButton 2s infinite;
-    transition: background-color 0.3s;
-}
-
-#start-game-button:hover {
-    background-color: #e03e00;
-}
-
-@keyframes pulseStartButton {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
 /* Анимация конфетти */
 #confetti-canvas {
     position: fixed;
@@ -547,65 +488,6 @@ footer .icon {
     }
     50% {
         transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Оптимизация под 9:16 */
-@media (orientation: portrait) {
-    .game-container, .game-screen {
-        width: 100vw;
-        height: 177.78vh; /* 9:16 соотношение */
-    }
-
-    #loading-screen img {
-        width: 70%;
-        max-width: 300px;
-    }
-}
-
-@media (orientation: landscape) {
-    .game-container, .game-screen {
-        width: 177.78vw; /* 16:9 перевёрнутое */
-        height: 100vh;
-    }
-
-    #loading-screen img {
-        width: 50%;
-        max-width: 300px;
-    }
-}
-
-/* Кнопка отключения звука на уровне бустера */
-#sound-toggle {
-    position: absolute;
-    bottom: 20px; /* Подгоняем под уровень бустера */
-    right: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 150;
-    transform: scale(1.5); /* Увеличиваем размер кнопки */
-}
-
-#sound-toggle img {
-    width: 60px;
-    height: 60px;
-}
-
-/* Пульсация счетчика монет */
-.coin-counter-pulse {
-    animation: pulseCounter 0.5s;
-}
-
-@keyframes pulseCounter {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.2);
     }
     100% {
         transform: scale(1);
