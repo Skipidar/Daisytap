@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const gameContainer = document.querySelector('.game-container');
         const playButton = document.getElementById('play-button');
         const soundToggle = document.getElementById('sound-toggle');
+        const soundIcon = document.getElementById('sound-icon');
 
         // Аудио
         const clickSound = new Audio('assets/sounds/click.mp3');
@@ -59,34 +60,47 @@ document.addEventListener('DOMContentLoaded', function() {
         backgroundMusic.loop = true;
         let soundEnabled = true;
 
-        // Анимация загрузки
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-            gameContainer.style.display = 'flex';
-            backgroundMusic.play();
-        }, 3000); // 3 секунды
+        // Фоновая музыка
+        backgroundMusic.play();
 
-        // Обработчик кнопки отключения звука
+        // Обработка кнопки отключения звука
         soundToggle.addEventListener('click', () => {
             soundEnabled = !soundEnabled;
             if (soundEnabled) {
-                soundToggle.querySelector('img').src = 'assets/images/on.webp';
+                soundIcon.src = 'assets/images/on.webp';
                 backgroundMusic.play();
             } else {
-                soundToggle.querySelector('img').src = 'assets/images/off.webp';
+                soundIcon.src = 'assets/images/off.webp';
                 backgroundMusic.pause();
             }
         });
 
+        // Анимация загрузки
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            gameContainer.style.display = 'flex';
+        }, 3000); // 3 секунды загрузки
+
         // Обработчик кнопки "Играть"
         playButton.addEventListener('click', () => {
-            startProtectFlowerGame();
+            if (playerHasTicket()) {
+                startProtectFlowerGame();
+            } else {
+                alert('У вас нет билетов для входа в мини-игру. Попробуйте позже.');
+            }
         });
+
+        // Проверка наличия билета (логика может быть расширена)
+        function playerHasTicket() {
+            // Здесь должна быть логика проверки билета (например, через сервер)
+            // Для примера возвращаем true
+            return true;
+        }
 
         // Обработчик клика по ромашке
         chamomile.addEventListener('click', function(e) {
             const now = Date.now();
-            if (now - lastClickTime >= 500 && energy > 0) {
+            if (now - lastClickTime >= 500 && energy > 0 && isFlowerClickable) {
                 lastClickTime = now;
                 if (soundEnabled) clickSound.play();
                 spinCoins += 1;
@@ -110,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Создание искр
+        // Создание искр при клике
         function createSparks(x, y) {
             const spark = document.createElement('div');
             spark.className = 'spark';
@@ -180,9 +194,26 @@ document.addEventListener('DOMContentLoaded', function() {
         // Получение случайного предсказания
         function getRandomPrediction() {
             const predictions = [
-                // Ваши предсказания
                 "Сегодня удача улыбнется вам во всех начинаниях. Не упустите свой шанс!",
-                // ... (остальные предсказания)
+                "Впереди вас ждет важная встреча, которая может изменить вашу жизнь. Будьте готовы!",
+                "Улыбайтесь чаще, и мир улыбнется вам в ответ. Позитивный настрой - ключ к успеху!",
+                "Удача будет сопровождать вас весь день. Смело беритесь за новые проекты!",
+                "Сегодня вы найдете решение давней проблемы. Доверьтесь своей интуиции!",
+                "Неожиданная хорошая новость поднимет вам настроение и вдохновит на новые свершения.",
+                "Приятный сюрприз ожидает вас сегодня. Будьте внимательны к мелочам!",
+                "Вас ждет неожиданное, но очень приятное событие. Готовьтесь к приятным переменам!",
+                "Встреча с давним другом принесет не только радость, но и новые возможности.",
+                "Терпение и труд все перетрут. Сегодня ваше упорство будет вознаграждено!",
+                "Важный разговор, которого вы ждали, наконец состоится. Будьте честны и открыты.",
+                "Сегодня ваш день! Все будет складываться наилучшим образом.",
+                "Ваши усилия не пройдут даром. Скоро вы увидите плоды своего труда.",
+                "Любовь витает в воздухе. Будьте открыты для новых отношений или укрепления существующих.",
+                "Путешествие, о котором вы мечтали, скоро станет реальностью. Начинайте планировать!",
+                "Сегодня лучше не торопиться. Всему свое время, и ваше время придет совсем скоро.",
+                "Завтрашний день принесет еще больше возможностей. Готовьтесь к ним уже сегодня!",
+                "Сохраняйте спокойствие и уверенность, даже если все идет не по плану. Это ключ к успеху.",
+                "Романтический вечер не за горами. Приготовьтесь к незабываемым моментам!",
+                "Приятный сюрприз ждет вас за ближайшим углом. Будьте внимательны и не пропустите его!"
             ];
             let availablePredictions = predictions.filter(p => !usedPredictions.includes(p));
             if (availablePredictions.length === 0) {
@@ -212,10 +243,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Создание конфетти
         function createConfetti() {
-            const confettiCanvas = document.getElementById('confetti-canvas');
-            const confetti = new ConfettiGenerator({ target: confettiCanvas });
-            confetti.render();
-            setTimeout(() => confetti.clear(), 5000);
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
         }
 
         // Обновление таймера бустера
@@ -243,6 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 boosterCharges--;
                 updateBoosterTimer();
                 updateEnergyBar();
+                chamomile.style.filter = "none";
+                isFlowerClickable = true;
             }
         });
 
@@ -269,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
             ratingModal.style.display = 'flex';
         });
 
-        // Обработчик магазина
+        // Обработчик кнопки магазина
         document.getElementById('shop-btn').addEventListener('click', () => {
             const shopModal = document.getElementById('shop-modal');
             const shopContent = document.getElementById('shop-content');
@@ -282,11 +316,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Обработчики вкладок магазина
         document.querySelectorAll('.shop-tab').forEach(tab => {
             tab.addEventListener('click', function() {
+                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
                 const tabName = this.getAttribute('data-tab');
                 loadShopItems(tabName);
             });
         });
 
+        // Функция загрузки предметов в магазине
         function loadShopItems(tabName) {
             const shopContent = document.getElementById('shop-content');
             shopContent.innerHTML = '';
@@ -295,17 +332,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tabName === 'daisy') {
                 items = [
                     { name: 'Bubble', price: 100, image: 'assets/images/bubble.webp' },
-                    // ... (остальные предметы)
+                    { name: 'Rose', price: 200, image: 'assets/images/Rose.webp' },
+                    { name: 'Pizza', price: 300, image: 'assets/images/pizza.webp' },
+                    { name: 'Pechenka', price: 400, image: 'assets/images/Pechenka.webp' },
+                    { name: 'Panda', price: 500, image: 'assets/images/panda.webp' },
+                    { name: 'Luna', price: 600, image: 'assets/images/luna.webp' }
                 ];
             } else if (tabName === 'coin') {
                 items = [
                     { name: 'Vinyl', price: 1, image: 'assets/images/vinyl.webp' },
-                    // ... (остальные предметы)
+                    { name: 'Lotus', price: 1, image: 'assets/images/lotus.webp' },
+                    { name: 'Pingvin', price: 1, image: 'assets/images/pingvin.webp' },
+                    { name: 'Spinner', price: 1, image: 'assets/images/spinner.webp' },
+                    { name: 'Lpodsolnuh', price: 1, image: 'assets/images/lpodsolnuh.webp' }
                 ];
             } else if (tabName === 'premium') {
                 items = [
                     { name: 'Lion', price: 5000, image: 'assets/images/lion.webp' },
-                    // ... (остальные предметы)
+                    { name: 'Fish', price: 5000, image: 'assets/images/fish.webp' }
                 ];
             }
 
@@ -326,6 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             spinCoins -= item.price;
                             spinCoinCount.textContent = spinCoins;
                         }
+                        applySkin(item.image);
                         alert(`Вы купили ${item.name}!`);
                     } else {
                         alert('Недостаточно средств!');
@@ -335,7 +380,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Обработчики других кнопок
+        // Функция применения скина (замена изображения ромашки)
+        function applySkin(skinImage) {
+            chamomile.src = skinImage;
+        }
+
+        // Обработчик кнопки друзей
         document.getElementById('friends-btn').addEventListener('click', () => {
             const friendsList = document.getElementById('friends-list');
             friendsList.innerHTML = '';
@@ -349,58 +399,349 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('friends-modal').style.display = 'flex';
         });
 
+        // Обработчик кнопки задач
         document.getElementById('tasks-btn').addEventListener('click', () => document.getElementById('tasks-modal').style.display = 'flex');
 
-        // Фоновая музыка
-        backgroundMusic.play();
+        // Функция создания конфетти
+        function createConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
 
-        // Загрузка начального состояния
+        // Обработчик кнопки "Поделиться с друзьями"
+        document.querySelector('.share-btn').addEventListener('click', function() {
+            alert('Функция поделиться с друзьями пока не реализована');
+        });
+
+        // Обработчик кнопки "Опубликовать историю"
+        document.querySelector('.publish-btn').addEventListener('click', function() {
+            alert('Функция опубликовать историю пока не реализована');
+        });
+
+        // Функция загрузки начального состояния
         updateBoosterTimer();
         updateEnergyBar();
 
         // Функции мини-игры "Защити цветок"
         function startProtectFlowerGame() {
-            // Проверяем наличие билета
-            if (playerHasTicket()) {
-                // Запускаем игру
-                console.log('Запуск игры "Защити цветок"');
-                // Здесь будет реализация игры
-            } else {
-                alert('У вас нет билетов для входа в игру. Попробуйте позже.');
-            }
+            gameContainer.style.display = 'none';
+            document.getElementById('protect-flower-game').style.display = 'flex';
+            startProtectFlowerCountdown();
+            initProtectFlowerGame();
+            backgroundMusic.pause(); // Останавливаем фоновую музыку
         }
 
-        function playerHasTicket() {
-            // Проверка наличия билета
-            // Для примера вернем true
-            return true;
-        }
-
-        function startCountdown(seconds) {
-            const endTime = Date.now() + seconds * 1000;
-            const countdown = setInterval(function() {
-                const remainingTime = Math.max(0, endTime - Date.now());
-                if (remainingTime === 0) {
-                    clearInterval(countdown);
-                    isFlowerClickable = true;
-                    chamomile.style.filter = "none";
-                    timer.textContent = "";
+        function startProtectFlowerCountdown() {
+            let countdown = 3;
+            const playButton = document.getElementById('play-button');
+            const countdownInterval = setInterval(() => {
+                if (countdown > 0) {
+                    playButton.textContent = countdown;
+                    countdown--;
                 } else {
-                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-                    timer.textContent = `Следующее предсказание через: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    clearInterval(countdownInterval);
+                    playButton.textContent = 'Играть';
+                    startProtectFlowerLevel();
                 }
             }, 1000);
         }
 
-        // Кнопки в модальном окне предсказания
-        document.querySelector('.share-btn').addEventListener('click', function() {
-            alert('Функция поделиться с друзьями пока не реализована');
-        });
+        function initProtectFlowerGame() {
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
-        document.querySelector('.publish-btn').addEventListener('click', function() {
-            alert('Функция опубликовать историю пока не реализована');
-        });
-    }
-});
+            const flower = {
+                x: canvas.width / 2,
+                y: canvas.height / 2 + 100,
+                width: 100,
+                height: 100,
+                image: new Image(),
+                draw: function() {
+                    ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+                }
+            };
+            flower.image.src = 'assets/images/PodsolnuhBEE.webp';
+
+            let bees = [];
+            let beeInterval;
+            let gameTime = 120; // 2 минуты
+            let gameTimerInterval;
+            let lives = 3;
+            let gameCoins = 0;
+            const gameCoinCount = document.getElementById('game-coin-count');
+            const gameLives = document.getElementById('game-lives');
+            const gameTimer = document.getElementById('game-timer');
+
+            // Звуки
+            const gameMusic = new Audio('assets/sounds/Onelevel.mp3');
+            gameMusic.loop = true;
+            const hitSound = new Audio('assets/sounds/udar.mp3');
+            let gameMusicEnabled = true;
+
+            // Включение музыки
+            if (soundEnabled && gameMusicEnabled) {
+                gameMusic.play();
+            }
+
+            // Функция создания пчел
+            function spawnBee() {
+                const size = 50;
+                const speed = 2 + Math.random() * 3; // Скорость пчелы
+                let x, y;
+
+                // Спавн пчел с разных сторон
+                const side = Math.floor(Math.random() * 4);
+                switch(side) {
+                    case 0: // Верх
+                        x = Math.random() * canvas.width;
+                        y = -size;
+                        break;
+                    case 1: // Право
+                        x = canvas.width + size;
+                        y = Math.random() * canvas.height;
+                        break;
+                    case 2: // Низ
+                        x = Math.random() * canvas.width;
+                        y = canvas.height + size;
+                        break;
+                    case 3: // Лево
+                        x = -size;
+                        y = Math.random() * canvas.height;
+                        break;
+                }
+
+                const bee = {
+                    x: x,
+                    y: y,
+                    width: size,
+                    height: size,
+                    speed: speed,
+                    image: new Image(),
+                    draw: function() {
+                        ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+                    },
+                    move: function() {
+                        // Вращение к ромашке
+                        const angle = Math.atan2(flower.y - this.y, flower.x - this.x);
+                        this.x += Math.cos(angle) * this.speed;
+                        this.y += Math.sin(angle) * this.speed;
+                    }
+                };
+                bee.image.src = 'assets/images/Bee.webp';
+                bees.push(bee);
+            }
+
+            // Функция обновления и отрисовки пчел
+            function updateBees() {
+                bees.forEach((bee, index) => {
+                    bee.move();
+                    bee.draw();
+
+                    // Проверка столкновения с ромашкой
+                    if (isColliding(bee, flower)) {
+                        // Уменьшаем жизни
+                        lives--;
+                        updateLives();
+                        // Удаляем пчелу
+                        bees.splice(index, 1);
+                        if (soundEnabled) hitSound.play();
+                        // Пульсирование ромашки
+                        chamomile.classList.add('pulsate');
+                        setTimeout(() => chamomile.classList.remove('pulsate'), 500);
+                        // Проверка на окончание игры
+                        if (lives <= 0) {
+                            endProtectFlowerGame();
+                        }
+                    }
+
+                    // Удаление пчел, вышедших за пределы экрана
+                    if (bee.x < -bee.width || bee.x > canvas.width + bee.width || bee.y < -bee.height || bee.y > canvas.height + bee.height) {
+                        bees.splice(index, 1);
+                        // За каждую пропущенную пчелу получаем монету
+                        gameCoins += 1;
+                        gameCoinCount.textContent = gameCoins;
+                        animateGameCoin();
+                    }
+                });
+            }
+
+            // Функция проверки столкновения двух объектов
+            function isColliding(obj1, obj2) {
+                return (
+                    obj1.x < obj2.x + obj2.width / 2 &&
+                    obj1.x + obj1.width / 2 > obj2.x &&
+                    obj1.y < obj2.y + obj2.height / 2 &&
+                    obj1.y + obj1.height / 2 > obj2.y
+                );
+            }
+
+            // Обновление жизней
+            function updateLives() {
+                const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
+                lifeIcons.forEach((icon, index) => {
+                    if (index < lives) {
+                        icon.style.opacity = '1';
+                    } else {
+                        icon.style.opacity = '0.3';
+                    }
+                });
+            }
+
+            // Функция анимации монеты в мини-игре
+            function animateGameCoin() {
+                // Создаем анимацию монеты
+                const coin = document.createElement('img');
+                coin.src = 'assets/images/silvercoin.webp';
+                coin.className = 'coin-icon';
+                coin.style.position = 'absolute';
+                coin.style.left = `${Math.random() * canvas.width}px`;
+                coin.style.top = `${Math.random() * canvas.height}px`;
+                coin.style.transition = 'all 1s linear';
+                document.body.appendChild(coin);
+
+                const target = document.getElementById('game-coins').getBoundingClientRect();
+
+                setTimeout(() => {
+                    coin.style.left = `${target.left + target.width / 2}px`;
+                    coin.style.top = `${target.top + target.height / 2}px`;
+                    coin.style.width = '0px';
+                    coin.style.height = '0px';
+                    coin.style.opacity = '0';
+                }, 10);
+
+                setTimeout(() => coin.remove(), 1000);
+            }
+
+            // Функция анимации монеты при сборе
+            function animateCoinCollection() {
+                const coin = document.createElement('img');
+                coin.src = 'assets/images/silvercoin.webp';
+                coin.className = 'coin-icon';
+                coin.style.position = 'absolute';
+                coin.style.left = `${Math.random() * canvas.width}px`;
+                coin.style.top = `${Math.random() * canvas.height}px`;
+                coin.style.transition = 'all 1s linear';
+                document.body.appendChild(coin);
+
+                const target = document.getElementById('game-coins').getBoundingClientRect();
+
+                setTimeout(() => {
+                    coin.style.left = `${target.left + target.width / 2}px`;
+                    coin.style.top = `${target.top + target.height / 2}px`;
+                    coin.style.width = '0px';
+                    coin.style.height = '0px';
+                    coin.style.opacity = '0';
+                }, 10);
+
+                setTimeout(() => coin.remove(), 1000);
+            }
+
+            // Функция обновления энергосистемы
+            function replenishEnergy() {
+                energy = 1000;
+                energyCount.textContent = energy;
+                chamomile.style.filter = "none";
+                isFlowerClickable = true;
+            }
+
+            // Функция завершения мини-игры
+            function endProtectFlowerGame() {
+                document.getElementById('protect-flower-game').style.display = 'none';
+                gameContainer.style.display = 'flex';
+                gameMusic.pause();
+                backgroundMusic.play(); // Возвращаем фоновую музыку
+                alert(`Игра закончена! Вы собрали ${gameCoins} Coin.`);
+                // Добавляем кнопку "Повторим?" и "Выйти"
+                const replayBtn = document.createElement('button');
+                replayBtn.textContent = 'Повторим?';
+                replayBtn.style.backgroundColor = '#32CD32';
+                replayBtn.style.color = '#fff';
+                replayBtn.style.padding = '10px 20px';
+                replayBtn.style.border = 'none';
+                replayBtn.style.borderRadius = '10px';
+                replayBtn.style.cursor = 'pointer';
+                replayBtn.style.marginRight = '10px';
+                replayBtn.className = 'replay-btn';
+                replayBtn.style.animation = 'pulseReplay 2s infinite';
+
+                const exitBtn = document.createElement('button');
+                exitBtn.textContent = 'Выйти';
+                exitBtn.style.backgroundColor = '#FF0000';
+                exitBtn.style.color = '#fff';
+                exitBtn.style.padding = '10px 20px';
+                exitBtn.style.border = 'none';
+                exitBtn.style.borderRadius = '10px';
+                exitBtn.style.cursor = 'pointer';
+                exitBtn.className = 'exit-btn';
+
+                const replayContainer = document.createElement('div');
+                replayContainer.style.position = 'absolute';
+                replayContainer.style.bottom = '50px';
+                replayContainer.style.display = 'flex';
+                replayContainer.style.justifyContent = 'center';
+                replayContainer.style.width = '100%';
+                replayContainer.appendChild(replayBtn);
+                replayContainer.appendChild(exitBtn);
+
+                document.getElementById('protect-flower-game').appendChild(replayContainer);
+
+                replayBtn.addEventListener('click', () => {
+                    replayBtn.remove();
+                    exitBtn.remove();
+                    startProtectFlowerGame();
+                });
+
+                exitBtn.addEventListener('click', () => {
+                    replayBtn.remove();
+                    exitBtn.remove();
+                });
+            }
+
+            // Анимация конфетти при открытии предсказания
+            function createConfetti() {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Функция запуска мини-игры "Защити цветок"
+            function startProtectFlowerLevel() {
+                // Инициализация пчел
+                beeInterval = setInterval(spawnBee, 1000); // Спавн пчел каждые 1 секунду
+
+                // Таймер игры
+                gameTimerInterval = setInterval(() => {
+                    gameTime--;
+                    const minutes = Math.floor(gameTime / 60);
+                    const seconds = gameTime % 60;
+                    gameTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    if (gameTime <= 0) {
+                        clearInterval(beeInterval);
+                        clearInterval(gameTimerInterval);
+                        endProtectFlowerGame();
+                    }
+                }, 1000);
+
+                // Основной игровой цикл
+                function gameLoop() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    flower.draw();
+                    updateBees();
+                    requestAnimationFrame(gameLoop);
+                }
+
+                gameLoop();
+            }
+
+            // Обработчик кликов на мини-игру для взаимодействия
+            // Здесь можно добавить дополнительные функции по необходимости
+        }
+    });

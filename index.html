@@ -7,9 +7,18 @@
     <!-- Подключаем стили -->
     <link href="styles.css" rel="stylesheet">
     <!-- Подключаем шрифт SpanB.otf -->
-    <link href="Fonts/SpanB.otf" rel="stylesheet" type="text/css">
+    <style>
+        @font-face {
+            font-family: 'SpanB';
+            src: url('Fonts/SpanB.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
     <!-- Подключаем Telegram Web Apps SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Подключаем библиотеку Confetti для анимации конфетти -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <!-- Анимация загрузки -->
@@ -19,7 +28,7 @@
 
     <!-- Кнопка отключения звука -->
     <button id="sound-toggle">
-        <img src="assets/images/on.webp" alt="Звук включен">
+        <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
     </button>
 
     <div class="game-container" style="display: none;">
@@ -41,7 +50,7 @@
         </div>
 
         <div class="chamomile-container">
-            <img src="assets/images/ромашка.png" id="chamomile" alt="Ромашка">
+            <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
         </div>
 
         <div id="timer"></div>
@@ -105,7 +114,7 @@
             <span class="close-btn">&times;</span>
             <h2>Магазин</h2>
             <div class="shop-tabs">
-                <button class="shop-tab" data-tab="daisy">За $Daisy</button>
+                <button class="shop-tab active" data-tab="daisy">За $Daisy</button>
                 <button class="shop-tab" data-tab="coin">За Coin</button>
                 <button class="shop-tab" data-tab="premium">Премиум</button>
             </div>
