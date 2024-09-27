@@ -314,15 +314,15 @@ footer .icon {
 }
 
 #loading-screen img {
-    width: 50%;
+    width: 70%; /* Подогнано для 9:16 */
     max-width: 300px;
     height: auto; /* Избежим искажения */
 }
 
-/* Кнопка отключения звука */
+/* Кнопка отключения звука на уровне бустера */
 #sound-toggle {
     position: absolute;
-    bottom: 80px;
+    bottom: 20px; /* Подгоняем под уровень бустера */
     right: 20px;
     background: none;
     border: none;
@@ -332,11 +332,9 @@ footer .icon {
 }
 
 #sound-toggle img {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
 }
-
-/* Кнопка "Играть" уже настроена выше */
 
 /* Магазин */
 .shop-tabs {
@@ -399,7 +397,8 @@ footer .icon {
     font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
 }
 
-.skin-item img#lpodsolnuh {
+/* Специальные стили для скина 'lpodsolnuh.webp' */
+.skin-item img[src="assets/images/lpodsolnuh.webp"] {
     width: 180px; /* Увеличиваем размер изображения в 3 раза */
     height: 180px;
 }
@@ -561,7 +560,7 @@ footer .icon {
     }
 
     #loading-screen img {
-        width: 70%;
+        width: 70%; /* Подогнано для 9:16 */
         max-width: 300px;
     }
 }
@@ -573,8 +572,25 @@ footer .icon {
     }
 
     #loading-screen img {
-        width: 50%;
+        width: 50%; /* Подогнано для 16:9 */
         max-width: 300px;
+    }
+}
+
+/* Пульсация счетчика монет */
+.coin-counter-pulse {
+    animation: pulseCounter 0.5s;
+}
+
+@keyframes pulseCounter {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
     }
 }
 
@@ -593,6 +609,522 @@ footer .icon {
 #sound-toggle img {
     width: 60px;
     height: 60px;
+}
+
+/* Магазин */
+.shop-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.shop-tab {
+    padding: 10px 20px;
+    background-color: rgba(255, 215, 0, 0.3);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: 'Press Start 2P', cursive; /* Аркадный шрифт */
+    font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
+}
+
+.shop-tab.active, .shop-tab:hover {
+    background-color: rgba(255, 215, 0, 0.6);
+}
+
+.shop-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+}
+
+.skin-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%; /* Делает изображение круговым */
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.skin-item:hover {
+    transform: scale(1.05);
+}
+
+.skin-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 50%; /* Убедимся, что изображения круговые */
+}
+
+.skin-price {
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
+}
+
+/* Специальные стили для скина 'lpodsolnuh.webp' */
+.skin-item img[src="assets/images/lpodsolnuh.webp"] {
+    width: 180px; /* Увеличиваем размер изображения в 3 раза */
+    height: 180px;
+}
+
+/* Мини-игра "Защити цветок" */
+.game-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('assets/images/gamepole.webp') no-repeat center center;
+    background-size: cover;
+    z-index: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#game-timer {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px; /* Уменьшил размер шрифта для аркадного стиля */
+    color: #FFFFFF;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+#game-lives {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.life-icon {
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+}
+
+#game-coins {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 18px; /* Уменьшил размер шрифта для аркадного стиля */
+    color: #FFFFFF;
+}
+
+#game-coins .coin-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+/* Кнопка "Начать игру" */
+#start-game-button {
+    position: absolute;
+    bottom: 50px;
+    padding: 15px 30px;
+    background-color: #FF4500;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    animation: pulseStartButton 2s infinite;
+    transition: background-color 0.3s;
+}
+
+#start-game-button:hover {
+    background-color: #e03e00;
+}
+
+@keyframes pulseStartButton {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Анимация конфетти */
+#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 250;
+}
+
+/* Дополнительные стили для мини-игры */
+.pulsate {
+    animation: pulsate 0.5s ease-out;
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.replay-btn, .exit-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px; /* Уменьшил размер шрифта для аркадного стиля */
+    margin: 10px;
+}
+
+.replay-btn {
+    background-color: #32CD32;
+    color: white;
+    animation: pulseReplay 2s infinite;
+}
+
+.exit-btn {
+    background-color: #FF0000;
+    color: white;
+}
+
+@keyframes pulseReplay {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Оптимизация под 9:16 и 16:9 */
+@media (orientation: portrait) {
+    .game-container, .game-screen {
+        width: 100vw;
+        height: 177.78vh; /* 9:16 соотношение */
+    }
+
+    #loading-screen img {
+        width: 70%; /* Подогнано для 9:16 */
+        max-width: 300px;
+    }
+}
+
+@media (orientation: landscape) {
+    .game-container, .game-screen {
+        width: 177.78vw; /* 16:9 перевёрнутое */
+        height: 100vh;
+    }
+
+    #loading-screen img {
+        width: 50%; /* Подогнано для 16:9 */
+        max-width: 300px;
+    }
+}
+
+/* Пульсация счетчика монет */
+.coin-counter-pulse {
+    animation: pulseCounter 0.5s;
+}
+
+@keyframes pulseCounter {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Кнопка отключения звука на уровне бустера */
+#sound-toggle {
+    position: absolute;
+    bottom: 20px; /* Подгоняем под уровень бустера */
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 150;
+    transform: scale(1.5); /* Увеличиваем размер кнопки */
+}
+
+#sound-toggle img {
+    width: 60px;
+    height: 60px;
+}
+
+/* Магазин */
+.shop-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.shop-tab {
+    padding: 10px 20px;
+    background-color: rgba(255, 215, 0, 0.3);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-family: 'Press Start 2P', cursive; /* Аркадный шрифт */
+    font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
+}
+
+.shop-tab.active, .shop-tab:hover {
+    background-color: rgba(255, 215, 0, 0.6);
+}
+
+.shop-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+}
+
+.skin-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%; /* Делает изображение круговым */
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.skin-item:hover {
+    transform: scale(1.05);
+}
+
+.skin-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 50%; /* Убедимся, что изображения круговые */
+}
+
+.skin-price {
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: 12px; /* Уменьшил размер шрифта для аркадного стиля */
+}
+
+/* Специальные стили для скина 'lpodsolnuh.webp' */
+.skin-item img[src="assets/images/lpodsolnuh.webp"] {
+    width: 180px; /* Увеличиваем размер изображения в 3 раза */
+    height: 180px;
+}
+
+/* Мини-игра "Защити цветок" */
+.game-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('assets/images/gamepole.webp') no-repeat center center;
+    background-size: cover;
+    z-index: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#game-timer {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px; /* Уменьшил размер шрифта для аркадного стиля */
+    color: #FFFFFF;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+#game-lives {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.life-icon {
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+}
+
+#game-coins {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 18px; /* Уменьшил размер шрифта для аркадного стиля */
+    color: #FFFFFF;
+}
+
+#game-coins .coin-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+/* Кнопка "Начать игру" */
+#start-game-button {
+    position: absolute;
+    bottom: 50px;
+    padding: 15px 30px;
+    background-color: #FF4500;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    animation: pulseStartButton 2s infinite;
+    transition: background-color 0.3s;
+}
+
+#start-game-button:hover {
+    background-color: #e03e00;
+}
+
+@keyframes pulseStartButton {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Анимация конфетти */
+#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 250;
+}
+
+/* Дополнительные стили для мини-игры */
+.pulsate {
+    animation: pulsate 0.5s ease-out;
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.replay-btn, .exit-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px; /* Уменьшил размер шрифта для аркадного стиля */
+    margin: 10px;
+}
+
+.replay-btn {
+    background-color: #32CD32;
+    color: white;
+    animation: pulseReplay 2s infinite;
+}
+
+.exit-btn {
+    background-color: #FF0000;
+    color: white;
+}
+
+@keyframes pulseReplay {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Оптимизация под 9:16 и 16:9 */
+@media (orientation: portrait) {
+    .game-container, .game-screen {
+        width: 100vw;
+        height: 177.78vh; /* 9:16 соотношение */
+    }
+
+    #loading-screen img {
+        width: 70%; /* Подогнано для 9:16 */
+        max-width: 300px;
+    }
+}
+
+@media (orientation: landscape) {
+    .game-container, .game-screen {
+        width: 177.78vw; /* 16:9 перевёрнутое */
+        height: 100vh;
+    }
+
+    #loading-screen img {
+        width: 50%; /* Подогнано для 16:9 */
+        max-width: 300px;
+    }
 }
 
 /* Пульсация счетчика монет */
