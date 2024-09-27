@@ -6,21 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- Подключаем стили -->
     <link href="styles.css" rel="stylesheet">
-    <!-- Подключаем шрифты -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Dancing+Script&display=swap" rel="stylesheet">
+    <!-- Подключаем шрифт SpanB.otf -->
+    <link href="Fonts/SpanB.otf" rel="stylesheet" type="text/css">
+    <!-- Подключаем Telegram Web Apps SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="game-container">
+    <!-- Анимация загрузки -->
+    <div id="loading-screen">
+        <img src="assets/images/Loadingscreen.webp" alt="Загрузка...">
+    </div>
+
+    <!-- Кнопка отключения звука -->
+    <button id="sound-toggle">
+        <img src="assets/images/on.webp" alt="Звук включен">
+    </button>
+
+    <div class="game-container" style="display: none;">
+        <!-- Зеленая кнопка "Играть" -->
+        <button id="play-button">Играть</button>
+
         <div class="counters">
-            <div id="coin-counter" class="counter"><span class="cham-coin" id="coin-count">0</span> $Cham</div>
+            <div id="coin-counter" class="counter">
+                <img src="assets/images/goldcoin.webp" alt="Gold Coin" class="coin-icon">
+                <span class="daisy-coin" id="coin-count">200</span> $Daisy
+            </div>
             <div>
-                <div id="secondary-coin-counter" class="counter"><span class="secondary-coin" id="spin-coin-count">0</span> Coin</div>
+                <div id="secondary-coin-counter" class="counter">
+                    <img src="assets/images/silvercoin.webp" alt="Silver Coin" class="coin-icon">
+                    <span class="secondary-coin" id="spin-coin-count">0</span> Coin
+                </div>
                 <div id="energy-counter" class="counter">Энергия: <span class="energy" id="energy-count">1000</span></div>
             </div>
         </div>
 
         <div class="chamomile-container">
-            <img src="assets/images/спинер--Photoroom.png" id="chamomile" alt="Ромашка">
+            <img src="assets/images/ромашка.png" id="chamomile" alt="Ромашка">
         </div>
 
         <div id="timer"></div>
@@ -32,13 +53,17 @@
         <footer>
             <button id="airdrop-btn">Airdrop</button>
             <button id="rating-btn">Рейтинг</button>
-            <button id="skins-btn">Скины</button>
+            <button id="shop-btn">
+                <img src="assets/images/shop.webp" alt="Магазин" class="icon">
+                Магазин
+            </button>
             <button id="friends-btn">Друзья</button>
             <button id="tasks-btn">Задачи</button>
         </footer>
     </div>
 
     <!-- Модальные окна -->
+    <!-- Предсказание -->
     <div id="prediction-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -55,6 +80,7 @@
         </div>
     </div>
 
+    <!-- Airdrop -->
     <div id="airdrop-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -64,6 +90,7 @@
         </div>
     </div>
 
+    <!-- Рейтинг -->
     <div id="rating-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -72,14 +99,21 @@
         </div>
     </div>
 
-    <div id="skins-modal" class="modal">
+    <!-- Магазин -->
+    <div id="shop-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h2>Скины</h2>
-            <div class="skins-grid" id="skins-grid"></div>
+            <h2>Магазин</h2>
+            <div class="shop-tabs">
+                <button class="shop-tab" data-tab="daisy">За $Daisy</button>
+                <button class="shop-tab" data-tab="coin">За Coin</button>
+                <button class="shop-tab" data-tab="premium">Премиум</button>
+            </div>
+            <div class="shop-content" id="shop-content"></div>
         </div>
     </div>
 
+    <!-- Друзья -->
     <div id="friends-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -89,17 +123,35 @@
         </div>
     </div>
 
+    <!-- Задачи -->
     <div id="tasks-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Задачи</h2>
-            <p>Выполняйте задания и зарабатывайте больше $Cham Coin</p>
+            <p>Выполняйте задания и зарабатывайте больше $Daisy Coin</p>
             <p style="color: gray;">Задания скоро появятся...</p>
         </div>
     </div>
 
+    <!-- Мини-игра "Защити цветок" -->
+    <div id="protect-flower-game" class="game-screen" style="display: none;">
+        <canvas id="game-canvas"></canvas>
+        <div id="game-timer">02:00</div>
+        <div id="game-lives">
+            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+        </div>
+        <div id="game-coins">
+            <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+            <span id="game-coin-count">0</span>
+        </div>
+    </div>
+
+    <!-- Анимация конфетти -->
+    <canvas id="confetti-canvas"></canvas>
+
     <!-- Подключаем скрипты -->
-    <script src="https://telegram.org/js/telegram-game.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,29 +1,27 @@
+/* Общие стили */
 body {
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #8A2BE2;
-    font-family: 'Roboto', sans-serif;
-    height: 100vh;
+    background-color: #000000;
+    font-family: 'SpanB', sans-serif;
     color: #FFD700;
+    overflow: hidden;
 }
 
 .game-container {
     width: 100%;
     height: 100vh;
-    background: radial-gradient(circle, #8A2BE2 0%, #4B0082 100%);
+    background: radial-gradient(circle at center, #000000 0%, #4B0082 100%);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 10px;
+    align-items: center;
     position: relative;
 }
 
 .counters {
     display: flex;
     justify-content: space-between;
+    width: 90%;
     padding: 10px;
     font-size: 24px;
     font-weight: bold;
@@ -33,26 +31,26 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     padding: 10px;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    display: flex;
+    align-items: center;
 }
 
-#coin-counter {
-    text-align: left;
-}
-
-#secondary-coin-counter, #energy-counter {
-    text-align: right;
+.coin-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
 }
 
 .chamomile-container {
     position: relative;
+    width: 300px;
+    height: 300px;
     margin: auto;
-    width: 135%;
-    height: 405px;
-    max-width: 405px;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: radial-gradient(circle at center, #000000 0%, #4B0082 100%);
+    border-radius: 50%;
 }
 
 #chamomile {
@@ -60,31 +58,68 @@ body {
     height: 100%;
     transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
     cursor: pointer;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));
-}
-
-#chamomile:active {
-    transform: scale(0.95);
 }
 
 .spark {
     position: absolute;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    opacity: 0;
-    animation: sparkAnimation 1s linear;
+    font-size: 24px;
+    animation: sparkAnimation 1s ease-out;
 }
 
 @keyframes sparkAnimation {
     0% {
         opacity: 1;
-        transform: translateY(0) translateX(0);
+        transform: translate(0, 0) scale(1);
     }
     100% {
         opacity: 0;
-        transform: translateY(100px) translateX(100px) scale(2);
+        transform: translate(-50px, -100px) scale(2);
     }
+}
+
+#timer {
+    font-size: 18px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+footer {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(138, 43, 226, 0.8);
+    border-radius: 0 0 25px 25px;
+}
+
+footer button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: #FFD700;
+    cursor: pointer;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+}
+
+footer .icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+#booster {
+    background-color: #32CD32;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .modal {
@@ -166,117 +201,6 @@ body {
     }
 }
 
-#timer {
-    font-size: 18px;
-    text-align: center;
-    margin-top: 10px;
-}
-
-footer {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background-color: rgba(138, 43, 226, 0.8);
-    border-radius: 0 0 25px 25px;
-}
-
-footer button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
-    color: #FFD700;
-    cursor: pointer;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-#booster {
-    background-color: #32CD32;
-    color: white;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-.skins-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 10px;
-}
-
-.skin-item {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-}
-
-.skin-price {
-    margin-top: 5px;
-    font-weight: bold;
-}
-
-.firework {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    animation: firework 1s ease-out;
-}
-
-@keyframes firework {
-    0% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(-100px) scale(3);
-        opacity: 0;
-    }
-}
-
-.rating-item {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid #FFD700;
-    border-radius: 15px;
-    padding: 10px;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-.friend-item {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 10px;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-}
-
-#energy-counter {
-    background: linear-gradient(to right, #3a8d3e, #d6c834, #c93b2f);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    background-size: 200% 100%;
-    background-position: left;
-    transition: background-position 0.5s ease;
-}
-
-#energy-counter.low {
-    background-position: center;
-}
-
-#energy-counter.empty {
-    background-position: right;
-}
-
 .prediction-buttons {
     display: flex;
     justify-content: center;
@@ -323,4 +247,129 @@ footer button {
 .history-date {
     font-size: 14px;
     color: #aaa;
+}
+
+/* Анимация загрузки */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+#loading-screen img {
+    width: 50%;
+    max-width: 300px;
+}
+
+/* Кнопка отключения звука */
+#sound-toggle {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+#sound-toggle img {
+    width: 40px;
+    height: 40px;
+}
+
+/* Кнопка "Играть" */
+#play-button {
+    background-color: #32CD32;
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    margin-top: 20px;
+    animation: pulsePlayButton 2s infinite;
+}
+
+@keyframes pulsePlayButton {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Стили для мини-игры "Защити цветок" */
+.game-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('assets/images/gamepole.webp') no-repeat center center;
+    background-size: cover;
+    z-index: 100;
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#game-timer {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 36px;
+    color: #FFFFFF;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+#game-lives {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.life-icon {
+    width: 40px;
+    height: 40px;
+}
+
+#game-coins {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    color: #FFFFFF;
+}
+
+#game-coins .coin-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+}
+
+/* Анимация конфетти */
+#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
 }
