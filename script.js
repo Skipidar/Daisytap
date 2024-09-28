@@ -57,7 +57,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const predictionSound = new Audio('assets/sounds/prediction.mp3');
         const backgroundMusic = new Audio('assets/sounds/backgroundmusic.mp3');
         
-    const oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
+    
+    let oneLevelMusic;
+    let udarSound;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
+        udarSound = new Audio('assets/sounds/udar.mp3');
+        oneLevelMusic.volume = 0.5;
+        udarSound.volume = 0.4;
+    
     const udarSound = new Audio('assets/sounds/udar.mp3');
     oneLevelMusic.volume = 0.5;
     udarSound.volume = 0.4;
@@ -66,7 +75,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
         let soundEnabled = true;
 
-        const oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
+        
+    let oneLevelMusic;
+    let udarSound;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
+        udarSound = new Audio('assets/sounds/udar.mp3');
+        oneLevelMusic.volume = 0.5;
+        udarSound.volume = 0.4;
+    
         const udarSound = new Audio('assets/sounds/udar.mp3');
 
         // Фоновая музыка будет запускаться после взаимодействия пользователя
@@ -722,7 +740,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Добавляем систему билетов
 let tickets = 1 + Math.floor(Math.random() * 7); // Ежедневный подарок от 1 до 7 билетов
-const ticketCounter = document.getElementById('ticket-counter');
+
+    const ticketCounter = document.getElementById('ticket-counter');
+    if (ticketCounter) {
+        ticketCounter.innerHTML = `<img src="assets/images/Ticket.webp" alt="Ticket"> ${tickets}`;
+    }
+    
 
     if (ticketCounter) {
         ticketCounter.innerHTML = `<img src="assets/images/Ticket.webp" alt="Ticket"> ${tickets}`;
