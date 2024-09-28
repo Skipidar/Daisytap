@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let tgUser = null;
     let isTelegram = false;
 
-    // Проверяем, доступен ли Telegram Web Apps SDK
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
         const tg = window.Telegram.WebApp;
         tgUser = tg.initDataUnsafe.user;
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`Добро пожаловать, ${tgUser.first_name}!`);
     } else {
         console.log('Игра запущена вне Telegram.');
-        // Для локального тестирования создаем тестового пользователя
         tgUser = {
             id: 123456789,
             first_name: 'TestUser',
@@ -19,11 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
         isTelegram = false;
     }
 
-    // Инициализируем игру
     initGame();
 
     function initGame() {
-        // Переменные игры
         let coins = 200; // Начальное количество $Daisy
         let spinCoins = 0;
         let energy = 1000;
@@ -33,11 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let rotationAngle = 0;
         let lastPredictionTime = 0;
 
-        // Для неповторяющихся предсказаний
         let usedPredictions = [];
         let predictionHistory = [];
 
-        // Элементы DOM
         const chamomile = document.getElementById('chamomile');
         const coinCount = document.getElementById('coin-count');
         const spinCoinCount = document.getElementById('spin-coin-count');
@@ -52,46 +46,40 @@ document.addEventListener('DOMContentLoaded', function() {
         const soundToggle = document.getElementById('sound-toggle');
         const soundIcon = document.getElementById('sound-icon');
 
-        // Аудио
         const clickSound = new Audio('assets/sounds/click.mp3');
         const predictionSound = new Audio('assets/sounds/prediction.mp3');
         const backgroundMusic = new Audio('assets/sounds/backgroundmusic.mp3');
         backgroundMusic.loop = true;
-        let soundEnabled = true;
+        backgroundMusic.volume = 0.5;
 
         const oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
         const udarSound = new Audio('assets/sounds/udar.mp3');
+        oneLevelMusic.volume = 0.5;
 
-        // Фоновая музыка будет запускаться после взаимодействия пользователя
+        clickSound.volume = 0.4;
 
-        // Обработка кнопки отключения звука
+        // Воспроизведение фоновой музыки после загрузки
+        setTimeout(() => {
+            backgroundMusic.play().catch(error => console.warn('Автоматическое воспроизведение музыки заблокировано:', error));
+        }, 3000); // 3 секунды загрузки
+
+        // Кнопка включения/выключения звука
         soundToggle.addEventListener('click', () => {
-            soundEnabled = !soundEnabled;
+            const soundEnabled = backgroundMusic.volume > 0;
             if (soundEnabled) {
-                soundIcon.src = 'assets/images/on.webp';
-                backgroundMusic.play();
-                oneLevelMusic.play();
-            } else {
                 soundIcon.src = 'assets/images/off.webp';
                 backgroundMusic.pause();
                 oneLevelMusic.pause();
+            } else {
+                soundIcon.src = 'assets/images/on.webp';
+                backgroundMusic.play();
             }
         });
 
-        // Анимация загрузки
-        setTimeout(() => {
-            loadingScreen.style.display = 'none';
-            gameContainer.style.display = 'flex';
-        }, 3000); // 3 секунды загрузки
-
-        // Обработчик кнопки "Играть"
         playButton.addEventListener('click', () => {
             if (playerHasTicket()) {
-                // Запускаем фоновую музыку после клика
-                if (soundEnabled) {
-                    backgroundMusic.play().catch(error => {
-                        console.warn('Автоматическое воспроизведение музыки заблокировано:', error);
-                    });
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play();
                 }
                 startProtectFlowerGame();
             } else {
@@ -99,25 +87,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Проверка наличия билета (логика может быть расширена)
         function playerHasTicket() {
-            // Здесь должна быть логика проверки билета (например, через сервер)
-            // Для примера возвращаем true
-            return true;
+            return true; // Проверка наличия билета
         }
 
-        // Обработчик клика по ромашке
         chamomile.addEventListener('click', function(e) {
             const now = Date.now();
             if (now - lastClickTime >= 500 && energy > 0 && isFlowerClickable) {
                 lastClickTime = now;
-                if (soundEnabled) clickSound.play();
+                clickSound.play();
                 spinCoins += 1;
                 spinCoinCount.textContent = spinCoins;
                 energy -= 10;
                 energyCount.textContent = energy;
 
-                // Вращение по часовой стрелке
                 rotationAngle += 360 * 5 + Math.random() * 360;
                 this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
                 this.style.transform = `rotate(${rotationAngle}deg)`;
@@ -133,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Создание искр при клике
         function createSparks(x, y) {
             const spark = document.createElement('div');
             spark.className = 'spark';
@@ -144,12 +126,13 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => spark.remove(), 1000);
         }
 
-        // Анимация монеты к счетчику
         function animateCoin(x, y) {
             const coin = document.createElement('img');
             coin.src = 'assets/images/silvercoin.webp';
             coin.className = 'coin-icon';
             coin.style.position = 'absolute';
+            coin.style.width = '50px';  // Увеличенный размер монетки
+            coin.style.height = '50px';
             coin.style.left = `${x}px`;
             coin.style.top = `${y}px`;
             coin.style.transition = 'all 1s linear';
@@ -163,12 +146,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 coin.style.width = '0px';
                 coin.style.height = '0px';
                 coin.style.opacity = '0';
+                document.getElementById('coin-count').classList.add('pulse');
             }, 10);
 
-            setTimeout(() => coin.remove(), 1000);
+            setTimeout(() => {
+                coin.remove();
+                document.getElementById('coin-count').classList.remove('pulse');
+            }, 1000);
         }
 
-        // Обновление энергии
         function updateEnergyBar() {
             if (energy > 0) {
                 chamomile.style.filter = "none";
@@ -177,12 +163,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Обработчик двойного клика по ромашке (предсказание)
         chamomile.addEventListener('dblclick', function() {
             const now = Date.now();
             if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
                 lastPredictionTime = now;
-                if (soundEnabled) predictionSound.play();
+                predictionSound.play();
                 predictionModal.style.display = 'flex';
 
                 const prediction = getRandomPrediction();
@@ -193,14 +178,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 startCountdown(6 * 60 * 60); // 6 часов
                 createConfetti();
 
-                // Добавляем предсказание в историю
                 const date = new Date().toLocaleString();
                 predictionHistory.unshift({ prediction, date });
                 updatePredictionHistory();
             }
         });
 
-        // Получение случайного предсказания
         function getRandomPrediction() {
             const predictions = [
                 "Сегодня удача улыбнется вам во всех начинаниях. Не упустите свой шанс!",
@@ -235,7 +218,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return prediction;
         }
 
-        // Обновление истории предсказаний
         function updatePredictionHistory() {
             const historyContainer = document.getElementById('predictions-history');
             historyContainer.innerHTML = '<h3>История предсказаний:</h3>';
@@ -250,7 +232,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Создание конфетти
         function createConfetti() {
             confetti({
                 particleCount: 100,
@@ -259,7 +240,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Обновление таймера бустера
         function updateBoosterTimer() {
             const now = new Date();
             const minutes = 59 - now.getMinutes();
@@ -276,7 +256,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 60 * 60 * 1000); // Каждый час
 
-        // Обработчик бустера
         boosterBtn.addEventListener('click', function() {
             if (boosterCharges > 0) {
                 energy = 1000;
@@ -289,14 +268,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Обработчики модальных окон
         document.querySelectorAll('.close-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 this.closest('.modal').style.display = 'none';
             });
         });
 
-        // Обработчики кнопок меню
         document.getElementById('airdrop-btn').addEventListener('click', () => {
             document.getElementById('airdrop-modal').style.display = 'flex';
         });
@@ -314,17 +291,14 @@ document.addEventListener('DOMContentLoaded', function() {
             ratingModal.style.display = 'flex';
         });
 
-        // Обработчик кнопки магазина
         document.getElementById('shop-btn').addEventListener('click', () => {
             const shopModal = document.getElementById('shop-modal');
             const shopContent = document.getElementById('shop-content');
             shopContent.innerHTML = '';
-            // По умолчанию открываем вкладку "За $Daisy"
             loadShopItems('daisy');
             shopModal.style.display = 'flex';
         });
 
-        // Обработчики вкладок магазина
         document.querySelectorAll('.shop-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
@@ -334,7 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Функция загрузки предметов в магазине
         function loadShopItems(tabName) {
             const shopContent = document.getElementById('shop-content');
             shopContent.innerHTML = '';
@@ -382,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             spinCoinCount.textContent = spinCoins;
                         }
                         applySkin(item.image);
-                        alert(`Вы купили ${item.name}!`);
+                        showSkinPurchaseModal(item.image);
                     } else {
                         alert('Недостаточно средств!');
                     }
@@ -391,12 +364,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Функция применения скина (замена изображения ромашки)
         function applySkin(skinImage) {
             chamomile.src = skinImage;
         }
 
-        // Обработчик кнопки друзей
         document.getElementById('friends-btn').addEventListener('click', () => {
             const friendsList = document.getElementById('friends-list');
             friendsList.innerHTML = '';
@@ -410,12 +381,10 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('friends-modal').style.display = 'flex';
         });
 
-        // Обработчик кнопки задач
         document.getElementById('tasks-btn').addEventListener('click', () => {
             document.getElementById('tasks-modal').style.display = 'flex';
         });
 
-        // Функция создания конфетти
         function createConfetti() {
             confetti({
                 particleCount: 100,
@@ -424,28 +393,38 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Обработчик кнопки "Поделиться с друзьями"
         document.querySelector('.share-btn').addEventListener('click', function() {
             alert('Функция поделиться с друзьями пока не реализована');
         });
 
-        // Обработчик кнопки "Опубликовать историю"
         document.querySelector('.publish-btn').addEventListener('click', function() {
             alert('Функция опубликовать историю пока не реализована');
         });
 
-        // Функция загрузки начального состояния
         updateBoosterTimer();
         updateEnergyBar();
 
-        // Функции мини-игры "Защити цветок"
+        function showSkinPurchaseModal(skinImage) {
+            const modal = document.getElementById('skin-purchase-modal');
+            modal.style.display = 'flex';
+
+            document.getElementById('apply-skin-btn').addEventListener('click', function() {
+                chamomile.src = skinImage;
+                modal.style.display = 'none';
+            });
+
+            document.getElementById('cancel-skin-btn').addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+        }
+
         function startProtectFlowerGame() {
             gameContainer.style.display = 'none';
             document.getElementById('protect-flower-game').style.display = 'flex';
             startProtectFlowerCountdown();
             initProtectFlowerGame();
-            backgroundMusic.pause(); // Останавливаем фоновую музыку
-            if (soundEnabled) oneLevelMusic.play(); // Запускаем музыку для мини-игры
+            backgroundMusic.pause();
+            if (!oneLevelMusic.playing) oneLevelMusic.play();
             oneLevelMusic.loop = true;
         }
 
@@ -487,7 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let bees = [];
             let beeInterval;
-            let gameTime = 120; // 2 минуты
+            let gameTime = 120;
             let gameTimerInterval;
             let lives = 3;
             let gameCoins = 0;
@@ -495,31 +474,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const gameLives = document.getElementById('game-lives');
             const gameTimer = document.getElementById('game-timer');
 
-            // Звуки
             const hitSound = new Audio('assets/sounds/udar.mp3');
 
-            // Функция создания пчел
             function spawnBee() {
                 const size = 50;
-                const speed = 2 + Math.random() * 3; // Скорость пчелы
+                const speed = 2 + Math.random() * 3;
                 let x, y;
 
-                // Спавн пчел с разных сторон
                 const side = Math.floor(Math.random() * 4);
                 switch(side) {
-                    case 0: // Верх
+                    case 0:
                         x = Math.random() * canvas.width;
                         y = -size;
                         break;
-                    case 1: // Право
+                    case 1:
                         x = canvas.width + size;
                         y = Math.random() * canvas.height;
                         break;
-                    case 2: // Низ
+                    case 2:
                         x = Math.random() * canvas.width;
                         y = canvas.height + size;
                         break;
-                    case 3: // Лево
+                    case 3:
                         x = -size;
                         y = Math.random() * canvas.height;
                         break;
@@ -536,7 +512,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
                     },
                     move: function() {
-                        // Вращение к ромашке
                         const angle = Math.atan2(flower.y - this.y, flower.x - this.x);
                         this.x += Math.cos(angle) * this.speed;
                         this.y += Math.sin(angle) * this.speed;
@@ -546,33 +521,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 bees.push(bee);
             }
 
-            // Функция обновления и отрисовки пчел
             function updateBees() {
                 bees.forEach((bee, index) => {
                     bee.move();
                     bee.draw();
 
-                    // Проверка столкновения с ромашкой
                     if (isColliding(bee, flower)) {
-                        // Уменьшаем жизни
                         lives--;
                         updateLives();
-                        // Удаляем пчелу
                         bees.splice(index, 1);
-                        if (soundEnabled) hitSound.play();
-                        // Пульсирование ромашки
+                        hitSound.play();
                         chamomile.classList.add('pulsate');
                         setTimeout(() => chamomile.classList.remove('pulsate'), 500);
-                        // Проверка на окончание игры
                         if (lives <= 0) {
                             endProtectFlowerGame();
                         }
                     }
 
-                    // Удаление пчел, вышедших за пределы экрана
                     if (bee.x < -bee.width || bee.x > canvas.width + bee.width || bee.y < -bee.height || bee.y > canvas.height + bee.height) {
                         bees.splice(index, 1);
-                        // За каждую пропущенную пчелу получаем монету
                         gameCoins += 1;
                         gameCoinCount.textContent = gameCoins;
                         animateGameCoin();
@@ -580,7 +547,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Функция проверки столкновения двух объектов
             function isColliding(obj1, obj2) {
                 return (
                     obj1.x < obj2.x + obj2.width / 2 &&
@@ -590,7 +556,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 );
             }
 
-            // Обновление жизней
             function updateLives() {
                 const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
                 lifeIcons.forEach((icon, index) => {
@@ -602,9 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Функция анимации монеты в мини-игре
             function animateGameCoin() {
-                // Создаем анимацию монеты
                 const coin = document.createElement('img');
                 coin.src = 'assets/images/silvercoin.webp';
                 coin.className = 'coin-icon';
@@ -627,16 +590,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => coin.remove(), 1000);
             }
 
-            // Функция завершения мини-игры
             function endProtectFlowerGame() {
                 const gameScreen = document.getElementById('protect-flower-game');
                 gameScreen.style.display = 'none';
                 gameContainer.style.display = 'flex';
                 oneLevelMusic.pause();
-                backgroundMusic.play(); // Возвращаем фоновую музыку
+                backgroundMusic.play();
                 alert(`Игра закончена! Вы собрали ${gameCoins} Coin.`);
 
-                // Добавляем кнопку "Повторим?" и "Выйти"
                 const replayBtn = document.createElement('button');
                 replayBtn.textContent = 'Повторим?';
                 replayBtn.style.backgroundColor = '#32CD32';
@@ -681,11 +642,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
 
-            // Функция запуска уровня мини-игры
             function startProtectFlowerLevel() {
-                beeInterval = setInterval(spawnBee, 1000); // Спавн пчел каждые 1 секунду
+                beeInterval = setInterval(spawnBee, 1000);
 
-                // Таймер игры
                 gameTimerInterval = setInterval(() => {
                     gameTime--;
                     const minutes = Math.floor(gameTime / 60);
@@ -699,7 +658,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }, 1000);
 
-                // Основной игровой цикл
                 function gameLoop() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     flower.draw();
@@ -711,4 +669,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
+    function giveDailyTicket() {
+        const tickets = Math.floor(Math.random() * 7) + 1;
+        alert(`Ваш подарок на сегодня — билетик в количестве ${tickets} штук!`);
+        document.getElementById('ticket-count').textContent = parseInt(document.getElementById('ticket-count').textContent) + tickets;
+    }
+
+    giveDailyTicket();
 });

@@ -17,6 +17,10 @@
     <!-- Анимация загрузки -->
     <div id="loading-screen">
         <img src="assets/images/Loadingscreen.webp" alt="Загрузка...">
+        <div id="loading-bar-container">
+            <div id="loading-bar"></div>
+        </div>
+        <div id="loading-text">Daisy</div>
     </div>
 
     <!-- Кнопка отключения звука -->
@@ -27,6 +31,11 @@
     <div class="game-container" style="display: none;">
         <!-- Зеленая кнопка "Играть" -->
         <button id="play-button">Играть</button>
+
+        <div id="ticket-counter">
+            <img src="assets/images/Ticket.webp" alt="Билетик" class="ticket-icon">
+            <span id="ticket-count">0</span>
+        </div>
 
         <div class="counters">
             <div id="coin-counter" class="counter">
@@ -64,89 +73,27 @@
         </footer>
     </div>
 
-    <!-- Модальные окна -->
-    <!-- Предсказание -->
-    <div id="prediction-modal" class="modal">
+    <!-- Модальное окно покупки скина -->
+    <div id="skin-purchase-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Ваше предсказание на сегодня:</h2>
-            <p id="prediction-title"></p>
-            <div class="prediction-buttons">
-                <button class="share-btn">Поделиться с друзьями</button>
-                <button class="publish-btn">Опубликовать историю</button>
-            </div>
-            <div id="predictions-history">
-                <h3>История предсказаний:</h3>
-                <!-- Здесь будут отображаться предыдущие предсказания -->
-            </div>
+            <h2>Вы приобрели новый скин!</h2>
+            <button id="apply-skin-btn">Установить</button>
+            <button id="cancel-skin-btn">Вернуться назад</button>
         </div>
     </div>
 
-    <!-- Airdrop -->
-    <div id="airdrop-modal" class="modal">
+    <!-- Модальное окно проигрыша -->
+    <div id="game-over-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Airdrop</h2>
-            <p>Что такое airdrop: Это бесплатная раздача токенов или монет пользователям криптовалютного проекта.</p>
-            <p>В данный момент игра находится на этапе добычи монет. Следите за обновлениями!</p>
+            <h2>Игра окончена!</h2>
+            <button id="retry-btn">Повторить</button>
         </div>
     </div>
 
-    <!-- Рейтинг -->
-    <div id="rating-modal" class="modal">
+    <!-- Модальное окно обратного отсчета -->
+    <div id="countdown-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Рейтинг игроков</h2>
-            <div id="rating-list"></div>
-        </div>
-    </div>
-
-    <!-- Магазин -->
-    <div id="shop-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Магазин</h2>
-            <div class="shop-tabs">
-                <button class="shop-tab active" data-tab="daisy">За $Daisy</button>
-                <button class="shop-tab" data-tab="coin">За Coin</button>
-                <button class="shop-tab" data-tab="premium">Премиум</button>
-            </div>
-            <div class="shop-content" id="shop-content"></div>
-        </div>
-    </div>
-
-    <!-- Друзья -->
-    <div id="friends-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Друзья</h2>
-            <p>Приглашайте друзей! Вы и ваш друг получите бонус в виде монет. Для Telegram друзей с Telegram Premium - особые условия!</p>
-            <div id="friends-list"></div>
-        </div>
-    </div>
-
-    <!-- Задачи -->
-    <div id="tasks-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Задачи</h2>
-            <p>Выполняйте задания и зарабатывайте больше $Daisy Coin</p>
-            <p style="color: gray;">Задания скоро появятся...</p>
-        </div>
-    </div>
-
-    <!-- Мини-игра "Защити цветок" -->
-    <div id="protect-flower-game" class="game-screen" style="display: none;">
-        <canvas id="game-canvas"></canvas>
-        <div id="game-timer">02:00</div>
-        <div id="game-lives">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-        </div>
-        <div id="game-coins">
-            <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-            <span id="game-coin-count">0</span>
+            <h1 id="countdown-text">3</h1>
         </div>
     </div>
 
