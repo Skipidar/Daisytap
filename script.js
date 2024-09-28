@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const udarSound = new Audio('assets/sounds/udar.mp3');
         udarSound.volume = 0.5; // Убавляем звук на 50%
 
-        // Фоновая музыка будет запускаться после взаимодействия пользователя
+        // Автоматическое воспроизведение музыки после взаимодействия пользователя
         window.addEventListener('click', () => {
             if (soundEnabled && backgroundMusic.paused && !oneLevelMusic.paused && !electricChaosMusic.paused) {
                 backgroundMusic.play().catch(error => {
@@ -92,10 +92,13 @@ document.addEventListener('DOMContentLoaded', function() {
             soundEnabled = !soundEnabled;
             if (soundEnabled) {
                 soundIcon.src = 'assets/images/on.webp';
-                backgroundMusic.play();
-                // Если мини-игра не запущена, включаем фоновую музыку
+                // Воспроизводим только фоновую музыку, если мини-игра не активна
                 if (!oneLevelMusic.paused && !electricChaosMusic.paused) {
                     backgroundMusic.pause();
+                } else {
+                    backgroundMusic.play().catch(error => {
+                        console.warn('Воспроизведение музыки заблокировано:', error);
+                    });
                 }
             } else {
                 soundIcon.src = 'assets/images/off.webp';
@@ -148,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         startGameBtn.addEventListener('click', () => {
             startGameBtn.style.display = 'none';
             startCountdown(3, () => {
-                startMiniGamePlay();
+                startMiniGamePlay(1);
             });
         });
 
@@ -249,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Обработчик двойного клика по ромашке (предсказание)
         chamomile.addEventListener('dblclick', function() {
             const now = Date.now();
-            if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
+            if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) { // 6 часов
                 lastPredictionTime = now;
                 if (soundEnabled) predictionSound.play();
                 predictionModal.style.display = 'flex';
@@ -487,29 +490,16 @@ document.addEventListener('DOMContentLoaded', function() {
             let countdown = seconds;
             const countdownElement = document.createElement('div');
             countdownElement.className = 'countdown';
-            countdownElement.style.position = 'absolute';
-            countdownElement.style.top = '50%';
-            countdownElement.style.left = '50%';
-            countdownElement.style.transform = 'translate(-50%, -50%)';
-            countdownElement.style.fontSize = '48px';
-            countdownElement.style.color = '#FFD700';
-            countdownElement.style.textShadow = '2px 2px 4px rgba(0,0,0,0.7)';
-            countdownElement.style.opacity = '0';
+            countdownElement.textContent = '3';
             document.getElementById('protect-flower-game').appendChild(countdownElement);
 
-            let currentCount = 3;
-            countdownElement.textContent = currentCount;
-            countdownElement.style.opacity = '1';
-            countdownElement.style.animation = 'fadeInTitle 0.5s forwards, scaleUp 0.5s forwards';
-
             const countdownInterval = setInterval(() => {
-                currentCount--;
-                if (currentCount > 0) {
-                    countdownElement.textContent = currentCount;
+                countdown--;
+                if (countdown > 0) {
+                    countdownElement.textContent = countdown;
                 } else {
                     clearInterval(countdownInterval);
                     countdownElement.textContent = '*Защити ромашку*';
-                    countdownElement.style.animation = 'fadeInTitle 0.5s forwards, scaleUp 0.5s forwards';
                     setTimeout(() => {
                         countdownElement.remove();
                         callback();
@@ -518,10 +508,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 1000);
         }
 
-        // Функция загрузки начального состояния
-        updateBoosterTimer();
-        updateEnergyBar();
-        updateTicketCount();
+        // Функция форматирования времени
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
 
         // Функция запуска мини-игры "Защити ромашку"
         function initProtectFlowerGame() {
@@ -715,7 +707,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     gameOverModal.style.display = 'none';
                     gameContainer.style.display = 'flex';
                     document.getElementById('protect-flower-game').style.display = 'none';
-                    backgroundMusic.play();
+                    backgroundMusic.play().catch(error => {
+                        console.warn('Воспроизведение музыки заблокировано:', error);
+                    });
                 });
 
                 // Обработчик кнопки "Повторить"
@@ -723,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 retryBtn.addEventListener('click', () => {
                     gameOverModal.style.display = 'none';
                     resetMiniGame();
-                    startMiniGame();
+                    startMiniGamePlay(1);
                 });
             }
 
@@ -739,14 +733,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 isFlowerClickable = true;
 
                 if (level === 1) {
-                    oneLevelMusic.play();
-                    oneLevelMusic.currentTime = 0;
-                    oneLevelMusic.volume = 0.5; // Убавляем звук на 50%
+                    oneLevelMusic.play().catch(error => {
+                        console.warn('Воспроизведение музыки заблокировано:', error);
+                    });
                 } else if (level === 2) {
-                    electricChaosMusic.play();
-                    electricChaosMusic.currentTime = 0;
-                    electricChaosMusic.volume = 0.5; // Убавляем звук на 50%
-                    gameTime = 120;
+                    electricChaosMusic.play().catch(error => {
+                        console.warn('Воспроизведение музыки заблокировано:', error);
+                    });
+                    gameTime = 120; // 2 минуты для второго уровня
                 }
 
                 beeInterval = setInterval(spawnBee, 1000); // Спавн пчел каждые 1 секунду
@@ -787,26 +781,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetMiniGame();
             }
 
-            // Функция форматирования времени
-            function formatTime(seconds) {
-                const minutes = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            }
-
             // Функция запуска мини-игры с обратным отсчетом и разными уровнями
             function startProtectFlowerGame() {
                 startCountdown(3, () => {
                     startMiniGamePlay(1);
-                });
-            }
-
-            // Функция создания конфетти
-            function createConfetti() {
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
                 });
             }
 
