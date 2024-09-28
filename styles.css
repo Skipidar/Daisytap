@@ -332,7 +332,8 @@ footer .icon {
 
 .shop-tab {
     padding: 10px 20px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 215, 0, 0.3);
+    border: none;
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -492,10 +493,3 @@ footer .icon {
         transform: scale(1);
     }
 }
-"""
-
-# Writing to a file
-with open("/mnt/data/styles.css", "w") as file:
-    file.write(styles_css)
-
-"/mnt/data/styles.css"
