@@ -134,6 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             loadingScreen.style.display = 'none';
             gameContainer.style.display = 'flex';
+            backgroundMusic.play().catch(error => {
+                console.warn('Воспроизведение музыки заблокировано:', error);
+            });
         }, 3000); // 3 секунды загрузки
 
         // Обработчик кнопки "Играть" на главном экране
@@ -262,8 +265,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 coins += Math.floor(Math.random() * (550 - 250 + 1)) + 250;
                 coinCount.textContent = coins;
-                startCountdown(6 * 60 * 60, () => {
-                    // Действия после истечения 6 часов, если необходимо
+                startCountdown(3, () => {
+                    // Обратный отсчет 3 часа (если требуется)
                 });
                 createConfetti();
 
@@ -472,11 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
             skinPurchaseModal.style.display = 'flex';
         }
 
-        // Функция создания предсказаний
-        function createPrediction() {
-            // Эта функция уже реализована через обработчик двойного клика по ромашке
-        }
-
         // Функция запуска мини-игры
         function startMiniGame() {
             gameContainer.style.display = 'none';
@@ -517,7 +515,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Функция запуска мини-игры "Защити ромашку"
         function initProtectFlowerGame() {
-            const canvas = document.getElementById('game-canvas');
+            const canvas = document.createElement('canvas');
+            canvas.id = 'game-canvas';
+            document.getElementById('protect-flower-game').appendChild(canvas);
             const ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -772,13 +772,6 @@ document.addEventListener('DOMContentLoaded', function() {
             function resetMiniGame() {
                 electricChaosMusic.pause();
                 oneLevelMusic.pause();
-            }
-
-            // Функция запуска мини-игры
-            function startMiniGame() {
-                document.getElementById('protect-flower-game').style.display = 'flex';
-                initProtectFlowerGame();
-                resetMiniGame();
             }
 
             // Функция запуска мини-игры с обратным отсчетом и разными уровнями
