@@ -7,25 +7,22 @@
     <!-- Подключаем стили -->
     <link href="styles.css" rel="stylesheet">
     <!-- Подключаем аркадный шрифт из Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
     <!-- Подключаем библиотеку Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <!-- Добавляем фавикон -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    
-    <!-- Анимация загрузки с полоской и словом Daisy -->
+    <!-- Анимация загрузки -->
     <div id="loading-screen">
-        <img src="assets/images/Loadingscreen.webp" alt="Загрузка...">
-        <h1 id="loading-title">DAISY</h1>
-        <div id="loading-bar-container">
-            <div id="loading-bar"></div>
+        <img src="assets/images/Loadingscreen.webp" alt="Загрузка..." class="loading-image">
+        <div class="loading-overlay">
+            <div class="loading-bar"></div>
+            <div class="loading-text">
+                <span>D</span><span>a</span><span>i</span><span>s</span><span>y</span>
+            </div>
         </div>
-    </div>
-    
-    <div id="loading-screen">
-        <img src="assets/images/Loadingscreen.webp" alt="Загрузка...">
     </div>
 
     <!-- Кнопка отключения звука -->
@@ -36,6 +33,12 @@
     <div class="game-container" style="display: none;">
         <!-- Зеленая кнопка "Играть" -->
         <button id="play-button">Играть</button>
+
+        <!-- Билеты -->
+        <div class="tickets-container">
+            <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+            <span id="ticket-count">0</span>
+        </div>
 
         <div class="counters">
             <div id="coin-counter" class="counter">
@@ -146,16 +149,31 @@
 
     <!-- Мини-игра "Защити цветок" -->
     <div id="protect-flower-game" class="game-screen" style="display: none;">
-        <canvas id="game-canvas"></canvas>
-        <div id="game-timer">02:00</div>
-        <div id="game-lives">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+        <div class="mini-game-header">
+            <canvas id="game-canvas"></canvas>
+            <div id="game-timer">02:00</div>
+            <div id="game-lives">
+                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+            </div>
+            <div id="game-coins">
+                <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+                <span id="game-coin-count">0</span>
+            </div>
         </div>
-        <div id="game-coins">
-            <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-            <span id="game-coin-count">0</span>
+        <div class="mini-game-footer">
+            <!-- Дополнительные элементы мини-игры -->
+        </div>
+    </div>
+
+    <!-- Модальное окно игры -->
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h2>Игра окончена!</h2>
+            <p>Вы собрали <span id="final-coin-count">0</span> Coin.</p>
+            <button id="retry-btn" class="replay-btn">Повторить</button>
+            <button id="exit-btn" class="exit-btn">Выйти</button>
         </div>
     </div>
 
