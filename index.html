@@ -14,17 +14,17 @@
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Анимация загрузки с текстом Daisy -->
-    <div id="loading-screen">
-        <div class="loading-content">
-            <img src="assets/images/Loadingscreen.webp" alt="Загрузка..." class="loading-image">
-            <div class="loading-bar"></div>
-            <h1 class="loading-title">Daisy</h1>
-        </div>
-    </div>
-
     <!-- Контейнер с фиксированным соотношением сторон 9:16 -->
     <div class="aspect-ratio-container">
+        <!-- Анимация загрузки с текстом Daisy -->
+        <div id="loading-screen">
+            <div class="loading-content">
+                <img src="assets/images/Loadingscreen.webp" alt="Загрузка..." class="loading-image">
+                <div class="loading-bar"></div>
+                <h1 class="loading-title">Daisy</h1>
+            </div>
+        </div>
+
         <!-- Кнопка отключения звука -->
         <button id="sound-toggle">
             <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
@@ -34,8 +34,7 @@
             <!-- Зеленая кнопка "Играть" -->
             <button id="play-button">Играть</button>
 
-            <!-- Кнопка "Играть" для мини-игры с билетами -->
-            <button id="mini-play-button">Играть</button>
+            <!-- Контейнер билетов -->
             <div class="tickets-container">
                 <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
                 <span id="ticket-count">5</span>
@@ -161,10 +160,9 @@
             </div>
         </div>
 
-        <!-- Мини-игра "Защити цветок" -->
+        <!-- Мини-игра "Защити ромашку" -->
         <div id="protect-flower-game" class="game-screen" style="display: none;">
             <div class="game-header">
-                <canvas id="game-canvas"></canvas>
                 <div id="game-timer">02:00</div>
                 <div id="game-lives">
                     <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
