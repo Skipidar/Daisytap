@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!-- Подключаем стили -->
     <link href="styles.css" rel="stylesheet">
-    <!-- Подключаем аркадный шрифт из Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <!-- Подключаем красивый шрифт из Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <!-- Подключаем библиотеку Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <!-- Добавляем фавикон -->
@@ -19,9 +19,7 @@
         <img src="assets/images/Loadingscreen.webp" alt="Загрузка..." class="loading-image">
         <div class="loading-overlay">
             <div class="loading-bar"></div>
-            <div class="loading-text">
-                <span>D</span><span>a</span><span>i</span><span>s</span><span>y</span>
-            </div>
+            <div class="loading-text">Daisy</div>
         </div>
     </div>
 
@@ -31,14 +29,14 @@
     </button>
 
     <div class="game-container" style="display: none;">
-        <!-- Зеленая кнопка "Играть" -->
-        <button id="play-button">Играть</button>
-
         <!-- Билеты -->
         <div class="tickets-container">
             <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
             <span id="ticket-count">0</span>
         </div>
+
+        <!-- Зеленая кнопка "Играть" -->
+        <button id="play-button">Играть</button>
 
         <div class="counters">
             <div id="coin-counter" class="counter">
@@ -56,12 +54,6 @@
 
         <div class="chamomile-container">
             <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
-        </div>
-
-        <div id="timer"></div>
-
-        <div style="text-align: center;">
-            <button id="booster">Бустер 6/6 (01:00)</button>
         </div>
 
         <footer>
@@ -147,33 +139,30 @@
         </div>
     </div>
 
-    <!-- Мини-игра "Защити цветок" -->
-    <div id="protect-flower-game" class="game-screen" style="display: none;">
-        <div class="mini-game-header">
-            <canvas id="game-canvas"></canvas>
-            <div id="game-timer">02:00</div>
-            <div id="game-lives">
-                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-            </div>
-            <div id="game-coins">
-                <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-                <span id="game-coin-count">0</span>
-            </div>
-        </div>
-        <div class="mini-game-footer">
-            <!-- Дополнительные элементы мини-игры -->
+    <!-- Модальное окно покупки скина -->
+    <div id="skin-purchase-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Вы приобрели скин!</h2>
+            <p>Хотите установить его?</p>
+            <button id="install-skin-btn">Установить</button>
+            <button id="return-skin-btn">Вернуться назад</button>
         </div>
     </div>
 
-    <!-- Модальное окно игры -->
-    <div id="game-over-modal" class="modal">
-        <div class="modal-content">
-            <h2>Игра окончена!</h2>
-            <p>Вы собрали <span id="final-coin-count">0</span> Coin.</p>
-            <button id="retry-btn" class="replay-btn">Повторить</button>
-            <button id="exit-btn" class="exit-btn">Выйти</button>
+    <!-- Мини-игра "Защити цветок" -->
+    <div id="protect-flower-game" class="game-screen" style="display: none;">
+        <div class="game-overlay"></div>
+        <canvas id="game-canvas"></canvas>
+        <div id="game-timer">02:00</div>
+        <div id="game-lives">
+            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+        </div>
+        <div id="game-coins">
+            <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+            <span id="game-coin-count">0</span>
         </div>
     </div>
 
