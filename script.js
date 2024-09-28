@@ -57,9 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const predictionSound = new Audio('assets/sounds/prediction.mp3');
         const backgroundMusic = new Audio('assets/sounds/backgroundmusic.mp3');
         
-    backgroundMusic.volume = 0.5; // Уменьшаем громкость музыки на 50%
+    const oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
+    const udarSound = new Audio('assets/sounds/udar.mp3');
     oneLevelMusic.volume = 0.5;
-    udarSound.volume = 0.4; // Уменьшаем громкость звуков
+    udarSound.volume = 0.4;
+    backgroundMusic.volume = 0.5; // Уменьшаем громкость музыки на 50%
     backgroundMusic.loop = true;
     
         let soundEnabled = true;
@@ -721,13 +723,21 @@ document.addEventListener('DOMContentLoaded', function() {
 // Добавляем систему билетов
 let tickets = 1 + Math.floor(Math.random() * 7); // Ежедневный подарок от 1 до 7 билетов
 const ticketCounter = document.getElementById('ticket-counter');
-ticketCounter.innerHTML = `<img src="assets/images/Ticket.webp" alt="Ticket"> ${tickets}`;
+
+    if (ticketCounter) {
+        ticketCounter.innerHTML = `<img src="assets/images/Ticket.webp" alt="Ticket"> ${tickets}`;
+    }
+    
 
 // Обработка билетов при входе в мини-игру
 function playerHasTicket() {
     if (tickets > 0) {
         tickets -= 1;
+        
+    if (ticketCounter) {
         ticketCounter.innerHTML = `<img src="assets/images/Ticket.webp" alt="Ticket"> ${tickets}`;
+    }
+    
         return true;
     } else {
         alert('У вас нет билетов для игры. Приходите завтра за новыми билетами!');
