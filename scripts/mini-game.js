@@ -8,7 +8,8 @@ const MiniGame = (function() {
     let currentLevel = 1;
     let isGameRunning = false;
     let tickets = 200; // Начальное количество билетов для теста
-    let ctx; // Добавляем ctx для контекста канваса
+    let ctx; // Контекст канваса
+    let canvas; // Канвас, который мы используем для игры
 
     function init() {
         // Обработчик кнопки "Старт" внутри мини-игры
@@ -29,8 +30,8 @@ const MiniGame = (function() {
         isGameRunning = true;
 
         const gameScreen = document.getElementById('protect-flower-game');
-        const canvas = document.getElementById('game-canvas');
-        ctx = canvas.getContext('2d'); // Инициализация контекста канваса
+        canvas = document.getElementById('game-canvas'); // Здесь определяем canvas
+        ctx = canvas.getContext('2d');
         canvas.width = gameScreen.clientWidth;
         canvas.height = gameScreen.clientHeight;
 
@@ -60,7 +61,7 @@ const MiniGame = (function() {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playOneLevelMusic();
 
-        // Спавн пчёл (замедлили скорость)
+        // Спавн пчёл
         beeInterval = setInterval(() => spawnBee(currentLevel), 1500);
 
         // Таймер игры
@@ -75,7 +76,7 @@ const MiniGame = (function() {
 
         // Основной игровой цикл
         function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем канвас перед каждым кадром
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             flower.draw();
             updateBees(ctx, flower);
             requestAnimationFrame(gameLoop);
@@ -86,6 +87,9 @@ const MiniGame = (function() {
         // Скрыть кнопку "Старт" после начала игры
         const startButton = document.getElementById('start-mini-game');
         startButton.style.display = 'none';
+
+        // Добавляем обработчик кликов/тапов по канвасу
+        canvas.addEventListener('click', handleCanvasClick);
     }
 
     function spawnBee(level) {
@@ -132,15 +136,15 @@ const MiniGame = (function() {
             }
         };
         bee.image.src = 'assets/images/Bee.webp';
-
         bees.push(bee);
+    }
 
-        // Добавляем обработчик клика по канвасу для каждой пчелы
-        canvas.addEventListener('click', (event) => {
-            const rect = canvas.getBoundingClientRect();
-            const xClick = event.clientX - rect.left;
-            const yClick = event.clientY - rect.top;
+    function handleCanvasClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const xClick = event.clientX - rect.left;
+        const yClick = event.clientY - rect.top;
 
+        bees.forEach((bee, index) => {
             if (
                 xClick >= bee.x - bee.width / 2 &&
                 xClick <= bee.x + bee.width / 2 &&
@@ -148,7 +152,7 @@ const MiniGame = (function() {
                 yClick <= bee.y + bee.height / 2
             ) {
                 // Убиваем пчелу
-                bees = bees.filter(b => b !== bee); // Удаляем пчелу из массива
+                bees.splice(index, 1); // Удаляем пчелу из массива
                 gameCoins += 10; // За каждую убитую пчелу 10 Coin
                 updateGameCoinCount();
                 AudioManager.playClickSound();
