@@ -10,39 +10,25 @@ const MiniGame = (function() {
     function init() {
         // Инициализация кнопки "Играть"
         const playButton = document.getElementById('play-button');
-        playButton.addEventListener('click', startProtectFlowerGame);
+        playButton.addEventListener('click', openGameModal);
+
+        // Инициализация кнопки "Старт" внутри мини-игры
+        const startGameButton = document.getElementById('start-game-button');
+        startGameButton.addEventListener('click', startProtectFlowerGame);
+    }
+
+    function openGameModal() {
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.style.display = 'flex';
+        document.querySelector('.game-container').style.display = 'none';
     }
 
     function startProtectFlowerGame() {
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.style.display = 'flex';
+        document.getElementById('start-game-button').style.display = 'none'; // Скрываем кнопку "Старт"
 
-        // Отключаем основной экран
-        document.querySelector('.game-container').style.display = 'none';
-
-        // Добавляем анимацию отсчёта 3..2..1.. Защити ромашку!
-        const countdownElement = document.createElement('div');
-        countdownElement.className = 'countdown';
-        countdownElement.textContent = '3';
-        gameScreen.appendChild(countdownElement);
-
-        let countdown = 3;
-        const countdownInterval = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-                countdownElement.textContent = countdown;
-            } else if (countdown === 0) {
-                countdownElement.textContent = 'Защити ромашку!';
-            } else {
-                clearInterval(countdownInterval);
-                countdownElement.remove();
-                startGame();
-            }
-        }, 1000);
-    }
-
-    function startGame() {
-        const gameScreen = document.getElementById('protect-flower-game');
+        // Устанавливаем размеры канваса в соответствии с родительским элементом
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = gameScreen.clientWidth;
@@ -51,8 +37,8 @@ const MiniGame = (function() {
         const flower = {
             x: canvas.width / 2,
             y: canvas.height / 2,
-            width: 100,
-            height: 100,
+            width: 150, // Увеличен на 1.5 раза
+            height: 150,
             image: new Image(),
             draw: function() {
                 ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
@@ -71,8 +57,8 @@ const MiniGame = (function() {
         updateLives();
         updateGameCoinCount();
 
-        AudioManager.pauseBackgroundMusic();
-        AudioManager.playOneLevelMusic();
+        AudioManager.pauseBackgroundMusic(); // Останавливаем фоновую музыку
+        AudioManager.playOneLevelMusic(); // Запускаем музыку уровня
 
         // Спавн пчёл
         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);

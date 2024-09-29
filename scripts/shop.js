@@ -42,7 +42,7 @@ const Shop = (function() {
                 { name: 'Lotus', price: 1, image: 'assets/images/lotus.webp' },
                 { name: 'Pingvin', price: 1, image: 'assets/images/pingvin.webp' },
                 { name: 'Spinner', price: 1, image: 'assets/images/spinner.webp' },
-                { name: 'lpodsolnuh', price: 1, image: 'assets/images/lpodsolnuh.webp' } // Исправленное имя
+                { name: 'lpodsolnuh', price: 1, image: 'assets/images/lpodsolnuh.webp' }
             ];
         } else if (tabName === 'premium') {
             items = [
@@ -113,7 +113,16 @@ const Shop = (function() {
         });
     }
 
+    // Функции для обновления баланса из других модулей
+    function updateBalance(newCoins, newSpinCoins) {
+        coins = newCoins;
+        spinCoins = newSpinCoins;
+        document.getElementById('coin-count').textContent = coins;
+        document.getElementById('spin-coin-count').textContent = spinCoins;
+    }
+
     return {
-        init
+        init,
+        updateBalance
     };
 })();

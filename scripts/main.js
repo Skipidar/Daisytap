@@ -44,7 +44,7 @@ function initMain() {
             const span = document.createElement('span');
             span.textContent = char;
             span.style.opacity = '0';
-            span.style.transition = 'opacity 0.5s ease ' + (index * 0.3) + 's';
+            span.style.transition = `opacity 0.5s ease ${index * 0.3}s`;
             daisyElement.appendChild(span);
             setTimeout(() => {
                 span.style.opacity = '1';

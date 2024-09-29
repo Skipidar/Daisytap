@@ -67,7 +67,10 @@ const AudioManager = (function() {
     }
 
     function playOneLevelMusic() {
-        if (soundEnabled) oneLevelMusic.play();
+        if (soundEnabled) {
+            oneLevelMusic.currentTime = 0;
+            oneLevelMusic.play();
+        }
     }
 
     function pauseOneLevelMusic() {
@@ -75,11 +78,18 @@ const AudioManager = (function() {
     }
 
     function playElectricChaosMusic() {
-        if (soundEnabled) electricChaosMusic.play();
+        if (soundEnabled) {
+            electricChaosMusic.currentTime = 0;
+            electricChaosMusic.play();
+        }
     }
 
     function pauseElectricChaosMusic() {
         electricChaosMusic.pause();
+    }
+
+    function pauseBackgroundMusic() {
+        backgroundMusic.pause();
     }
 
     return {
@@ -91,6 +101,7 @@ const AudioManager = (function() {
         playOneLevelMusic,
         pauseOneLevelMusic,
         playElectricChaosMusic,
-        pauseElectricChaosMusic
+        pauseElectricChaosMusic,
+        pauseBackgroundMusic
     };
 })();

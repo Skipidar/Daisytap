@@ -40,16 +40,27 @@ const Modal = (function() {
             alert('Опубликовать историю: Функция в разработке.');
         });
 
-        // Оповещение о получении стикеров
-        predictionModal.addEventListener('DOMSubtreeModified', function() {
-            if (predictionModal.style.display === 'flex') {
-                // Показать оповещение о стикерах
-                stickerNotification.style.display = 'block';
-                setTimeout(() => {
-                    stickerNotification.style.display = 'none';
-                }, 3000); // Скрыть через 3 секунды
+        // Использование MutationObserver вместо DOMSubtreeModified
+        const observer = new MutationObserver(function(mutationsList, observer) {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    if (predictionModal.style.display === 'flex') {
+                        // Показать оповещение о стикерах
+                        showStickerNotification();
+                    }
+                }
             }
         });
+
+        observer.observe(predictionModal, { attributes: true });
+    }
+
+    function showStickerNotification() {
+        const stickerNotification = document.getElementById('sticker-notification');
+        stickerNotification.style.display = 'block';
+        setTimeout(() => {
+            stickerNotification.style.display = 'none';
+        }, 3000); // Скрыть через 3 секунды
     }
 
     return {

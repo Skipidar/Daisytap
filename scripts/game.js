@@ -56,7 +56,7 @@ const Game = (function() {
             document.getElementById('energy-count').textContent = energy;
 
             // Вращение по часовой стрелке
-            rotationAngle += 360 * 5 + Math.random() * 360;
+            rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
             this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
             this.style.transform = `rotate(${rotationAngle}deg)`;
 
@@ -248,7 +248,7 @@ const Game = (function() {
     function updateBoosterTimer() {
         const boosterBtn = document.getElementById('booster');
         // Предполагаем, что таймер бустера отсчитывает до следующего бустера
-        // Здесь можно добавить логику таймера
+        // Здесь можно добавить реальную логику таймера, если требуется
         boosterBtn.textContent = `Бустер ${boosterCharges}/6 (${formatBoosterTime()})`;
     }
 
