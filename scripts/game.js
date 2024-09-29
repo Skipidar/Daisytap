@@ -43,6 +43,9 @@ const Game = (function() {
 
         // Обновление энергии
         updateEnergyBar();
+
+        // Запуск восполнения энергии
+        setInterval(replenishEnergy, 1000); // Каждую секунду
     }
 
     function handleChamomileClick(e) {
@@ -211,6 +214,14 @@ const Game = (function() {
         }
     }
 
+    function replenishEnergy() {
+        if (energy < 1000) {
+            energy += 10;
+            document.getElementById('energy-count').textContent = energy;
+            updateEnergyBar();
+        }
+    }
+
     function startCountdown(seconds) {
         const countdownElement = document.createElement('div');
         countdownElement.className = 'countdown';
@@ -248,7 +259,7 @@ const Game = (function() {
     function updateBoosterTimer() {
         const boosterBtn = document.getElementById('booster');
         // Предполагаем, что таймер бустера отсчитывает до следующего бустера
-        // Здесь можно добавить реальную логику таймера, если требуется
+        // Здесь можно добавить логику таймера
         boosterBtn.textContent = `Бустер ${boosterCharges}/6 (${formatBoosterTime()})`;
     }
 

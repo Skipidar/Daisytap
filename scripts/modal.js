@@ -40,27 +40,22 @@ const Modal = (function() {
             alert('Опубликовать историю: Функция в разработке.');
         });
 
-        // Использование MutationObserver вместо DOMSubtreeModified
+        // Оповещение о получении стикеров
         const observer = new MutationObserver(function(mutationsList, observer) {
-            for (const mutation of mutationsList) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            for(let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
                     if (predictionModal.style.display === 'flex') {
                         // Показать оповещение о стикерах
-                        showStickerNotification();
+                        stickerNotification.style.display = 'block';
+                        setTimeout(() => {
+                            stickerNotification.style.display = 'none';
+                        }, 3000); // Скрыть через 3 секунды
                     }
                 }
             }
         });
 
-        observer.observe(predictionModal, { attributes: true });
-    }
-
-    function showStickerNotification() {
-        const stickerNotification = document.getElementById('sticker-notification');
-        stickerNotification.style.display = 'block';
-        setTimeout(() => {
-            stickerNotification.style.display = 'none';
-        }, 3000); // Скрыть через 3 секунды
+        observer.observe(predictionModal, { childList: true, subtree: true });
     }
 
     return {

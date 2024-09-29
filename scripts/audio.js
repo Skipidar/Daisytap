@@ -16,7 +16,7 @@ const AudioManager = (function() {
         predictionSound = new Audio('assets/sounds/prediction.mp3');
         udarSound = new Audio('assets/sounds/udar.mp3');
 
-        // Установка громкости (убавил на 50%)
+        // Установка громкости (уменьшено на 50%)
         backgroundMusic.volume = 0.25;
         oneLevelMusic.volume = 0.25;
         electricChaosMusic.volume = 0.25;
@@ -44,8 +44,8 @@ const AudioManager = (function() {
         if (soundEnabled) {
             soundIcon.src = 'assets/images/on.webp';
             backgroundMusic.play();
-            oneLevelMusic.play();
-            electricChaosMusic.play();
+            if (!oneLevelMusic.paused) oneLevelMusic.play();
+            if (!electricChaosMusic.paused) electricChaosMusic.play();
         } else {
             soundIcon.src = 'assets/images/off.webp';
             backgroundMusic.pause();
@@ -68,28 +68,28 @@ const AudioManager = (function() {
 
     function playOneLevelMusic() {
         if (soundEnabled) {
-            oneLevelMusic.currentTime = 0;
+            backgroundMusic.pause();
+            electricChaosMusic.pause();
             oneLevelMusic.play();
         }
     }
 
     function pauseOneLevelMusic() {
         oneLevelMusic.pause();
+        backgroundMusic.play();
     }
 
     function playElectricChaosMusic() {
         if (soundEnabled) {
-            electricChaosMusic.currentTime = 0;
+            backgroundMusic.pause();
+            oneLevelMusic.pause();
             electricChaosMusic.play();
         }
     }
 
     function pauseElectricChaosMusic() {
         electricChaosMusic.pause();
-    }
-
-    function pauseBackgroundMusic() {
-        backgroundMusic.pause();
+        backgroundMusic.play();
     }
 
     return {
@@ -101,7 +101,6 @@ const AudioManager = (function() {
         playOneLevelMusic,
         pauseOneLevelMusic,
         playElectricChaosMusic,
-        pauseElectricChaosMusic,
-        pauseBackgroundMusic
+        pauseElectricChaosMusic
     };
 })();

@@ -97,8 +97,7 @@ body {
     animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
     position: absolute;
-    top: 20px;
-    right: 80px; /* Расположена на уровне кнопки звука */
+    bottom: 200px; /* Под ромашкой */
 }
 
 #play-button:hover {
@@ -120,7 +119,7 @@ body {
 /* Ромашка */
 .chamomile-container {
     position: relative;
-    width: 300px; /* Увеличен на 1.5 раза (200px * 1.5 = 300px) */
+    width: 300px; /* Увеличено на 1.5 раза (200px * 1.5 = 300px) */
     height: 300px;
     margin: auto;
     display: flex;
@@ -133,7 +132,6 @@ body {
     height: 100%;
     transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
     cursor: pointer;
-    position: absolute;
 }
 
 /* Искры */
@@ -239,8 +237,6 @@ footer .icon {
 }
 
 #prediction-modal .modal-content {
-    background-image: url('assets/images/prediction-background.png');
-    background-size: cover;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
     color: #fff;
@@ -351,6 +347,8 @@ footer .icon {
     margin-bottom: 20px;
     position: absolute;
     top: 20%;
+    opacity: 0;
+    animation: fadeInLetters 1.5s forwards;
 }
 
 .loading-overlay {
@@ -380,13 +378,18 @@ footer .icon {
     transition: opacity 1s ease-out;
 }
 
+@keyframes fadeInLetters {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
 /* Кнопка отключения звука */
 #sound-toggle {
     width: 60px; /* Увеличен размер */
     height: 60px;
     position: absolute;
-    top: 20px; /* Расположена на уровне кнопки "Играть" */
-    right: 20px;
+    bottom: 20px; /* Расположена снизу */
+    left: 20px; /* Отступ слева */
     background: none;
     border: none;
     cursor: pointer;
@@ -396,6 +399,25 @@ footer .icon {
 #sound-toggle img {
     width: 100%;
     height: 100%;
+}
+
+/* Кнопка "Играть" */
+#play-button {
+    background-color: #32CD32;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    animation: pulsePlayButton 2s infinite;
+    transition: background-color 0.3s;
+    position: absolute;
+    bottom: 100px; /* Под ромашкой */
+}
+
+#play-button:hover {
+    background-color: #28a428;
 }
 
 /* Магазин */
@@ -441,10 +463,10 @@ footer .icon {
 }
 
 .shop-item-image {
-    width: 60px;
+    width: auto;
     height: 60px;
-    object-fit: cover;
-    /* border-radius: 50%; */ /* Убрано, чтобы сохранить оригинальный размер */
+    object-fit: contain;
+    /* border-radius: 50%; */ /* Убрано, чтобы сохранить оригинальные размеры */
 }
 
 .skin-price {
@@ -509,37 +531,6 @@ footer .icon {
     width: 24px;
     height: 24px;
     margin-right: 5px;
-}
-
-/* Кнопка "Старт" внутри мини-игры */
-#start-game-button {
-    position: absolute;
-    bottom: 20px;
-    padding: 10px 20px;
-    background-color: #32CD32;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    animation: pulseStartButton 2s infinite;
-    transition: background-color 0.3s;
-}
-
-#start-game-button:hover {
-    background-color: #28a428;
-}
-
-@keyframes pulseStartButton {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
 }
 
 /* Анимация конфетти */
@@ -613,6 +604,24 @@ footer .icon {
     100% { transform: scale(1); }
 }
 
+/* Кнопка "Старт" внутри мини-игры */
+#start-mini-game {
+    position: absolute;
+    bottom: 50px;
+    padding: 10px 20px;
+    background-color: #FFD700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #000;
+    transition: background-color 0.3s;
+}
+
+#start-mini-game:hover {
+    background-color: #e6c200;
+}
+
 /* Оповещение о получении стикеров */
 .sticker-notification {
     display: none;
@@ -624,59 +633,7 @@ footer .icon {
     font-weight: bold;
 }
 
-/* Анимация загрузочной полоски */
-.loading-bar {
-    width: 0%;
-    height: 10px;
-    background: #FFD700;
-    border-radius: 5px;
-    animation: load 3s forwards;
-}
-
-@keyframes load {
-    from { width: 0%; }
-    to { width: 80%; }
-}
-
-/* Анимация появления букв "Daisy" */
-.loading-text {
-    font-size: 48px;
-    color: #FFD700;
-    margin-bottom: 20px;
-    position: absolute;
-    top: 20%;
-}
-
-.loading-text span {
-    display: inline-block;
-    opacity: 0;
-    animation: fadeIn 0.5s forwards;
-}
-
-@keyframes fadeIn {
-    to { opacity: 1; }
-}
-
-/* Центрирование ромашки */
-.chamomile-container {
-    position: relative;
-    width: 300px; /* Увеличен на 1.5 раза (200px * 1.5 = 300px) */
-    height: 300px;
-    margin: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Оригинальные размеры скинов в магазине */
-.skin-item img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-}
-
-/* Оптимизация под мобильные устройства 9:16 */
+/* Адаптация для мобильных устройств 9:16 */
 @media (max-width: 768px) {
     .game-container, #protect-flower-game {
         width: 100%;
@@ -685,19 +642,17 @@ footer .icon {
 
     #play-button {
         position: absolute;
-        top: 20px;
-        right: 80px;
+        bottom: 100px; /* Под ромашкой */
     }
 
     #sound-toggle {
-        top: 20px;
-        right: 20px;
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
     }
 
-    /* Перемещение бустера под энергию */
-    #secondary-counter-container {
-        flex-direction: column;
-        align-items: flex-start;
+    #start-mini-game {
+        bottom: 50px;
     }
 }
 

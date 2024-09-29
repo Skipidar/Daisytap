@@ -22,7 +22,6 @@ function initMain() {
     // Анимация загрузки
     setTimeout(() => {
         fadeOutLoadingScreen();
-        animateDaisyLetters();
     }, 3000); // 3 секунды загрузки
 
     // Функция плавного исчезновения экрана загрузки
@@ -32,6 +31,7 @@ function initMain() {
         setTimeout(() => {
             loadingScreen.style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
+            animateDaisyLetters();
         }, 1000); // Длительность анимации fade-out
     }
 
@@ -44,7 +44,7 @@ function initMain() {
             const span = document.createElement('span');
             span.textContent = char;
             span.style.opacity = '0';
-            span.style.transition = `opacity 0.5s ease ${index * 0.3}s`;
+            span.style.transition = 'opacity 0.5s ease ' + (index * 0.3) + 's';
             daisyElement.appendChild(span);
             setTimeout(() => {
                 span.style.opacity = '1';

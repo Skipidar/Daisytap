@@ -8,27 +8,47 @@ const MiniGame = (function() {
     let currentLevel = 1;
 
     function init() {
-        // Инициализация кнопки "Играть"
-        const playButton = document.getElementById('play-button');
-        playButton.addEventListener('click', openGameModal);
-
         // Инициализация кнопки "Старт" внутри мини-игры
-        const startGameButton = document.getElementById('start-game-button');
-        startGameButton.addEventListener('click', startProtectFlowerGame);
-    }
-
-    function openGameModal() {
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.style.display = 'flex';
-        document.querySelector('.game-container').style.display = 'none';
+        const startButton = document.getElementById('start-mini-game');
+        startButton.addEventListener('click', startGame);
     }
 
     function startProtectFlowerGame() {
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.style.display = 'flex';
-        document.getElementById('start-game-button').style.display = 'none'; // Скрываем кнопку "Старт"
 
-        // Устанавливаем размеры канваса в соответствии с родительским элементом
+        // Отключаем основной экран
+        document.querySelector('.game-container').style.display = 'none';
+
+        // Добавляем анимацию отсчёта 3..2..1.. Защити ромашку!
+        const countdownElement = document.createElement('div');
+        countdownElement.className = 'countdown';
+        countdownElement.textContent = '3';
+        gameScreen.appendChild(countdownElement);
+
+        let countdown = 3;
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                countdownElement.textContent = countdown;
+            } else if (countdown === 0) {
+                countdownElement.textContent = 'Защити ромашку!';
+            } else {
+                clearInterval(countdownInterval);
+                countdownElement.remove();
+                // Показываем кнопку "Старт"
+                showStartButton();
+            }
+        }, 1000);
+    }
+
+    function showStartButton() {
+        const startButton = document.getElementById('start-mini-game');
+        startButton.style.display = 'block';
+    }
+
+    function startGame() {
+        const gameScreen = document.getElementById('protect-flower-game');
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = gameScreen.clientWidth;
@@ -37,8 +57,8 @@ const MiniGame = (function() {
         const flower = {
             x: canvas.width / 2,
             y: canvas.height / 2,
-            width: 150, // Увеличен на 1.5 раза
-            height: 150,
+            width: 100,
+            height: 100,
             image: new Image(),
             draw: function() {
                 ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
@@ -57,8 +77,8 @@ const MiniGame = (function() {
         updateLives();
         updateGameCoinCount();
 
-        AudioManager.pauseBackgroundMusic(); // Останавливаем фоновую музыку
-        AudioManager.playOneLevelMusic(); // Запускаем музыку уровня
+        AudioManager.pauseBackgroundMusic();
+        AudioManager.playOneLevelMusic();
 
         // Спавн пчёл
         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
@@ -82,6 +102,10 @@ const MiniGame = (function() {
         }
 
         gameLoop();
+
+        // Скрыть кнопку "Старт" после начала игры
+        const startButton = document.getElementById('start-mini-game');
+        startButton.style.display = 'none';
     }
 
     function spawnBee(level) {
@@ -279,6 +303,8 @@ const MiniGame = (function() {
             exitBtn.remove();
             gameScreen.style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
+            AudioManager.pauseElectricChaosMusic();
+            AudioManager.playBackgroundMusic();
         });
     }
 
