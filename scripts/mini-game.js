@@ -1,10 +1,12 @@
 const MiniGame = (function() {
-    let gameTime = 120; // 2 минуты для уровня
+    let gameTime = 60; // 1 минута для уровня
     let bees = [];
     let beeInterval;
     let gameTimerInterval;
+    let heartInterval;
     let lives = 3;
     let gameCoins = 0; // Монеты не будут обнуляться между играми
+    let daisyCoins = 0; // Отдельный счётчик для $Daisy
     let currentLevel = 1;
     let isGameRunning = false;
     let ctx;
@@ -55,8 +57,9 @@ const MiniGame = (function() {
         updateLives();
 
         bees = [];
-        gameTime = 120;
+        gameTime = 60; // 1 минута
         updateGameCoinCount();
+        updateDaisyCoinCount();
 
         // Музыка и спавн пчел в зависимости от уровня
         if (currentLevel === 1) {
@@ -65,39 +68,71 @@ const MiniGame = (function() {
             AudioManager.playElectricChaosMusic();
         }
 
+        // Анимация "3...2...1...Поехали!"
+        showCountdown(() => {
+            startBeeAndHeartSpawns();
+            startGameTimer();
+        });
+    }
+
+    function startBeeAndHeartSpawns() {
         const spawnInterval = currentLevel === 1 ? 1500 : 1000;
         beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
+        // Спавн сердец для восстановления жизни
+        heartInterval = setInterval(spawnHeart, 15000); // Каждые 15 секунд
+    }
+
+    function startGameTimer() {
         gameTimerInterval = setInterval(() => {
             gameTime--;
             document.getElementById('game-timer').textContent = formatTime(gameTime);
 
             if (gameTime <= 0) {
                 if (currentLevel === 1) {
+                    // Переход на второй уровень
                     currentLevel = 2;
-                    gameTime = 120;
+                    gameTime = 60; // 1 минута для второго уровня
                     AudioManager.pauseOneLevelMusic();
                     AudioManager.playElectricChaosMusic();
                     clearInterval(beeInterval);
-                    beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+                    clearInterval(heartInterval);
+                    startBeeAndHeartSpawns();
                 } else {
                     endGame();
                 }
             }
         }, 1000);
+    }
 
-        // Основной игровой цикл
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            flower.draw();
-            updateBees(ctx, flower);
-            requestAnimationFrame(gameLoop);
-        }
+    function showCountdown(callback) {
+        const countdownElement = document.createElement('div');
+        countdownElement.style.position = 'fixed';
+        countdownElement.style.top = '50%';
+        countdownElement.style.left = '50%';
+        countdownElement.style.transform = 'translate(-50%, -50%)';
+        countdownElement.style.fontSize = '48px';
+        countdownElement.style.color = 'white';
+        countdownElement.style.zIndex = '1000';
+        countdownElement.style.textAlign = 'center';
+        document.body.appendChild(countdownElement);
 
-        gameLoop();
+        let count = 3;
+        countdownElement.innerHTML = count;
 
-        document.getElementById('start-mini-game').style.display = 'none';
-        canvas.addEventListener('click', handleCanvasClick);
+        const countdownInterval = setInterval(() => {
+            count--;
+            if (count > 0) {
+                countdownElement.innerHTML = count;
+            } else {
+                countdownElement.innerHTML = 'Поехали!';
+                setTimeout(() => {
+                    countdownElement.remove();
+                    clearInterval(countdownInterval);
+                    callback();
+                }, 1000);
+            }
+        }, 1000);
     }
 
     function spawnBee(level) {
@@ -133,22 +168,41 @@ const MiniGame = (function() {
         bees.push(bee);
     }
 
-    function handleCanvasClick(event) {
-        const rect = canvas.getBoundingClientRect();
-        const xClick = event.clientX - rect.left;
-        const yClick = event.clientY - rect.top;
+    function spawnHeart() {
+        const size = 40; // Размер сердца
+        let x = Math.random() * canvas.width;
+        let y = Math.random() * canvas.height;
 
-        bees.forEach((bee, index) => {
-            if (xClick >= bee.x - bee.width / 2 && xClick <= bee.x + bee.width / 2 &&
-                yClick >= bee.y - bee.height / 2 && yClick <= bee.y + bee.height / 2) {
-                bees.splice(index, 1);
-                gameCoins += 1;
-                totalCoinsEarned += 1;
-                updateGameCoinCount();
-                AudioManager.playClickSound();
+        const heart = {
+            x: x,
+            y: y,
+            width: size,
+            height: size,
+            image: new Image(),
+            draw: function() {
+                ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+            }
+        };
+        heart.image.src = 'assets/images/heart.png';
+        heart.image.onload = () => {
+            heart.draw();
+        };
 
-                if (navigator.vibrate) {
-                    navigator.vibrate(100);
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const xClick = event.clientX - rect.left;
+            const yClick = event.clientY - rect.top;
+
+            if (
+                xClick >= heart.x - heart.width / 2 &&
+                xClick <= heart.x + heart.width / 2 &&
+                yClick >= heart.y - heart.height / 2 &&
+                yClick <= heart.y + heart.height / 2
+            ) {
+                // Поймали сердце, восстанавливаем жизнь
+                if (lives < 3) {
+                    lives++;
+                    updateLives();
                 }
             }
         });
@@ -197,7 +251,7 @@ const MiniGame = (function() {
             obj1.x < obj2.x + obj2.width / 2 &&
             obj1.x + obj1.width / 2 > obj2.x &&
             obj1.y < obj2.y + obj2.height / 2 &&
-            obj1.y + obj1.height / 2 > obj2.y
+            obj1.y + obj2.height / 2 > obj2.y
         );
     }
 
@@ -216,8 +270,8 @@ const MiniGame = (function() {
         document.getElementById('game-coin-count').textContent = gameCoins;
     }
 
-    function updateTicketCount() {
-        document.getElementById('ticket-count').textContent = tickets;
+    function updateDaisyCoinCount() {
+        document.getElementById('daisy-coin-count').textContent = daisyCoins;
     }
 
     function formatTime(seconds) {
@@ -229,9 +283,14 @@ const MiniGame = (function() {
     function endGame() {
         clearInterval(beeInterval);
         clearInterval(gameTimerInterval);
+        clearInterval(heartInterval);
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
+        showResultModal();
+    }
+
+    function showResultModal() {
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
         resultModal.style.top = '50%';
@@ -241,12 +300,12 @@ const MiniGame = (function() {
         resultModal.style.color = 'white';
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
+        resultModal.style.borderRadius = '15px'; // Закруглённые края
+        resultModal.style.zIndex = '2000'; // Поверх мини-игры
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
-            <p>Вы заработали ${totalCoinsEarned} Coin.</p>
-            <button class="replay-btn">
-                <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} Tickets)
-            </button>
+            <p>Вы заработали ${gameCoins} Coin и ${daisyCoins} $Daisy.</p>
+            <button class="replay-btn">Повторим? (осталось ${tickets} Ticket)</button>
             <button class="exit-btn">Домой</button>
         `;
         document.body.appendChild(resultModal);
@@ -276,7 +335,7 @@ const MiniGame = (function() {
     };
 })();
 
-// Добавляем анимации
+// Добавляем анимации для тряски экрана
 const style = document.createElement('style');
 style.textContent = `
 @keyframes shake {
