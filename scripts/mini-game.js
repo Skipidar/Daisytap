@@ -7,10 +7,10 @@ const MiniGame = (function() {
     let gameCoins = 0; // Монеты не будут обнуляться между играми
     let currentLevel = 1;
     let isGameRunning = false;
-    let tickets = 200; // Начальное количество билетов для теста
     let ctx;
     let canvas;
     let totalCoinsEarned = 0; // Всего заработанных монет за игру
+    let tickets = 200; // Начальное количество билетов для теста
 
     function init() {
         // Обработчик кнопки "Старт" внутри мини-игры
@@ -109,7 +109,7 @@ const MiniGame = (function() {
     }
 
     function spawnBee(level) {
-        const size = Math.floor(Math.random() * 30) + 20; // Размер пчел (20-50px)
+        const size = Math.floor(Math.random() * 60) + 40; // Увеличен размер пчел (40-100px)
         const speed = level === 1 ? 2 : 3.5; // Скорость пчел зависит от уровня
         let x, y;
 
@@ -173,6 +173,11 @@ const MiniGame = (function() {
                 totalCoinsEarned += 1; // Обновляем общую сумму заработанных монет
                 updateGameCoinCount();
                 AudioManager.playClickSound();
+
+                // Виброотклик для мобильных устройств
+                if (navigator.vibrate) {
+                    navigator.vibrate(100); // Вибрация 100 мс
+                }
             }
         });
     }
@@ -243,17 +248,19 @@ const MiniGame = (function() {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
-        // Модальное окно с результатами
+        // Окно с результатами
         const resultModal = document.createElement('div');
-        resultModal.className = 'modal-content'; // Оформление модального окна
-        resultModal.style.display = 'flex';
-        resultModal.style.flexDirection = 'column';
-        resultModal.style.justifyContent = 'center';
-        resultModal.style.alignItems = 'center';
+        resultModal.style.position = 'fixed';
+        resultModal.style.top = '50%';
+        resultModal.style.left = '50%';
+        resultModal.style.transform = 'translate(-50%, -50%)';
+        resultModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        resultModal.style.color = 'white';
+        resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
         resultModal.innerHTML = `
-            <h2>Игра закончена!</h2>
-            <p>Вы собрали ${totalCoinsEarned} Coin.</p>
+            <h2>Игра окончена!</h2>
+            <p>Вы заработали ${totalCoinsEarned} Coin.</p>
             <button class="replay-btn">Повторить</button>
             <button class="exit-btn">В главное меню</button>
         `;
@@ -261,8 +268,8 @@ const MiniGame = (function() {
 
         // Центрируем кнопки
         const replayButton = resultModal.querySelector('.replay-btn');
-        replayButton.style.margin = '10px';
         const exitButton = resultModal.querySelector('.exit-btn');
+        replayButton.style.margin = '10px';
         exitButton.style.margin = '10px';
 
         // Обработчик кнопки "Повторить"
