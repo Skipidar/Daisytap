@@ -7,6 +7,7 @@ const MiniGame = (function() {
     let gameCoins = 0;
     let currentLevel = 1;
     let isGameRunning = false;
+    let tickets = 200; // Начальное количество билетов для теста
     let ctx; // Добавляем ctx для контекста канваса
 
     function init() {
@@ -17,6 +18,14 @@ const MiniGame = (function() {
 
     function startGame() {
         if (isGameRunning) return; // Предотвращение повторного запуска
+        if (tickets <= 0) {
+            alert("Недостаточно билетов!");
+            return;
+        }
+
+        tickets -= 1; // Списываем 1 Ticket за игру
+        updateTicketCount();
+
         isGameRunning = true;
 
         const gameScreen = document.getElementById('protect-flower-game');
@@ -51,8 +60,8 @@ const MiniGame = (function() {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playOneLevelMusic();
 
-        // Спавн пчёл (уменьшена скорость)
-        beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+        // Спавн пчёл (замедлили скорость)
+        beeInterval = setInterval(() => spawnBee(currentLevel), 1500);
 
         // Таймер игры
         gameTimerInterval = setInterval(() => {
@@ -81,7 +90,7 @@ const MiniGame = (function() {
 
     function spawnBee(level) {
         const size = Math.floor(Math.random() * 30) + 20; // Размер пчел (20-50px)
-        const speed = (3 + Math.random() * 3 + (level === 2 ? 2 : 0)) / 2; // Скорость пчелы уменьшена в 2 раза
+        const speed = (1.5 + Math.random() * 2 + (level === 2 ? 1 : 0)); // Скорость пчелы уменьшена
         let x, y;
 
         // Спавн пчел с разных сторон
@@ -124,15 +133,27 @@ const MiniGame = (function() {
         };
         bee.image.src = 'assets/images/Bee.webp';
 
-        // Обработчик клика на пчелу
-        bee.image.addEventListener('click', () => {
-            bees = bees.filter(b => b !== bee); // Удаляем пчелу из массива
-            gameCoins += 10; // За каждую убитую пчелу 10 Coin
-            updateGameCoinCount();
-            AudioManager.playClickSound();
-        });
-
         bees.push(bee);
+
+        // Добавляем обработчик клика по канвасу для каждой пчелы
+        canvas.addEventListener('click', (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const xClick = event.clientX - rect.left;
+            const yClick = event.clientY - rect.top;
+
+            if (
+                xClick >= bee.x - bee.width / 2 &&
+                xClick <= bee.x + bee.width / 2 &&
+                yClick >= bee.y - bee.height / 2 &&
+                yClick <= bee.y + bee.height / 2
+            ) {
+                // Убиваем пчелу
+                bees = bees.filter(b => b !== bee); // Удаляем пчелу из массива
+                gameCoins += 10; // За каждую убитую пчелу 10 Coin
+                updateGameCoinCount();
+                AudioManager.playClickSound();
+            }
+        });
     }
 
     function updateBees(ctx, flower) {
@@ -183,6 +204,10 @@ const MiniGame = (function() {
 
     function updateGameCoinCount() {
         document.getElementById('game-coin-count').textContent = gameCoins;
+    }
+
+    function updateTicketCount() {
+        document.getElementById('ticket-count').textContent = tickets;
     }
 
     function formatTime(seconds) {
