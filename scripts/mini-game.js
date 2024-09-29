@@ -51,7 +51,7 @@ const MiniGame = (function() {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playOneLevelMusic();
 
-        // Спавн пчёл
+        // Спавн пчёл (уменьшена скорость)
         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
 
         // Таймер игры
@@ -81,7 +81,7 @@ const MiniGame = (function() {
 
     function spawnBee(level) {
         const size = Math.floor(Math.random() * 30) + 20; // Размер пчел (20-50px)
-        const speed = 3 + Math.random() * 3 + (level === 2 ? 2 : 0); // Скорость пчелы, быстрее на втором уровне
+        const speed = (3 + Math.random() * 3 + (level === 2 ? 2 : 0)) / 2; // Скорость пчелы уменьшена в 2 раза
         let x, y;
 
         // Спавн пчел с разных сторон
@@ -123,6 +123,15 @@ const MiniGame = (function() {
             }
         };
         bee.image.src = 'assets/images/Bee.webp';
+
+        // Обработчик клика на пчелу
+        bee.image.addEventListener('click', () => {
+            bees = bees.filter(b => b !== bee); // Удаляем пчелу из массива
+            gameCoins += 10; // За каждую убитую пчелу 10 Coin
+            updateGameCoinCount();
+            AudioManager.playClickSound();
+        });
+
         bees.push(bee);
     }
 
@@ -190,14 +199,27 @@ const MiniGame = (function() {
 
         alert(`Игра закончена! Вы собрали ${gameCoins} Coin.`);
 
+        // Добавляем кнопку "Повторим?" по центру
         const replayButton = document.createElement('button');
         replayButton.textContent = 'Повторим?';
-        replayButton.addEventListener('click', () => {
-            replayButton.remove();
-            startGame();
-        });
+        replayButton.className = 'replay-btn'; // Добавляем класс для стилизации кнопки
+        replayButton.style.position = 'absolute';
+        replayButton.style.left = '50%';
+        replayButton.style.top = '50%';
+        replayButton.style.transform = 'translate(-50%, -50%)';
+        replayButton.style.padding = '10px 20px';
+        replayButton.style.backgroundColor = '#32CD32';
+        replayButton.style.color = '#fff';
+        replayButton.style.borderRadius = '10px';
+        replayButton.style.cursor = 'pointer';
 
         document.body.appendChild(replayButton);
+
+        // Логика перезапуска игры
+        replayButton.addEventListener('click', () => {
+            replayButton.remove(); // Удаляем кнопку
+            startGame(); // Перезапуск игры
+        });
     }
 
     return {
