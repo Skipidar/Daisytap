@@ -25,7 +25,7 @@ const MiniGame = (function() {
         }
 
         tickets -= 1; // Списываем 1 Ticket за игру
-        updateTicketCount();
+        updateTicketCount(); // Убедимся, что эта функция объявлена
 
         isGameRunning = true;
 
@@ -222,7 +222,7 @@ const MiniGame = (function() {
             obj1.x < obj2.x + obj2.width / 2 &&
             obj1.x + obj1.width / 2 > obj2.x &&
             obj1.y < obj2.y + obj2.height / 2 &&
-            obj1.y + obj1.height / 2 > obj2.y
+            obj1.y + obj2.height / 2 > obj2.y
         );
     }
 
@@ -252,30 +252,39 @@ const MiniGame = (function() {
         `;
         document.body.appendChild(resultModal);
 
-        // Центрируем кнопки
         const replayButton = resultModal.querySelector('.replay-btn');
         const exitButton = resultModal.querySelector('.exit-btn');
-        replayButton.style.margin = '10px';
-        exitButton.style.margin = '10px';
 
-        // Обработчик кнопки "Повторить"
         replayButton.addEventListener('click', () => {
             resultModal.remove();
             startGame();
         });
 
-        // Обработчик кнопки "Домой"
         exitButton.addEventListener('click', () => {
             resultModal.remove();
             const gameScreen = document.getElementById('protect-flower-game');
-            gameScreen.style.display = 'none'; // Закрываем мини-игру
+            gameScreen.style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
-            AudioManager.playBackgroundMusic();
-            totalCoinsEarned = 0; // Сбрасываем счетчик монет
-            currentLevel = 1; // Возвращаем на первый уровень
+            totalCoinsEarned = 0;
+            currentLevel = 1;
         });
 
         isGameRunning = false;
+    }
+
+    function updateLives() {
+        const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
+        lifeIcons.forEach((icon, index) => {
+            if (index < lives) {
+                icon.style.opacity = '1';
+            } else {
+                icon.style.opacity = '0.3';
+            }
+        });
+    }
+
+    function updateGameCoinCount() {
+        document.getElementById('game-coin-count').textContent = gameCoins;
     }
 
     return {
@@ -283,5 +292,5 @@ const MiniGame = (function() {
     };
 })();
 
-// Добавление виброотклика при клике на пчел
+// Добавляем обработчик для клика по пчелам
 canvas.addEventListener('click', handleCanvasClick);
