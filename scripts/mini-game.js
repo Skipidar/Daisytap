@@ -50,12 +50,14 @@ const MiniGame = (function() {
             flower.draw();
         };
 
+        // Восстанавливаем жизни
+        lives = 3;
+        updateLives();
+
         bees = [];
         currentLevel = 1;
         gameTime = 120;
-        lives = 3;
         gameCoins = 0;
-        updateLives();
         updateGameCoinCount();
 
         AudioManager.pauseOneLevelMusic();
@@ -101,20 +103,20 @@ const MiniGame = (function() {
         const side = Math.floor(Math.random() * 4);
         switch(side) {
             case 0: // Верх
-                x = Math.random() * window.innerWidth;
+                x = Math.random() * canvas.width;
                 y = -size;
                 break;
             case 1: // Право
-                x = window.innerWidth + size;
-                y = Math.random() * window.innerHeight;
+                x = canvas.width + size;
+                y = Math.random() * canvas.height;
                 break;
             case 2: // Низ
-                x = Math.random() * window.innerWidth;
-                y = window.innerHeight + size;
+                x = Math.random() * canvas.width;
+                y = canvas.height + size;
                 break;
             case 3: // Лево
                 x = -size;
-                y = Math.random() * window.innerHeight;
+                y = Math.random() * canvas.height;
                 break;
         }
 
@@ -180,7 +182,7 @@ const MiniGame = (function() {
             }
 
             // Удаление пчел, вышедших за пределы экрана
-            if (bee.x < -bee.width || bee.x > window.innerWidth + bee.width || bee.y < -bee.height || bee.y > window.innerHeight + bee.height) {
+            if (bee.x < -bee.width || bee.x > canvas.width + bee.width || bee.y < -bee.height || bee.y > canvas.height + bee.height) {
                 bees.splice(i, 1);
             }
         }
@@ -249,6 +251,8 @@ const MiniGame = (function() {
             replayButton.remove(); // Удаляем кнопку
             startGame(); // Перезапуск игры
         });
+
+        isGameRunning = false;
     }
 
     return {
