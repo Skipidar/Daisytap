@@ -292,15 +292,3 @@ const MiniGame = (function() {
         init
     };
 })();
-// scripts/mini-game.js
-const MiniGame = (function() {
-    function init() {
-        // Обработчик кнопки "Старт" внутри мини-игры
-        const startButton = document.getElementById('start-mini-game');
-        startButton.addEventListener('click', Game.startGame);
-    }
-
-    return {
-        init
-    };
-})();
