@@ -1,15 +1,16 @@
 const MiniGame = (function() {
-    let gameTime = 120; // 2 минуты
+    let gameTime = 120; // 2 минуты для уровня
     let bees = [];
     let beeInterval;
     let gameTimerInterval;
     let lives = 3;
-    let gameCoins = 0;
+    let gameCoins = 0; // Монеты не будут обнуляться между играми
     let currentLevel = 1;
     let isGameRunning = false;
     let tickets = 200; // Начальное количество билетов для теста
-    let ctx; // Контекст канваса
-    let canvas; // Канвас, который мы используем для игры
+    let ctx;
+    let canvas;
+    let totalCoinsEarned = 0; // Всего заработанных монет за игру
 
     function init() {
         // Обработчик кнопки "Старт" внутри мини-игры
@@ -30,7 +31,7 @@ const MiniGame = (function() {
         isGameRunning = true;
 
         const gameScreen = document.getElementById('protect-flower-game');
-        canvas = document.getElementById('game-canvas'); // Здесь определяем canvas
+        canvas = document.getElementById('game-canvas');
         ctx = canvas.getContext('2d');
         canvas.width = gameScreen.clientWidth;
         canvas.height = gameScreen.clientHeight;
@@ -55,16 +56,19 @@ const MiniGame = (function() {
         updateLives();
 
         bees = [];
-        currentLevel = 1;
-        gameTime = 120;
-        gameCoins = 0;
-        updateGameCoinCount();
+        gameTime = 120; // Сбрасываем время
+        updateGameCoinCount(); // Показываем предыдущий счёт монет
 
-        AudioManager.pauseOneLevelMusic();
-        AudioManager.playOneLevelMusic();
+        // Запускаем музыку и игровой цикл
+        if (currentLevel === 1) {
+            AudioManager.playOneLevelMusic();
+        } else {
+            AudioManager.playElectricChaosMusic();
+        }
 
-        // Спавн пчёл
-        beeInterval = setInterval(() => spawnBee(currentLevel), 1500); // Интервал увеличен, чтобы уменьшить скорость появления
+        // Спавн пчёл для текущего уровня
+        const spawnInterval = currentLevel === 1 ? 1500 : 1000; // Скорость спавна увеличена на 2 уровне
+        beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
         // Таймер игры
         gameTimerInterval = setInterval(() => {
@@ -72,7 +76,17 @@ const MiniGame = (function() {
             document.getElementById('game-timer').textContent = formatTime(gameTime);
 
             if (gameTime <= 0) {
-                endGame();
+                if (currentLevel === 1) {
+                    // Переход на второй уровень
+                    currentLevel = 2;
+                    gameTime = 120; // 2 минуты для второго уровня
+                    AudioManager.pauseOneLevelMusic();
+                    AudioManager.playElectricChaosMusic();
+                    clearInterval(beeInterval);
+                    beeInterval = setInterval(() => spawnBee(currentLevel), 1000); // Быстрее спавн на 2 уровне
+                } else {
+                    endGame();
+                }
             }
         }, 1000);
 
@@ -90,13 +104,13 @@ const MiniGame = (function() {
         const startButton = document.getElementById('start-mini-game');
         startButton.style.display = 'none';
 
-        // Добавляем обработчик кликов/тапов по канвасу
+        // Добавляем обработчик кликов по канвасу
         canvas.addEventListener('click', handleCanvasClick);
     }
 
     function spawnBee(level) {
         const size = Math.floor(Math.random() * 30) + 20; // Размер пчел (20-50px)
-        const speed = (1.5 + Math.random() * 2); // Скорость пчелы уменьшена в 2 раза
+        const speed = level === 1 ? 2 : 3.5; // Скорость пчел зависит от уровня
         let x, y;
 
         // Спавн пчел с разных сторон
@@ -155,7 +169,8 @@ const MiniGame = (function() {
             ) {
                 // Убиваем пчелу
                 bees.splice(index, 1); // Удаляем пчелу из массива
-                gameCoins += 10; // За каждую убитую пчелу 10 Coin
+                gameCoins += 1; // За каждую убитую пчелу 1 Coin
+                totalCoinsEarned += 1; // Обновляем общую сумму заработанных монет
                 updateGameCoinCount();
                 AudioManager.playClickSound();
             }
@@ -228,28 +243,41 @@ const MiniGame = (function() {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
-        alert(`Игра закончена! Вы собрали ${gameCoins} Coin.`);
+        // Модальное окно с результатами
+        const resultModal = document.createElement('div');
+        resultModal.className = 'modal-content'; // Оформление модального окна
+        resultModal.style.display = 'flex';
+        resultModal.style.flexDirection = 'column';
+        resultModal.style.justifyContent = 'center';
+        resultModal.style.alignItems = 'center';
+        resultModal.style.padding = '20px';
+        resultModal.innerHTML = `
+            <h2>Игра закончена!</h2>
+            <p>Вы собрали ${totalCoinsEarned} Coin.</p>
+            <button class="replay-btn">Повторить</button>
+            <button class="exit-btn">В главное меню</button>
+        `;
+        document.body.appendChild(resultModal);
 
-        // Добавляем кнопку "Повторим?" по центру
-        const replayButton = document.createElement('button');
-        replayButton.textContent = 'Повторим?';
-        replayButton.className = 'replay-btn'; // Добавляем класс для стилизации кнопки
-        replayButton.style.position = 'absolute';
-        replayButton.style.left = '50%';
-        replayButton.style.top = '50%';
-        replayButton.style.transform = 'translate(-50%, -50%)';
-        replayButton.style.padding = '10px 20px';
-        replayButton.style.backgroundColor = '#32CD32';
-        replayButton.style.color = '#fff';
-        replayButton.style.border = 'none';
-        replayButton.style.borderRadius = '10px';
-        replayButton.style.cursor = 'pointer';
+        // Центрируем кнопки
+        const replayButton = resultModal.querySelector('.replay-btn');
+        replayButton.style.margin = '10px';
+        const exitButton = resultModal.querySelector('.exit-btn');
+        exitButton.style.margin = '10px';
 
-        document.getElementById('protect-flower-game').appendChild(replayButton);
-
+        // Обработчик кнопки "Повторить"
         replayButton.addEventListener('click', () => {
-            replayButton.remove(); // Удаляем кнопку
+            resultModal.remove(); // Удаляем окно с результатами
             startGame(); // Перезапуск игры
+        });
+
+        // Обработчик кнопки "В главное меню"
+        exitButton.addEventListener('click', () => {
+            resultModal.remove(); // Удаляем окно с результатами
+            const gameScreen = document.getElementById('protect-flower-game');
+            gameScreen.style.display = 'none'; // Закрываем мини-игру
+            document.querySelector('.game-container').style.display = 'flex';
+            AudioManager.playBackgroundMusic();
         });
 
         isGameRunning = false;
