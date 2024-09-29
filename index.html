@@ -16,10 +16,9 @@
 <body>
     <!-- Анимация загрузки -->
     <div id="loading-screen">
-        <img src="assets/images/Loadingscreen.webp" alt="Загрузка..." class="loading-image">
+        <div class="loading-text">Daisy</div>
         <div class="loading-overlay">
             <div class="loading-bar"></div>
-            <div class="loading-text">Daisy</div>
         </div>
     </div>
 
@@ -35,22 +34,24 @@
             <span id="ticket-count">200</span>
         </div>
 
-        <!-- Зеленая кнопка "Играть" -->
-        <button id="play-button">Играть</button>
-
+        <!-- Счётчики -->
         <div class="counters">
             <div id="coin-counter" class="counter">
                 <img src="assets/images/goldcoin.webp" alt="Gold Coin" class="coin-icon">
                 <span class="daisy-coin" id="coin-count">200</span> $Daisy
             </div>
-            <div>
+            <div id="secondary-counter-container">
                 <div id="secondary-coin-counter" class="counter">
                     <img src="assets/images/silvercoin.webp" alt="Silver Coin" class="coin-icon">
                     <span class="secondary-coin" id="spin-coin-count">0</span> Coin
                 </div>
                 <div id="energy-counter" class="counter">Энергия: <span class="energy" id="energy-count">1000</span></div>
+                <button id="booster">Бустер 6/6 (01:00)</button>
             </div>
         </div>
+
+        <!-- Зеленая кнопка "Играть" -->
+        <button id="play-button">Играть</button>
 
         <div class="chamomile-container">
             <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
@@ -66,9 +67,6 @@
             <button id="friends-btn">Друзья</button>
             <button id="tasks-btn">Задачи</button>
         </footer>
-
-        <!-- Бустер -->
-        <button id="booster">Бустер 6/6 (01:00)</button>
     </div>
 
     <!-- Модальные окна -->
@@ -85,6 +83,9 @@
             <div id="predictions-history">
                 <h3>История предсказаний:</h3>
                 <!-- Здесь будут отображаться предыдущие предсказания -->
+            </div>
+            <div id="sticker-notification" class="sticker-notification">
+                <p>Вы получили стикеры!</p>
             </div>
         </div>
     </div>

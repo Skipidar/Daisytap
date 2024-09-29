@@ -8,12 +8,17 @@ const MiniGame = (function() {
     let currentLevel = 1;
 
     function init() {
-        // Обработчик кнопки "Играть" уже настроен в `Game.js`
+        // Инициализация кнопки "Играть"
+        const playButton = document.getElementById('play-button');
+        playButton.addEventListener('click', startProtectFlowerGame);
     }
 
     function startProtectFlowerGame() {
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.style.display = 'flex';
+
+        // Отключаем основной экран
+        document.querySelector('.game-container').style.display = 'none';
 
         // Добавляем анимацию отсчёта 3..2..1.. Защити ромашку!
         const countdownElement = document.createElement('div');
@@ -37,16 +42,17 @@ const MiniGame = (function() {
     }
 
     function startGame() {
+        const gameScreen = document.getElementById('protect-flower-game');
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = gameScreen.clientWidth;
+        canvas.height = gameScreen.clientHeight;
 
         const flower = {
             x: canvas.width / 2,
             y: canvas.height / 2,
-            width: 300,
-            height: 300,
+            width: 100,
+            height: 100,
             image: new Image(),
             draw: function() {
                 ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
@@ -65,7 +71,7 @@ const MiniGame = (function() {
         updateLives();
         updateGameCoinCount();
 
-        AudioManager.pauseOneLevelMusic();
+        AudioManager.pauseBackgroundMusic();
         AudioManager.playOneLevelMusic();
 
         // Спавн пчёл
@@ -151,11 +157,6 @@ const MiniGame = (function() {
                 updateLives();
                 bees.splice(i, 1);
                 AudioManager.playUdarSound();
-                // Пульсирование ромашки
-                document.getElementById('chamomile').classList.add('pulsate');
-                setTimeout(() => {
-                    document.getElementById('chamomile').classList.remove('pulsate');
-                }, 500);
 
                 if (lives <= 0) {
                     endGame();
@@ -259,7 +260,6 @@ const MiniGame = (function() {
         replayBtn.style.borderRadius = '10px';
         replayBtn.style.cursor = 'pointer';
         replayBtn.className = 'replay-btn';
-        replayBtn.style.animation = 'pulseReplay 2s infinite';
 
         const exitBtn = document.createElement('button');
         exitBtn.textContent = 'Выйти';
@@ -294,12 +294,6 @@ const MiniGame = (function() {
             gameScreen.style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
         });
-    }
-
-    function formatTime(seconds) {
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
     }
 
     return {

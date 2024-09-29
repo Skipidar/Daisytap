@@ -16,13 +16,13 @@ const AudioManager = (function() {
         predictionSound = new Audio('assets/sounds/prediction.mp3');
         udarSound = new Audio('assets/sounds/udar.mp3');
 
-        // Установка громкости
-        backgroundMusic.volume = 0.5; // Убавил на 50%
-        oneLevelMusic.volume = 0.5;
-        electricChaosMusic.volume = 0.5;
-        clickSound.volume = 0.4; // Убавил на 60%
-        predictionSound.volume = 0.4;
-        udarSound.volume = 0.4;
+        // Установка громкости (убавил на 50%)
+        backgroundMusic.volume = 0.25;
+        oneLevelMusic.volume = 0.25;
+        electricChaosMusic.volume = 0.25;
+        clickSound.volume = 0.2;
+        predictionSound.volume = 0.2;
+        udarSound.volume = 0.2;
 
         backgroundMusic.loop = true;
         oneLevelMusic.loop = true;

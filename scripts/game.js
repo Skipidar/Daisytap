@@ -32,6 +32,8 @@ const Game = (function() {
         boosterBtn.addEventListener('click', handleBoosterClick);
         updateBoosterTimer();
         setInterval(updateBoosterTimer, 1000); // Обновление таймера каждую секунду
+
+        // Инициализация получения новых бустеров каждый час
         setInterval(() => {
             if (boosterCharges < 6) {
                 boosterCharges++;
@@ -61,11 +63,6 @@ const Game = (function() {
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
             updateEnergyBar();
-
-            if (energy <= 0) {
-                chamomile.style.filter = "grayscale(100%)";
-                isFlowerClickable = false;
-            }
         }
     }
 
@@ -93,7 +90,7 @@ const Game = (function() {
             const ticketAmount = Math.floor(Math.random() * 7) + 1; // 1-7
             tickets += ticketAmount;
             document.getElementById('ticket-count').textContent = tickets;
-            alert(`Ваш подарок на сегодня: ${ticketAmount} билет(ов) в игру!`);
+            showStickerNotification(ticketAmount);
         }
     }
 
@@ -165,7 +162,7 @@ const Game = (function() {
         coin.style.height = '36px';
         document.body.appendChild(coin);
 
-        const target = document.getElementById('secondary-coin-counter').getBoundingClientRect();
+        const target = document.getElementById('spin-coin-count').getBoundingClientRect();
 
         setTimeout(() => {
             coin.style.left = `${target.left + target.width / 2}px`;
@@ -210,6 +207,7 @@ const Game = (function() {
             chamomile.style.filter = "none";
         } else {
             chamomile.style.filter = "grayscale(100%)";
+            isFlowerClickable = false;
         }
     }
 
@@ -249,15 +247,29 @@ const Game = (function() {
 
     function updateBoosterTimer() {
         const boosterBtn = document.getElementById('booster');
-        const now = new Date();
-        const minutes = 59 - now.getMinutes();
-        const seconds = 59 - now.getSeconds();
-        boosterBtn.textContent = `Бустер ${boosterCharges}/6 (${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
+        // Предполагаем, что таймер бустера отсчитывает до следующего бустера
+        // Здесь можно добавить логику таймера
+        boosterBtn.textContent = `Бустер ${boosterCharges}/6 (${formatBoosterTime()})`;
+    }
+
+    function formatBoosterTime() {
+        // Простая заглушка для времени
+        // Реализуйте реальный таймер, если требуется
+        return '01:00';
     }
 
     function updateTicketCount() {
         const ticketCount = document.getElementById('ticket-count');
         ticketCount.textContent = tickets;
+    }
+
+    function showStickerNotification(amount) {
+        const stickerNotification = document.getElementById('sticker-notification');
+        stickerNotification.textContent = `Вы получили ${amount} стикера(ов)!`;
+        stickerNotification.style.display = 'block';
+        setTimeout(() => {
+            stickerNotification.style.display = 'none';
+        }, 3000); // Скрыть через 3 секунды
     }
 
     return {
