@@ -17,7 +17,12 @@ const Modal = (function() {
         });
     }
 
+    function open(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+    }
+
     return {
-        init
+        init,
+        open
     };
 })();

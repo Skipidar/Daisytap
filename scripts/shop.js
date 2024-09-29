@@ -19,7 +19,7 @@ const Shop = (function() {
 
     function openShop() {
         loadShopItems('daisy');
-        document.getElementById('shop-modal').style.display = 'flex';
+        Modal.open('shop-modal');
     }
 
     function loadShopItems(tabName) {

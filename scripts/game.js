@@ -26,6 +26,21 @@ const Game = (function() {
 
         // Обработчик двойного клика по ромашке (предсказание)
         chamomile.addEventListener('dblclick', handleChamomileDblClick);
+
+        // Инициализация кнопки бустера
+        const boosterBtn = document.getElementById('booster');
+        boosterBtn.addEventListener('click', handleBoosterClick);
+        updateBoosterTimer();
+        setInterval(updateBoosterTimer, 1000); // Обновление таймера каждую секунду
+        setInterval(() => {
+            if (boosterCharges < 6) {
+                boosterCharges++;
+                updateBoosterTimer();
+            }
+        }, 60 * 60 * 1000); // Каждый час
+
+        // Обновление энергии
+        updateEnergyBar();
     }
 
     function handleChamomileClick(e) {
@@ -221,15 +236,31 @@ const Game = (function() {
         return `${m}:${s}`;
     }
 
+    function handleBoosterClick() {
+        if (boosterCharges > 0) {
+            energy = 1000;
+            document.getElementById('energy-count').textContent = energy;
+            boosterCharges--;
+            updateBoosterTimer();
+            updateEnergyBar();
+            AudioManager.playClickSound();
+        }
+    }
+
+    function updateBoosterTimer() {
+        const boosterBtn = document.getElementById('booster');
+        const now = new Date();
+        const minutes = 59 - now.getMinutes();
+        const seconds = 59 - now.getSeconds();
+        boosterBtn.textContent = `Бустер ${boosterCharges}/6 (${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')})`;
+    }
+
     function updateTicketCount() {
         const ticketCount = document.getElementById('ticket-count');
         ticketCount.textContent = tickets;
     }
 
     return {
-        init,
-        coins: () => coins,
-        spinCoins: () => spinCoins,
-        tickets: () => tickets
+        init
     };
 })();
