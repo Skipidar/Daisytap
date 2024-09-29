@@ -27,7 +27,7 @@ const MiniGame = (function() {
         }
 
         tickets -= 1; // Списываем 1 Ticket за игру
-        updateTicketCount();
+        updateTicketCount(); // Теперь функция определена
 
         isGameRunning = true;
 
@@ -73,6 +73,10 @@ const MiniGame = (function() {
             startBeeAndHeartSpawns();
             startGameTimer();
         });
+    }
+
+    function updateTicketCount() {
+        document.getElementById('ticket-count').textContent = tickets; // Обновление количества билетов на экране
     }
 
     function startBeeAndHeartSpawns() {
@@ -258,11 +262,7 @@ const MiniGame = (function() {
     function updateLives() {
         const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
         lifeIcons.forEach((icon, index) => {
-            if (index < lives) {
-                icon.style.opacity = '1';
-            } else {
-                icon.style.opacity = '0.3';
-            }
+            icon.style.opacity = index < lives ? '1' : '0.3';
         });
     }
 
@@ -300,8 +300,8 @@ const MiniGame = (function() {
         resultModal.style.color = 'white';
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
-        resultModal.style.borderRadius = '15px'; // Закруглённые края
-        resultModal.style.zIndex = '2000'; // Поверх мини-игры
+        resultModal.style.borderRadius = '15px';
+        resultModal.style.zIndex = '2000';
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
             <p>Вы заработали ${gameCoins} Coin и ${daisyCoins} $Daisy.</p>
