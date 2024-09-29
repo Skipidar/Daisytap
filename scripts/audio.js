@@ -1,4 +1,3 @@
-// scripts/audio.js
 const AudioManager = (function() {
     let backgroundMusic;
     let oneLevelMusic;
@@ -17,11 +16,10 @@ const AudioManager = (function() {
         predictionSound = new Audio('assets/sounds/prediction.mp3');
         udarSound = new Audio('assets/sounds/udar.mp3');
 
-        // Установка громкости (уменьшено на 50%)
         backgroundMusic.volume = 0.25;
         oneLevelMusic.volume = 0.25;
         electricChaosMusic.volume = 0.25;
-        clickSound.volume = 0.1; // Уменьшено для кликов
+        clickSound.volume = 0.1;
         predictionSound.volume = 0.1;
         udarSound.volume = 0.1;
 
@@ -29,12 +27,10 @@ const AudioManager = (function() {
         oneLevelMusic.loop = true;
         electricChaosMusic.loop = true;
 
-        // Автоматическое воспроизведение фоновой музыки
         backgroundMusic.play().catch(error => {
             console.warn('Автоматическое воспроизведение музыки заблокировано:', error);
         });
 
-        // Обработка кнопки отключения звука
         const soundToggle = document.getElementById('sound-toggle');
         soundToggle.addEventListener('click', toggleSound);
     }
