@@ -1,0 +1,96 @@
+const AudioManager = (function() {
+    let backgroundMusic;
+    let oneLevelMusic;
+    let electricChaosMusic;
+    let clickSound;
+    let predictionSound;
+    let udarSound;
+
+    let soundEnabled = true;
+
+    function init() {
+        backgroundMusic = new Audio('assets/sounds/backgroundmusic.mp3');
+        oneLevelMusic = new Audio('assets/sounds/Onelevel.mp3');
+        electricChaosMusic = new Audio('assets/sounds/Electric Chaos.mp3');
+        clickSound = new Audio('assets/sounds/click.mp3');
+        predictionSound = new Audio('assets/sounds/prediction.mp3');
+        udarSound = new Audio('assets/sounds/udar.mp3');
+
+        // Установка громкости
+        backgroundMusic.volume = 0.5; // Убавил на 50%
+        oneLevelMusic.volume = 0.5;
+        electricChaosMusic.volume = 0.5;
+        clickSound.volume = 0.4; // Убавил на 60%
+        predictionSound.volume = 0.4;
+        udarSound.volume = 0.4;
+
+        backgroundMusic.loop = true;
+        oneLevelMusic.loop = true;
+        electricChaosMusic.loop = true;
+
+        // Автоматическое воспроизведение фоновой музыки
+        backgroundMusic.play().catch(error => {
+            console.warn('Автоматическое воспроизведение музыки заблокировано:', error);
+        });
+
+        // Обработка кнопки отключения звука
+        const soundToggle = document.getElementById('sound-toggle');
+        soundToggle.addEventListener('click', toggleSound);
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        const soundIcon = document.getElementById('sound-icon');
+        if (soundEnabled) {
+            soundIcon.src = 'assets/images/on.webp';
+            backgroundMusic.play();
+            oneLevelMusic.play();
+            electricChaosMusic.play();
+        } else {
+            soundIcon.src = 'assets/images/off.webp';
+            backgroundMusic.pause();
+            oneLevelMusic.pause();
+            electricChaosMusic.pause();
+        }
+    }
+
+    function playClickSound() {
+        if (soundEnabled) clickSound.play();
+    }
+
+    function playPredictionSound() {
+        if (soundEnabled) predictionSound.play();
+    }
+
+    function playUdarSound() {
+        if (soundEnabled) udarSound.play();
+    }
+
+    function playOneLevelMusic() {
+        if (soundEnabled) oneLevelMusic.play();
+    }
+
+    function pauseOneLevelMusic() {
+        oneLevelMusic.pause();
+    }
+
+    function playElectricChaosMusic() {
+        if (soundEnabled) electricChaosMusic.play();
+    }
+
+    function pauseElectricChaosMusic() {
+        electricChaosMusic.pause();
+    }
+
+    return {
+        init,
+        toggleSound,
+        playClickSound,
+        playPredictionSound,
+        playUdarSound,
+        playOneLevelMusic,
+        pauseOneLevelMusic,
+        playElectricChaosMusic,
+        pauseElectricChaosMusic
+    };
+})();
