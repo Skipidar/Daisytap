@@ -1,11 +1,14 @@
+// scripts/modal.js
 const Modal = (function() {
     function init() {
+        // Закрытие модальных окон при нажатии на крестик
         document.querySelectorAll('.close-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 this.closest('.modal').style.display = 'none';
             });
         });
 
+        // Закрытие модальных окон при клике вне контента
         window.addEventListener('click', function(event) {
             document.querySelectorAll('.modal').forEach(modal => {
                 if (event.target === modal) {
@@ -14,6 +17,7 @@ const Modal = (function() {
             });
         });
 
+        // Обработчики кнопок в модальных окнах
         setupPredictionModal();
         setupAirdropModal();
         setupRatingModal();
@@ -34,17 +38,21 @@ const Modal = (function() {
         const ticketNotification = document.getElementById('ticket-notification');
 
         shareBtn.addEventListener('click', () => {
+            // Логика для поделиться с друзьями
             alert('Поделиться с друзьями: Функция в разработке.');
         });
 
         publishBtn.addEventListener('click', () => {
+            // Логика для опубликовать историю
             alert('Опубликовать историю: Функция в разработке.');
         });
 
-        const observer = new MutationObserver(function(mutationsList) {
-            for (let mutation of mutationsList) {
+        // Оповещение о получении билетов
+        const observer = new MutationObserver(function(mutationsList, observer) {
+            for(let mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     if (predictionModal.style.display === 'flex') {
+                        // Показать оповещение о билетах
                         ticketNotification.style.display = 'block';
                     }
                 }
@@ -52,6 +60,8 @@ const Modal = (function() {
         });
 
         observer.observe(predictionModal, { childList: true, subtree: true });
+
+        // Не скрывать уведомление
     }
 
     function setupAirdropModal() {

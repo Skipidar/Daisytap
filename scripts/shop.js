@@ -1,10 +1,13 @@
+// scripts/shop.js
 const Shop = (function() {
     let coins = 200; // Начальное количество $Daisy
     let spinCoins = 0;
 
     function init() {
+        // Инициализация кнопки магазина
         document.getElementById('shop-btn').addEventListener('click', openShop);
 
+        // Инициализация вкладок магазина
         document.querySelectorAll('.shop-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
@@ -93,12 +96,22 @@ const Shop = (function() {
         const giftAmount = Math.floor(Math.random() * 5) + 1; // Выдача 1-5 билетов
         document.getElementById('gift-amount').textContent = giftAmount;
 
+        // Обновление баланса билетов
         let tickets = parseInt(document.getElementById('ticket-count').textContent, 10);
         tickets += giftAmount;
         document.getElementById('ticket-count').textContent = tickets;
     }
 
+    // Функции для обновления баланса из других модулей
+    function updateBalance(newCoins, newSpinCoins) {
+        coins = newCoins;
+        spinCoins = newSpinCoins;
+        document.getElementById('coin-count').textContent = coins;
+        document.getElementById('spin-coin-count').textContent = spinCoins;
+    }
+
     return {
-        init
+        init,
+        updateBalance
     };
 })();
