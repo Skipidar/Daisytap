@@ -1,4 +1,3 @@
-// scripts/mini-game.js
 const MiniGame = (function() {
     let gameTime = 120; // 2 минуты
     let bees = [];
@@ -8,6 +7,7 @@ const MiniGame = (function() {
     let gameCoins = 0;
     let currentLevel = 1;
     let isGameRunning = false;
+    let ctx; // Добавляем ctx для контекста канваса
 
     function init() {
         // Обработчик кнопки "Старт" внутри мини-игры
@@ -21,7 +21,7 @@ const MiniGame = (function() {
 
         const gameScreen = document.getElementById('protect-flower-game');
         const canvas = document.getElementById('game-canvas');
-        const ctx = canvas.getContext('2d');
+        ctx = canvas.getContext('2d'); // Инициализация контекста канваса
         canvas.width = gameScreen.clientWidth;
         canvas.height = gameScreen.clientHeight;
 
@@ -66,7 +66,7 @@ const MiniGame = (function() {
 
         // Основной игровой цикл
         function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем канвас перед каждым кадром
             flower.draw();
             updateBees(ctx, flower);
             requestAnimationFrame(gameLoop);
@@ -145,21 +145,9 @@ const MiniGame = (function() {
                 continue;
             }
 
-            // Проверка на клик по пчеле
-            bee.image.onclick = () => {
-                bees.splice(i, 1);
-                gameCoins += 10; // За каждую убитую пчелу 10 Coin
-                updateGameCoinCount();
-                AudioManager.playClickSound();
-            };
-
             // Удаление пчел, вышедших за пределы экрана
             if (bee.x < -bee.width || bee.x > window.innerWidth + bee.width || bee.y < -bee.height || bee.y > window.innerHeight + bee.height) {
                 bees.splice(i, 1);
-                // За каждую пропущенную пчелу получаем монету
-                gameCoins += 1;
-                updateGameCoinCount();
-                animateGameCoin();
             }
         }
     }
@@ -188,45 +176,10 @@ const MiniGame = (function() {
         document.getElementById('game-coin-count').textContent = gameCoins;
     }
 
-    function animateGameCoin() {
-        const coin = document.createElement('img');
-        coin.src = 'assets/images/silvercoin.webp';
-        coin.className = 'coin-icon coin-animation';
-        coin.style.position = 'absolute';
-        coin.style.left = `${Math.random() * window.innerWidth}px`;
-        coin.style.top = `${Math.random() * window.innerHeight}px`;
-        coin.style.transition = 'all 1s linear';
-        coin.style.width = '36px'; // Увеличенный размер монетки
-        coin.style.height = '36px';
-        document.body.appendChild(coin);
-
-        const target = document.getElementById('game-coins').getBoundingClientRect();
-
-        setTimeout(() => {
-            coin.style.left = `${target.left + target.width / 2}px`;
-            coin.style.top = `${target.top + target.height / 2}px`;
-            coin.style.width = '0px';
-            coin.style.height = '0px';
-            coin.style.opacity = '0';
-        }, 10);
-
-        // Добавление анимации пульсации к счетчику монет
-        coin.addEventListener('transitionend', () => {
-            if (coin.style.opacity === '0') {
-                coin.remove();
-                pulseGameCoinCount();
-            }
-        });
-
-        setTimeout(() => coin.remove(), 1000);
-    }
-
-    function pulseGameCoinCount() {
-        const gameCoinCount = document.getElementById('game-coin-count');
-        gameCoinCount.classList.add('pulse');
-        setTimeout(() => {
-            gameCoinCount.classList.remove('pulse');
-        }, 500); // Длительность пульсации
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
     }
 
     function endGame() {
@@ -237,55 +190,14 @@ const MiniGame = (function() {
 
         alert(`Игра закончена! Вы собрали ${gameCoins} Coin.`);
 
-        // Добавляем кнопки "Повторим?" и "Выйти"
-        const gameScreen = document.getElementById('protect-flower-game');
-
-        const replayBtn = document.createElement('button');
-        replayBtn.textContent = 'Повторим?';
-        replayBtn.style.backgroundColor = '#32CD32';
-        replayBtn.style.color = '#fff';
-        replayBtn.style.padding = '10px 20px';
-        replayBtn.style.border = 'none';
-        replayBtn.style.borderRadius = '10px';
-        replayBtn.style.cursor = 'pointer';
-        replayBtn.className = 'replay-btn';
-
-        const exitBtn = document.createElement('button');
-        exitBtn.textContent = 'Выйти';
-        exitBtn.style.backgroundColor = '#FF0000';
-        exitBtn.style.color = '#fff';
-        exitBtn.style.padding = '10px 20px';
-        exitBtn.style.border = 'none';
-        exitBtn.style.borderRadius = '10px';
-        exitBtn.style.cursor = 'pointer';
-        exitBtn.className = 'exit-btn';
-
-        const replayContainer = document.createElement('div');
-        replayContainer.style.position = 'absolute';
-        replayContainer.style.bottom = '50px';
-        replayContainer.style.display = 'flex';
-        replayContainer.style.justifyContent = 'center';
-        replayContainer.style.width = '100%';
-        replayContainer.appendChild(replayBtn);
-        replayContainer.appendChild(exitBtn);
-
-        gameScreen.appendChild(replayContainer);
-
-        replayBtn.addEventListener('click', () => {
-            replayBtn.remove();
-            exitBtn.remove();
+        const replayButton = document.createElement('button');
+        replayButton.textContent = 'Повторим?';
+        replayButton.addEventListener('click', () => {
+            replayButton.remove();
             startGame();
         });
 
-        exitBtn.addEventListener('click', () => {
-            replayBtn.remove();
-            exitBtn.remove();
-            gameScreen.style.display = 'none';
-            document.querySelector('.game-container').style.display = 'flex';
-            AudioManager.pauseElectricChaosMusic();
-            AudioManager.playBackgroundMusic();
-            isGameRunning = false;
-        });
+        document.body.appendChild(replayButton);
     }
 
     return {
