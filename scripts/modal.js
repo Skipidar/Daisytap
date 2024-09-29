@@ -18,6 +18,7 @@ const Modal = (function() {
 
         // Обработчики кнопок в модальных окнах
         setupPredictionModal();
+        setupStartMiniGameButton();
     }
 
     function open(modalId) {
@@ -28,7 +29,7 @@ const Modal = (function() {
         const predictionModal = document.getElementById('prediction-modal');
         const shareBtn = predictionModal.querySelector('.share-btn');
         const publishBtn = predictionModal.querySelector('.publish-btn');
-        const stickerNotification = document.getElementById('sticker-notification');
+        const ticketNotification = document.getElementById('ticket-notification');
 
         shareBtn.addEventListener('click', () => {
             // Логика для поделиться с друзьями
@@ -40,15 +41,15 @@ const Modal = (function() {
             alert('Опубликовать историю: Функция в разработке.');
         });
 
-        // Оповещение о получении стикеров
+        // Оповещение о получении билетов
         const observer = new MutationObserver(function(mutationsList, observer) {
             for(let mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     if (predictionModal.style.display === 'flex') {
-                        // Показать оповещение о стикерах
-                        stickerNotification.style.display = 'block';
+                        // Показать оповещение о билетах
+                        ticketNotification.style.display = 'block';
                         setTimeout(() => {
-                            stickerNotification.style.display = 'none';
+                            ticketNotification.style.display = 'none';
                         }, 3000); // Скрыть через 3 секунды
                     }
                 }
@@ -56,6 +57,15 @@ const Modal = (function() {
         });
 
         observer.observe(predictionModal, { childList: true, subtree: true });
+    }
+
+    function setupStartMiniGameButton() {
+        const startButton = document.getElementById('start-mini-game');
+        if (startButton) {
+            startButton.addEventListener('click', () => {
+                MiniGame.startGame();
+            });
+        }
     }
 
     return {

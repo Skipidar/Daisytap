@@ -46,6 +46,12 @@ const Game = (function() {
 
         // Запуск восполнения энергии
         setInterval(replenishEnergy, 1000); // Каждую секунду
+
+        // Обработчик кнопки "Играть"
+        const playButton = document.getElementById('play-button');
+        playButton.addEventListener('click', () => {
+            Modal.open('protect-flower-game');
+        });
     }
 
     function handleChamomileClick(e) {
@@ -90,10 +96,10 @@ const Game = (function() {
             updatePredictionHistory();
 
             // Выдача билетиков за предсказание
-            const ticketAmount = Math.floor(Math.random() * 7) + 1; // 1-7
+            const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
             tickets += ticketAmount;
             document.getElementById('ticket-count').textContent = tickets;
-            showStickerNotification(ticketAmount);
+            showTicketNotification(ticketAmount);
         }
     }
 
@@ -208,6 +214,7 @@ const Game = (function() {
         const chamomile = document.getElementById('chamomile');
         if (energy > 0) {
             chamomile.style.filter = "none";
+            isFlowerClickable = true;
         } else {
             chamomile.style.filter = "grayscale(100%)";
             isFlowerClickable = false;
@@ -216,7 +223,7 @@ const Game = (function() {
 
     function replenishEnergy() {
         if (energy < 1000) {
-            energy += 10;
+            energy += 1; // Восполнение по 1 единице каждую секунду
             document.getElementById('energy-count').textContent = energy;
             updateEnergyBar();
         }
@@ -252,7 +259,7 @@ const Game = (function() {
             boosterCharges--;
             updateBoosterTimer();
             updateEnergyBar();
-            AudioManager.playClickSound();
+            // Бустер не издаёт звуки
         }
     }
 
@@ -274,12 +281,12 @@ const Game = (function() {
         ticketCount.textContent = tickets;
     }
 
-    function showStickerNotification(amount) {
-        const stickerNotification = document.getElementById('sticker-notification');
-        stickerNotification.textContent = `Вы получили ${amount} стикера(ов)!`;
-        stickerNotification.style.display = 'block';
+    function showTicketNotification(amount) {
+        const ticketNotification = document.getElementById('ticket-notification');
+        ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
+        ticketNotification.style.display = 'block';
         setTimeout(() => {
-            stickerNotification.style.display = 'none';
+            ticketNotification.style.display = 'none';
         }, 3000); // Скрыть через 3 секунды
     }
 

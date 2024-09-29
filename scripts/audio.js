@@ -20,9 +20,9 @@ const AudioManager = (function() {
         backgroundMusic.volume = 0.25;
         oneLevelMusic.volume = 0.25;
         electricChaosMusic.volume = 0.25;
-        clickSound.volume = 0.2;
-        predictionSound.volume = 0.2;
-        udarSound.volume = 0.2;
+        clickSound.volume = 0.1; // Уменьшено для кликов
+        predictionSound.volume = 0.1;
+        udarSound.volume = 0.1;
 
         backgroundMusic.loop = true;
         oneLevelMusic.loop = true;

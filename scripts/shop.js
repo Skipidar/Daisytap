@@ -92,25 +92,13 @@ const Shop = (function() {
         const skinPurchaseModal = document.getElementById('skin-purchase-modal');
         skinPurchaseModal.style.display = 'flex';
 
-        const installBtn = document.getElementById('install-skin-btn');
-        const returnBtn = document.getElementById('return-skin-btn');
+        const giftAmount = Math.floor(Math.random() * 5) + 1; // Выдача 1-5 билетов
+        document.getElementById('gift-amount').textContent = giftAmount;
 
-        // Очистка предыдущих обработчиков
-        installBtn.replaceWith(installBtn.cloneNode(true));
-        returnBtn.replaceWith(returnBtn.cloneNode(true));
-
-        // Получение новых кнопок после клонирования
-        const newInstallBtn = document.getElementById('install-skin-btn');
-        const newReturnBtn = document.getElementById('return-skin-btn');
-
-        newInstallBtn.addEventListener('click', () => {
-            skinPurchaseModal.style.display = 'none';
-            alert(`Скин "${skinName}" установлен!`);
-        });
-
-        newReturnBtn.addEventListener('click', () => {
-            skinPurchaseModal.style.display = 'none';
-        });
+        // Обновление баланса билетов
+        let tickets = parseInt(document.getElementById('ticket-count').textContent, 10);
+        tickets += giftAmount;
+        document.getElementById('ticket-count').textContent = tickets;
     }
 
     // Функции для обновления баланса из других модулей

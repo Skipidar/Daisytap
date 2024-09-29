@@ -50,13 +50,13 @@
             </div>
         </div>
 
-        <!-- Кнопка "Играть" -->
-        <button id="play-button">Играть</button>
-
         <!-- Ромашка -->
         <div class="chamomile-container">
             <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
         </div>
+
+        <!-- Кнопка "Играть" -->
+        <button id="play-button">Играть</button>
 
         <footer>
             <button id="airdrop-btn">Airdrop</button>
@@ -85,8 +85,8 @@
                 <h3>История предсказаний:</h3>
                 <!-- Здесь будут отображаться предыдущие предсказания -->
             </div>
-            <div id="sticker-notification" class="sticker-notification">
-                <p>Вы получили стикеры!</p>
+            <div id="ticket-notification" class="ticket-notification">
+                <p>Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
             </div>
         </div>
     </div>
@@ -148,16 +148,14 @@
     <div id="skin-purchase-modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h2>Вы приобрели скин!</h2>
-            <p>Хотите установить его?</p>
-            <button id="install-skin-btn">Установить</button>
-            <button id="return-skin-btn">Вернуться назад</button>
+            <h2>Поздравляем!</h2>
+            <p>Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
+            <button id="close-gift-btn">Закрыть</button>
         </div>
     </div>
 
     <!-- Мини-игра "Защити цветок" -->
     <div id="protect-flower-game" class="game-screen" style="display: none;">
-        <div class="game-overlay"></div>
         <canvas id="game-canvas"></canvas>
         <div id="game-timer">02:00</div>
         <div id="game-lives">
@@ -169,7 +167,7 @@
             <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
             <span id="game-coin-count">0</span>
         </div>
-        <!-- Кнопка "Старт" внутри модального окна мини-игры -->
+        <!-- Кнопка "Старт" внутри мини-игры -->
         <button id="start-mini-game">Старт</button>
     </div>
 

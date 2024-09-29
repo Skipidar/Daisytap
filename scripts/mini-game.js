@@ -6,48 +6,18 @@ const MiniGame = (function() {
     let lives = 3;
     let gameCoins = 0;
     let currentLevel = 1;
+    let isGameRunning = false;
 
     function init() {
-        // Инициализация кнопки "Старт" внутри мини-игры
+        // Обработчик кнопки "Старт" внутри мини-игры
         const startButton = document.getElementById('start-mini-game');
         startButton.addEventListener('click', startGame);
     }
 
-    function startProtectFlowerGame() {
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.style.display = 'flex';
-
-        // Отключаем основной экран
-        document.querySelector('.game-container').style.display = 'none';
-
-        // Добавляем анимацию отсчёта 3..2..1.. Защити ромашку!
-        const countdownElement = document.createElement('div');
-        countdownElement.className = 'countdown';
-        countdownElement.textContent = '3';
-        gameScreen.appendChild(countdownElement);
-
-        let countdown = 3;
-        const countdownInterval = setInterval(() => {
-            countdown--;
-            if (countdown > 0) {
-                countdownElement.textContent = countdown;
-            } else if (countdown === 0) {
-                countdownElement.textContent = 'Защити ромашку!';
-            } else {
-                clearInterval(countdownInterval);
-                countdownElement.remove();
-                // Показываем кнопку "Старт"
-                showStartButton();
-            }
-        }, 1000);
-    }
-
-    function showStartButton() {
-        const startButton = document.getElementById('start-mini-game');
-        startButton.style.display = 'block';
-    }
-
     function startGame() {
+        if (isGameRunning) return; // Предотвращение повторного запуска
+        isGameRunning = true;
+
         const gameScreen = document.getElementById('protect-flower-game');
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
@@ -174,6 +144,14 @@ const MiniGame = (function() {
                 continue;
             }
 
+            // Проверка на клик по пчеле
+            bee.image.onclick = () => {
+                bees.splice(i, 1);
+                gameCoins += 10; // За каждую убитую пчелу 10 Coin
+                updateGameCoinCount();
+                AudioManager.playClickSound();
+            };
+
             // Удаление пчел, вышедших за пределы экрана
             if (bee.x < -bee.width || bee.x > window.innerWidth + bee.width || bee.y < -bee.height || bee.y > window.innerHeight + bee.height) {
                 bees.splice(i, 1);
@@ -295,7 +273,7 @@ const MiniGame = (function() {
         replayBtn.addEventListener('click', () => {
             replayBtn.remove();
             exitBtn.remove();
-            startProtectFlowerGame();
+            startGame();
         });
 
         exitBtn.addEventListener('click', () => {

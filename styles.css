@@ -97,7 +97,7 @@ body {
     animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
     position: absolute;
-    bottom: 200px; /* Под ромашкой */
+    bottom: 100px; /* Под ромашкой */
 }
 
 #play-button:hover {
@@ -314,8 +314,8 @@ footer .icon {
     color: #aaa;
 }
 
-/* Оповещение о получении стикеров */
-.sticker-notification {
+/* Оповещение о получении билетов */
+.ticket-notification {
     display: none;
     margin-top: 20px;
     padding: 10px;
@@ -348,7 +348,17 @@ footer .icon {
     position: absolute;
     top: 20%;
     opacity: 0;
+    display: flex;
+}
+
+.loading-text span {
+    display: inline-block;
+    opacity: 0;
     animation: fadeInLetters 1.5s forwards;
+}
+
+@keyframes fadeInLetters {
+    to { opacity: 1; }
 }
 
 .loading-overlay {
@@ -378,11 +388,6 @@ footer .icon {
     transition: opacity 1s ease-out;
 }
 
-@keyframes fadeInLetters {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
 /* Кнопка отключения звука */
 #sound-toggle {
     width: 60px; /* Увеличен размер */
@@ -399,25 +404,6 @@ footer .icon {
 #sound-toggle img {
     width: 100%;
     height: 100%;
-}
-
-/* Кнопка "Играть" */
-#play-button {
-    background-color: #32CD32;
-    color: white;
-    padding: 15px 30px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    animation: pulsePlayButton 2s infinite;
-    transition: background-color 0.3s;
-    position: absolute;
-    bottom: 100px; /* Под ромашкой */
-}
-
-#play-button:hover {
-    background-color: #28a428;
 }
 
 /* Магазин */
@@ -622,8 +608,8 @@ footer .icon {
     background-color: #e6c200;
 }
 
-/* Оповещение о получении стикеров */
-.sticker-notification {
+/* Оповещение о получении билетов */
+.ticket-notification {
     display: none;
     margin-top: 20px;
     padding: 10px;
@@ -673,4 +659,10 @@ footer .icon {
         overflow: hidden;
         position: relative;
     }
+}
+
+/* Анимация появления букв "Daisy" */
+@keyframes fadeInLetters {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
 }
