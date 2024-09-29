@@ -1,3 +1,4 @@
+// scripts/modal.js
 const Modal = (function() {
     function init() {
         // Закрытие модальных окон при нажатии на крестик
@@ -18,7 +19,12 @@ const Modal = (function() {
 
         // Обработчики кнопок в модальных окнах
         setupPredictionModal();
-        setupStartMiniGameButton();
+        setupAirdropModal();
+        setupRatingModal();
+        setupShopModal();
+        setupFriendsModal();
+        setupTasksModal();
+        setupGiftModal();
     }
 
     function open(modalId) {
@@ -48,22 +54,56 @@ const Modal = (function() {
                     if (predictionModal.style.display === 'flex') {
                         // Показать оповещение о билетах
                         ticketNotification.style.display = 'block';
-                        setTimeout(() => {
-                            ticketNotification.style.display = 'none';
-                        }, 3000); // Скрыть через 3 секунды
                     }
                 }
             }
         });
 
         observer.observe(predictionModal, { childList: true, subtree: true });
+
+        // Не скрывать уведомление
     }
 
-    function setupStartMiniGameButton() {
-        const startButton = document.getElementById('start-mini-game');
-        if (startButton) {
-            startButton.addEventListener('click', () => {
-                MiniGame.startGame();
+    function setupAirdropModal() {
+        const airdropBtn = document.getElementById('airdrop-btn');
+        airdropBtn.addEventListener('click', () => {
+            Modal.open('airdrop-modal');
+        });
+    }
+
+    function setupRatingModal() {
+        const ratingBtn = document.getElementById('rating-btn');
+        ratingBtn.addEventListener('click', () => {
+            Modal.open('rating-modal');
+        });
+    }
+
+    function setupShopModal() {
+        const shopBtn = document.getElementById('shop-btn');
+        shopBtn.addEventListener('click', () => {
+            Modal.open('shop-modal');
+        });
+    }
+
+    function setupFriendsModal() {
+        const friendsBtn = document.getElementById('friends-btn');
+        friendsBtn.addEventListener('click', () => {
+            Modal.open('friends-modal');
+        });
+    }
+
+    function setupTasksModal() {
+        const tasksBtn = document.getElementById('tasks-btn');
+        tasksBtn.addEventListener('click', () => {
+            Modal.open('tasks-modal');
+        });
+    }
+
+    function setupGiftModal() {
+        const closeGiftBtn = document.getElementById('close-gift-btn');
+        if (closeGiftBtn) {
+            closeGiftBtn.addEventListener('click', () => {
+                document.getElementById('skin-purchase-modal').style.display = 'none';
             });
         }
     }

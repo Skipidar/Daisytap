@@ -1,3 +1,4 @@
+// scripts/shop.js
 const Shop = (function() {
     let coins = 200; // Начальное количество $Daisy
     let spinCoins = 0;

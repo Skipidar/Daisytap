@@ -1,3 +1,4 @@
+// scripts/game.js
 const Game = (function() {
     let coins = 200; // Начальное количество $Daisy
     let spinCoins = 0;
@@ -265,8 +266,7 @@ const Game = (function() {
 
     function updateBoosterTimer() {
         const boosterBtn = document.getElementById('booster');
-        // Предполагаем, что таймер бустера отсчитывает до следующего бустера
-        // Здесь можно добавить логику таймера
+        // Здесь можно добавить реальную логику таймера
         boosterBtn.textContent = `Бустер ${boosterCharges}/6 (${formatBoosterTime()})`;
     }
 
@@ -285,9 +285,7 @@ const Game = (function() {
         const ticketNotification = document.getElementById('ticket-notification');
         ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
         ticketNotification.style.display = 'block';
-        setTimeout(() => {
-            ticketNotification.style.display = 'none';
-        }, 3000); // Скрыть через 3 секунды
+        // Не скрывать уведомление
     }
 
     return {

@@ -1,3 +1,4 @@
+// scripts/main.js
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация модальных окон
     Modal.init();
@@ -38,17 +39,12 @@ function initMain() {
     // Функция анимации появления слова "Daisy" по буквам
     function animateDaisyLetters() {
         const daisyElement = document.querySelector('.loading-text');
-        const text = daisyElement.textContent;
-        daisyElement.textContent = '';
-        text.split('').forEach((char, index) => {
-            const span = document.createElement('span');
-            span.textContent = char;
+        const spans = daisyElement.querySelectorAll('span');
+        spans.forEach((span, index) => {
             span.style.opacity = '0';
-            span.style.transition = `opacity 0.5s ease ${index * 0.3}s`;
-            daisyElement.appendChild(span);
             setTimeout(() => {
                 span.style.opacity = '1';
-            }, 100);
+            }, index * 300); // Задержка 0.3s между буквами
         });
     }
 }

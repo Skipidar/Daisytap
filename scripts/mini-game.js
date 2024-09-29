@@ -1,3 +1,4 @@
+// scripts/mini-game.js
 const MiniGame = (function() {
     let gameTime = 120; // 2 минуты
     let bees = [];
@@ -47,7 +48,7 @@ const MiniGame = (function() {
         updateLives();
         updateGameCoinCount();
 
-        AudioManager.pauseBackgroundMusic();
+        AudioManager.pauseOneLevelMusic();
         AudioManager.playOneLevelMusic();
 
         // Спавн пчёл
@@ -283,7 +284,20 @@ const MiniGame = (function() {
             document.querySelector('.game-container').style.display = 'flex';
             AudioManager.pauseElectricChaosMusic();
             AudioManager.playBackgroundMusic();
+            isGameRunning = false;
         });
+    }
+
+    return {
+        init
+    };
+})();
+// scripts/mini-game.js
+const MiniGame = (function() {
+    function init() {
+        // Обработчик кнопки "Старт" внутри мини-игры
+        const startButton = document.getElementById('start-mini-game');
+        startButton.addEventListener('click', Game.startGame);
     }
 
     return {

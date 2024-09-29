@@ -1,3 +1,4 @@
+/* styles.css */
 /* Общие стили */
 body {
     margin: 0;
@@ -11,7 +12,7 @@ body {
 .game-container {
     width: 100%;
     height: 100vh;
-    background: linear-gradient(to bottom, #000000, #4B0082); /* Градиент от черного к фиолетовому */
+    background: radial-gradient(circle at center, #000000, #4B0082); /* Градиент от черного к фиолетовому, исходящий из центра */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -125,6 +126,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    top: -50px; /* Поднимаем ромашку выше по центру */
 }
 
 #chamomile {
@@ -347,15 +349,20 @@ footer .icon {
     margin-bottom: 20px;
     position: absolute;
     top: 20%;
-    opacity: 0;
     display: flex;
 }
 
 .loading-text span {
     display: inline-block;
     opacity: 0;
-    animation: fadeInLetters 1.5s forwards;
+    animation: fadeInLetters 0.5s forwards;
 }
+
+.loading-text span:nth-child(1) { animation-delay: 0s; }
+.loading-text span:nth-child(2) { animation-delay: 0.3s; }
+.loading-text span:nth-child(3) { animation-delay: 0.6s; }
+.loading-text span:nth-child(4) { animation-delay: 0.9s; }
+.loading-text span:nth-child(5) { animation-delay: 1.2s; }
 
 @keyframes fadeInLetters {
     to { opacity: 1; }
@@ -390,11 +397,11 @@ footer .icon {
 
 /* Кнопка отключения звука */
 #sound-toggle {
-    width: 60px; /* Увеличен размер */
+    width: 60px;
     height: 60px;
     position: absolute;
-    bottom: 20px; /* Расположена снизу */
-    left: 20px; /* Отступ слева */
+    bottom: 20px;
+    left: 20px;
     background: none;
     border: none;
     cursor: pointer;
@@ -452,7 +459,6 @@ footer .icon {
     width: auto;
     height: 60px;
     object-fit: contain;
-    /* border-radius: 50%; */ /* Убрано, чтобы сохранить оригинальные размеры */
 }
 
 .skin-price {

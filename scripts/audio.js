@@ -1,3 +1,4 @@
+// scripts/audio.js
 const AudioManager = (function() {
     let backgroundMusic;
     let oneLevelMusic;
