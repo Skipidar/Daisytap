@@ -62,7 +62,7 @@ const MiniGame = (function() {
         AudioManager.playOneLevelMusic();
 
         // Спавн пчёл
-        beeInterval = setInterval(() => spawnBee(currentLevel), 1500);
+        beeInterval = setInterval(() => spawnBee(currentLevel), 1500); // Интервал увеличен, чтобы уменьшить скорость появления
 
         // Таймер игры
         gameTimerInterval = setInterval(() => {
@@ -94,7 +94,7 @@ const MiniGame = (function() {
 
     function spawnBee(level) {
         const size = Math.floor(Math.random() * 30) + 20; // Размер пчел (20-50px)
-        const speed = (1.5 + Math.random() * 2 + (level === 2 ? 1 : 0)); // Скорость пчелы уменьшена
+        const speed = (1.5 + Math.random() * 2); // Скорость пчелы уменьшена в 2 раза
         let x, y;
 
         // Спавн пчел с разных сторон
@@ -239,12 +239,12 @@ const MiniGame = (function() {
         replayButton.style.padding = '10px 20px';
         replayButton.style.backgroundColor = '#32CD32';
         replayButton.style.color = '#fff';
+        replayButton.style.border = 'none';
         replayButton.style.borderRadius = '10px';
         replayButton.style.cursor = 'pointer';
 
-        document.body.appendChild(replayButton);
+        document.getElementById('protect-flower-game').appendChild(replayButton);
 
-        // Логика перезапуска игры
         replayButton.addEventListener('click', () => {
             replayButton.remove(); // Удаляем кнопку
             startGame(); // Перезапуск игры
