@@ -1,4 +1,4 @@
-const MiniGame = (function () {
+const MiniGame = (function() {
     let gameTime = 120; // 2 минуты для уровня
     let bees = [];
     let beeInterval;
@@ -11,7 +11,6 @@ const MiniGame = (function () {
     let canvas;
     let totalCoinsEarned = 0; // Всего заработанных монет за игру
     let tickets = 200; // Начальное количество билетов для теста
-    let daisyCoins = 0; // Количество заработанных $Daisy
 
     function init() {
         const startButton = document.getElementById('start-mini-game');
@@ -42,7 +41,7 @@ const MiniGame = (function () {
             width: 100,
             height: 100,
             image: new Image(),
-            draw: function () {
+            draw: function() {
                 ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
             }
         };
@@ -58,7 +57,6 @@ const MiniGame = (function () {
         bees = [];
         gameTime = 120;
         updateGameCoinCount();
-        updateDaisyCoinCount(); // Показываем $Daisy
 
         // Музыка и спавн пчел в зависимости от уровня
         if (currentLevel === 1) {
@@ -122,10 +120,10 @@ const MiniGame = (function () {
             height: size,
             speed: speed,
             image: new Image(),
-            draw: function () {
+            draw: function() {
                 ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
             },
-            move: function (flower) {
+            move: function(flower) {
                 const angle = Math.atan2(flower.y - this.y, flower.x - this.x);
                 this.x += Math.cos(angle) * this.speed;
                 this.y += Math.sin(angle) * this.speed;
@@ -146,9 +144,7 @@ const MiniGame = (function () {
                 bees.splice(index, 1);
                 gameCoins += 1;
                 totalCoinsEarned += 1;
-                daisyCoins += 10; // Добавляем $Daisy за пчелу
                 updateGameCoinCount();
-                updateDaisyCoinCount();
                 AudioManager.playClickSound();
 
                 if (navigator.vibrate) {
@@ -178,7 +174,7 @@ const MiniGame = (function () {
             }
 
             if (bee.x < -bee.width || bee.x > canvas.width + bee.width ||
-                bee.y < -bee.height || bee.y > canvas.height) {
+                bee.y < -bee.height || bee.y > canvas.height + bee.height) {
                 bees.splice(i, 1);
             }
         }
@@ -220,10 +216,6 @@ const MiniGame = (function () {
         document.getElementById('game-coin-count').textContent = gameCoins;
     }
 
-    function updateDaisyCoinCount() {
-        document.getElementById('daisy-coin-count').textContent = daisyCoins;
-    }
-
     function updateTicketCount() {
         document.getElementById('ticket-count').textContent = tickets;
     }
@@ -240,6 +232,7 @@ const MiniGame = (function () {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
+        // Создаем модальное окно внутри экрана игры
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
         resultModal.style.top = '50%';
@@ -249,32 +242,35 @@ const MiniGame = (function () {
         resultModal.style.color = 'white';
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
+        resultModal.style.zIndex = '1000'; // z-index, чтобы окно было выше остальных элементов
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
-            <p>Вы заработали ${totalCoinsEarned} Coin и ${daisyCoins} $Daisy.</p>
+            <p>Вы заработали ${totalCoinsEarned} Coin.</p>
             <button class="replay-btn">
                 <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} Tickets)
             </button>
             <button class="exit-btn">Домой</button>
         `;
-        document.body.appendChild(resultModal);
 
+        // Добавляем модальное окно в элемент с игрой
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.appendChild(resultModal);
+
+        // Обработчики кнопок
         const replayButton = resultModal.querySelector('.replay-btn');
         const exitButton = resultModal.querySelector('.exit-btn');
 
         replayButton.addEventListener('click', () => {
-            resultModal.remove();
-            startGame();
+            resultModal.remove(); // Удаляем модальное окно
+            startGame(); // Перезапускаем игру
         });
 
         exitButton.addEventListener('click', () => {
-            resultModal.remove();
-            const gameScreen = document.getElementById('protect-flower-game');
-            gameScreen.style.display = 'none';
-            document.querySelector('.game-container').style.display = 'flex';
+            resultModal.remove(); // Удаляем модальное окно
+            gameScreen.style.display = 'none'; // Закрываем игру
+            document.querySelector('.game-container').style.display = 'flex'; // Возвращаемся на главный экран
             totalCoinsEarned = 0;
             currentLevel = 1;
-            daisyCoins = 0;
         });
 
         isGameRunning = false;
@@ -284,3 +280,22 @@ const MiniGame = (function () {
         init
     };
 })();
+
+// Добавляем анимации
+const style = document.createElement('style');
+style.textContent = `
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+`;
+document.head.appendChild(style);
