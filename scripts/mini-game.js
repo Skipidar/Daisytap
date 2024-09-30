@@ -210,7 +210,7 @@ const MiniGame = (function() {
                 updateLives();
                 bees.splice(i, 1);
                 AudioManager.playUdarSound();
-                shakeScreen();
+                shakeScreen(); // Добавляем вызов shakeScreen
                 flashFlower();
 
                 if (lives <= 0) {
@@ -232,6 +232,19 @@ const MiniGame = (function() {
             obj1.y < obj2.y + obj2.height / 2 &&
             obj1.y + obj1.height / 2 > obj2.y
         );
+    }
+
+    // Определение функции shakeScreen
+    function shakeScreen() {
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.style.animation = 'shake 0.1s';
+        setTimeout(() => gameScreen.style.animation = '', 100);
+    }
+
+    function flashFlower() {
+        const flower = document.getElementById('game-canvas');
+        flower.style.filter = 'brightness(0.5)';
+        setTimeout(() => flower.style.filter = '', 100);
     }
 
     function updateLives() {
