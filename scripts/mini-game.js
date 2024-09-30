@@ -14,10 +14,11 @@ const MiniGame = (function () {
     let canvas;
     let totalCoinsEarned = 0;
     let tickets = 200;
+    let isCountdownDone = false;
 
     function init() {
-        const startButton = document.getElementById("start-mini-game");
-        startButton.addEventListener("click", startGame);
+        const startButton = document.getElementById('start-mini-game');
+        startButton.addEventListener('click', startGame);
     }
 
     function startGame() {
@@ -31,10 +32,11 @@ const MiniGame = (function () {
         updateTicketCount();
 
         isGameRunning = true;
+        isCountdownDone = false;
 
-        const gameScreen = document.getElementById("protect-flower-game");
-        canvas = document.getElementById("game-canvas");
-        ctx = canvas.getContext("2d");
+        const gameScreen = document.getElementById('protect-flower-game');
+        canvas = document.getElementById('game-canvas');
+        ctx = canvas.getContext('2d');
         canvas.width = gameScreen.clientWidth;
         canvas.height = gameScreen.clientHeight;
 
@@ -54,7 +56,7 @@ const MiniGame = (function () {
                 );
             },
         };
-        flower.image.src = "assets/images/PodsolnuhBEE.webp";
+        flower.image.src = 'assets/images/PodsolnuhBEE.webp';
         flower.image.onload = () => {
             flower.draw();
         };
@@ -72,53 +74,57 @@ const MiniGame = (function () {
             AudioManager.playElectricChaosMusic();
         }
 
-        const spawnInterval = currentLevel === 1 ? 1500 : 1000;
-        beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
+        // Запускаем отсчёт и начинаем игру после слова "Поехали!"
+        startCountdown(() => {
+            isCountdownDone = true;
+            const spawnInterval = currentLevel === 1 ? 1500 : 1000;
+            beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
-        heartInterval = setInterval(spawnHeart, 20000);
-        coinInterval = setInterval(spawnCoin, 25000);
+            heartInterval = setInterval(spawnHeart, 20000);
+            coinInterval = setInterval(spawnCoin, 25000);
 
-        gameTimerInterval = setInterval(() => {
-            gameTime--;
-            document.getElementById("game-timer").textContent = formatTime(gameTime);
+            gameTimerInterval = setInterval(() => {
+                gameTime--;
+                document.getElementById('game-timer').textContent = formatTime(gameTime);
 
-            if (gameTime <= 0) {
-                if (currentLevel === 1) {
-                    currentLevel = 2;
-                    gameTime = 60;
-                    clearInterval(beeInterval);
-                    beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
-                    showLevelCompleteModal();
-                } else {
-                    endGame();
+                if (gameTime <= 0) {
+                    if (currentLevel === 1) {
+                        currentLevel = 2;
+                        gameTime = 60;
+                        clearInterval(beeInterval);
+                        beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+                        showLevelCompleteModal(); // Переход на второй уровень
+                    } else {
+                        endGame();
+                    }
                 }
+            }, 1000);
+
+            function gameLoop() {
+                if (!isCountdownDone) return; // Ждем окончания отсчёта
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                flower.draw();
+                updateBees(ctx, flower);
+                requestAnimationFrame(gameLoop);
             }
-        }, 1000);
 
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            flower.draw();
-            updateBees(ctx, flower);
-            requestAnimationFrame(gameLoop);
-        }
+            gameLoop();
+        });
 
-        gameLoop();
-
-        document.getElementById("start-mini-game").style.display = "none";
-        canvas.addEventListener("click", handleCanvasClick);
-
-        startCountdown();
+        document.getElementById('start-mini-game').style.display = 'none';
+        canvas.addEventListener('click', handleCanvasClick);
     }
 
-    function startCountdown() {
-        const countdown = document.createElement("div");
-        countdown.style.position = "fixed";
-        countdown.style.top = "50%";
-        countdown.style.left = "50%";
-        countdown.style.transform = "translate(-50%, -50%)";
-        countdown.style.fontSize = "48px";
-        countdown.style.color = "white";
-        countdown.style.zIndex = "1001";
+    // Отсчёт "3, 2, 1, Поехали!"
+    function startCountdown(callback) {
+        const countdown = document.createElement('div');
+        countdown.style.position = 'fixed';
+        countdown.style.top = '50%';
+        countdown.style.left = '50%';
+        countdown.style.transform = 'translate(-50%, -50%)';
+        countdown.style.fontSize = '48px';
+        countdown.style.color = 'white';
+        countdown.style.zIndex = '1001';
         document.body.appendChild(countdown);
 
         let counter = 3;
@@ -127,8 +133,11 @@ const MiniGame = (function () {
                 countdown.textContent = counter;
                 counter--;
             } else {
-                countdown.textContent = "Поехали!";
-                setTimeout(() => countdown.remove(), 1000);
+                countdown.textContent = 'Поехали!';
+                setTimeout(() => {
+                    countdown.remove();
+                    callback(); // Запуск игры
+                }, 1000); // Ждем 1 секунду после "Поехали!"
                 clearInterval(countdownInterval);
             }
         }, 1000);
@@ -181,7 +190,7 @@ const MiniGame = (function () {
                 this.y += Math.sin(angle) * this.speed;
             },
         };
-        bee.image.src = "assets/images/Bee.webp";
+        bee.image.src = 'assets/images/Bee.webp';
         bees.push(bee);
     }
 
@@ -197,7 +206,7 @@ const MiniGame = (function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
             },
         };
-        heart.image.src = "assets/images/heart.png";
+        heart.image.src = 'assets/images/heart.png';
         heart.image.onload = () => {
             heart.draw();
         };
@@ -216,7 +225,7 @@ const MiniGame = (function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
             },
         };
-        coin.image.src = "assets/images/goldcoin.webp";
+        coin.image.src = 'assets/images/goldcoin.webp';
         coin.image.onload = () => {
             coin.draw();
         };
@@ -259,7 +268,7 @@ const MiniGame = (function () {
                 updateLives();
                 bees.splice(i, 1);
                 AudioManager.playUdarSound();
-                shakeScreen();
+                shakeScreen(); // Тряска при столкновении с цветком
                 flashFlower();
 
                 if (lives <= 0) {
@@ -288,39 +297,39 @@ const MiniGame = (function () {
     }
 
     function shakeScreen() {
-        const gameScreen = document.getElementById("protect-flower-game");
-        gameScreen.style.animation = "shake 0.1s";
-        setTimeout(() => (gameScreen.style.animation = ""), 100);
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.style.animation = 'shake 0.1s';
+        setTimeout(() => (gameScreen.style.animation = ''), 100);
     }
 
     function flashFlower() {
-        const flower = document.getElementById("game-canvas");
-        flower.style.filter = "brightness(0.5)";
-        setTimeout(() => (flower.style.filter = ""), 100);
+        const flower = document.getElementById('game-canvas');
+        flower.style.filter = 'brightness(0.5)';
+        setTimeout(() => (flower.style.filter = ''), 100);
     }
 
     function updateLives() {
-        const lifeIcons = document.querySelectorAll("#game-lives .life-icon");
+        const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
         lifeIcons.forEach((icon, index) => {
             if (index < lives) {
-                icon.style.opacity = "1";
+                icon.style.opacity = '1';
             } else {
-                icon.style.opacity = "0.3";
+                icon.style.opacity = '0.3';
             }
         });
     }
 
     function updateGameCoinCount() {
-        document.getElementById("game-coin-count").textContent = gameCoins;
+        document.getElementById('game-coin-count').textContent = gameCoins;
     }
 
     function updateTicketCount() {
-        document.getElementById("ticket-count").textContent = tickets;
+        document.getElementById('ticket-count').textContent = tickets;
     }
 
     function formatTime(seconds) {
-        const m = Math.floor(seconds / 60).toString().padStart(2, "0");
-        const s = (seconds % 60).toString().padStart(2, "0");
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const s = (seconds % 60).toString().padStart(2, '0');
         return `${m}:${s}`;
     }
 
@@ -330,15 +339,15 @@ const MiniGame = (function () {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
-        const resultModal = document.createElement("div");
-        resultModal.style.position = "fixed";
-        resultModal.style.top = "50%";
-        resultModal.style.left = "50%";
-        resultModal.style.transform = "translate(-50%, -50%)";
-        resultModal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
-        resultModal.style.color = "white";
-        resultModal.style.textAlign = "center";
-        resultModal.style.padding = "20px";
+        const resultModal = document.createElement('div');
+        resultModal.style.position = 'fixed';
+        resultModal.style.top = '50%';
+        resultModal.style.left = '50%';
+        resultModal.style.transform = 'translate(-50%, -50%)';
+        resultModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        resultModal.style.color = 'white';
+        resultModal.style.textAlign = 'center';
+        resultModal.style.padding = '20px';
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
             <p>Вы заработали ${totalCoinsEarned} Coin.</p>
@@ -347,21 +356,21 @@ const MiniGame = (function () {
             </button>
             <button class="exit-btn">Домой</button>
         `;
-        const gameScreen = document.getElementById("protect-flower-game");
+        const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.appendChild(resultModal);
 
-        const replayButton = resultModal.querySelector(".replay-btn");
-        const exitButton = resultModal.querySelector(".exit-btn");
+        const replayButton = resultModal.querySelector('.replay-btn');
+        const exitButton = resultModal.querySelector('.exit-btn');
 
-        replayButton.addEventListener("click", () => {
+        replayButton.addEventListener('click', () => {
             resultModal.remove();
             startGame();
         });
 
-        exitButton.addEventListener("click", () => {
+        exitButton.addEventListener('click', () => {
             resultModal.remove();
-            gameScreen.style.display = "none";
-            document.querySelector(".game-container").style.display = "flex";
+            gameScreen.style.display = 'none';
+            document.querySelector('.game-container').style.display = 'flex';
             totalCoinsEarned = 0;
             currentLevel = 1;
         });
@@ -375,7 +384,7 @@ const MiniGame = (function () {
 })();
 
 // Добавляем анимации
-const style = document.createElement("style");
+const style = document.createElement('style');
 style.textContent = `
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
