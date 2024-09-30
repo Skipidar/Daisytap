@@ -53,7 +53,7 @@ const MiniGame = (function() {
         };
 
         lives = 3;
-        updateLives();
+        updateLives(); // Вызов обновления жизней
 
         bees = [];
         gameTime = 60; // Уменьшаем время до 1 минуты
@@ -225,6 +225,17 @@ const MiniGame = (function() {
         }
     }
 
+    function updateLives() {
+        const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
+        lifeIcons.forEach((icon, index) => {
+            if (index < lives) {
+                icon.style.opacity = '1';
+            } else {
+                icon.style.opacity = '0.3';
+            }
+        });
+    }
+
     function updateGameCoinCount() {
         document.getElementById('game-coin-count').textContent = gameCoins;
     }
@@ -267,7 +278,6 @@ const MiniGame = (function() {
             </button>
             <button class="exit-btn">Домой</button>
         `;
-
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.appendChild(resultModal);
 
