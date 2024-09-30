@@ -1,11 +1,9 @@
 const MiniGame = (function () {
     let gameTime = 60; // 1 минута для уровня
     let bees = [];
-    let hearts = [];
-    let coins = [];
     let heartInterval;
-    let beeInterval;
     let coinInterval;
+    let beeInterval;
     let gameTimerInterval;
     let lives = 3;
     let gameCoins = 0;
@@ -18,8 +16,8 @@ const MiniGame = (function () {
     let tickets = 200;
 
     function init() {
-        const startButton = document.getElementById('start-mini-game');
-        startButton.addEventListener('click', startGame);
+        const startButton = document.getElementById("start-mini-game");
+        startButton.addEventListener("click", startGame);
     }
 
     function startGame() {
@@ -34,9 +32,9 @@ const MiniGame = (function () {
 
         isGameRunning = true;
 
-        const gameScreen = document.getElementById('protect-flower-game');
-        canvas = document.getElementById('game-canvas');
-        ctx = canvas.getContext('2d');
+        const gameScreen = document.getElementById("protect-flower-game");
+        canvas = document.getElementById("game-canvas");
+        ctx = canvas.getContext("2d");
         canvas.width = gameScreen.clientWidth;
         canvas.height = gameScreen.clientHeight;
 
@@ -47,21 +45,25 @@ const MiniGame = (function () {
             height: 100,
             image: new Image(),
             draw: function () {
-                ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
-            }
+                ctx.drawImage(
+                    this.image,
+                    this.x - this.width / 2,
+                    this.y - this.height / 2,
+                    this.width,
+                    this.height
+                );
+            },
         };
-        flower.image.src = 'assets/images/PodsolnuhBEE.webp';
+        flower.image.src = "assets/images/PodsolnuhBEE.webp";
         flower.image.onload = () => {
             flower.draw();
         };
 
         lives = 3;
-        updateLives(); // Вызов обновления жизней
+        updateLives();
 
         bees = [];
-        hearts = [];
-        coins = [];
-        gameTime = 60; // Уменьшаем время до 1 минуты
+        gameTime = 60;
         updateGameCoinCount();
 
         if (currentLevel === 1) {
@@ -73,12 +75,12 @@ const MiniGame = (function () {
         const spawnInterval = currentLevel === 1 ? 1500 : 1000;
         beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
-        heartInterval = setInterval(spawnHeart, 20000); // Сердце каждые 20 секунд
-        coinInterval = setInterval(spawnCoin, 15000); // Монеты каждые 15 секунд
+        heartInterval = setInterval(spawnHeart, 20000);
+        coinInterval = setInterval(spawnCoin, 25000);
 
         gameTimerInterval = setInterval(() => {
             gameTime--;
-            document.getElementById('game-timer').textContent = formatTime(gameTime);
+            document.getElementById("game-timer").textContent = formatTime(gameTime);
 
             if (gameTime <= 0) {
                 if (currentLevel === 1) {
@@ -86,7 +88,7 @@ const MiniGame = (function () {
                     gameTime = 60;
                     clearInterval(beeInterval);
                     beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
-                    showLevelCompleteModal(); // Переход на второй уровень
+                    showLevelCompleteModal();
                 } else {
                     endGame();
                 }
@@ -97,28 +99,26 @@ const MiniGame = (function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             flower.draw();
             updateBees(ctx, flower);
-            updateHearts(ctx, flower);
-            updateCoins(ctx, flower);
             requestAnimationFrame(gameLoop);
         }
 
         gameLoop();
 
-        document.getElementById('start-mini-game').style.display = 'none';
-        canvas.addEventListener('click', handleCanvasClick);
+        document.getElementById("start-mini-game").style.display = "none";
+        canvas.addEventListener("click", handleCanvasClick);
 
         startCountdown();
     }
 
     function startCountdown() {
-        const countdown = document.createElement('div');
-        countdown.style.position = 'fixed';
-        countdown.style.top = '50%';
-        countdown.style.left = '50%';
-        countdown.style.transform = 'translate(-50%, -50%)';
-        countdown.style.fontSize = '48px';
-        countdown.style.color = 'white';
-        countdown.style.zIndex = '1001';
+        const countdown = document.createElement("div");
+        countdown.style.position = "fixed";
+        countdown.style.top = "50%";
+        countdown.style.left = "50%";
+        countdown.style.transform = "translate(-50%, -50%)";
+        countdown.style.fontSize = "48px";
+        countdown.style.color = "white";
+        countdown.style.zIndex = "1001";
         document.body.appendChild(countdown);
 
         let counter = 3;
@@ -167,15 +167,21 @@ const MiniGame = (function () {
             speed: speed,
             image: new Image(),
             draw: function () {
-                ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+                ctx.drawImage(
+                    this.image,
+                    this.x - this.width / 2,
+                    this.y - this.height / 2,
+                    this.width,
+                    this.height
+                );
             },
             move: function (flower) {
                 const angle = Math.atan2(flower.y - this.y, flower.x - this.x);
                 this.x += Math.cos(angle) * this.speed;
                 this.y += Math.sin(angle) * this.speed;
-            }
+            },
         };
-        bee.image.src = 'assets/images/Bee.webp';
+        bee.image.src = "assets/images/Bee.webp";
         bees.push(bee);
     }
 
@@ -190,15 +196,12 @@ const MiniGame = (function () {
             draw: function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
             },
-            move: function () {
-                this.y += this.speed;
-            }
         };
-        heart.image.src = 'assets/images/heart.png';
+        heart.image.src = "assets/images/heart.png";
         heart.image.onload = () => {
             heart.draw();
         };
-        hearts.push(heart);
+        bees.push(heart);
     }
 
     function spawnCoin() {
@@ -212,15 +215,12 @@ const MiniGame = (function () {
             draw: function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
             },
-            move: function () {
-                this.y += this.speed;
-            }
         };
-        coin.image.src = 'assets/images/goldcoin.webp';
+        coin.image.src = "assets/images/goldcoin.webp";
         coin.image.onload = () => {
             coin.draw();
         };
-        coins.push(coin);
+        bees.push(coin);
     }
 
     function handleCanvasClick(event) {
@@ -229,8 +229,12 @@ const MiniGame = (function () {
         const yClick = event.clientY - rect.top;
 
         bees.forEach((bee, index) => {
-            if (xClick >= bee.x - bee.width / 2 && xClick <= bee.x + bee.width / 2 &&
-                yClick >= bee.y - bee.height / 2 && yClick <= bee.y + bee.height / 2) {
+            if (
+                xClick >= bee.x - bee.width / 2 &&
+                xClick <= bee.x + bee.width / 2 &&
+                yClick >= bee.y - bee.height / 2 &&
+                yClick <= bee.y + bee.height / 2
+            ) {
                 bees.splice(index, 1);
                 gameCoins += 1;
                 totalCoinsEarned += 1;
@@ -255,7 +259,7 @@ const MiniGame = (function () {
                 updateLives();
                 bees.splice(i, 1);
                 AudioManager.playUdarSound();
-                shakeScreen(); // Добавляем вызов shakeScreen
+                shakeScreen();
                 flashFlower();
 
                 if (lives <= 0) {
@@ -263,47 +267,13 @@ const MiniGame = (function () {
                 }
             }
 
-            if (bee.x < -bee.width || bee.x > canvas.width + bee.width ||
-                bee.y < -bee.height || bee.y > canvas.height + bee.height) {
+            if (
+                bee.x < -bee.width ||
+                bee.x > canvas.width + bee.width ||
+                bee.y < -bee.height ||
+                bee.y > canvas.height + bee.height
+            ) {
                 bees.splice(i, 1);
-            }
-        }
-    }
-
-    function updateHearts(ctx, flower) {
-        for (let i = hearts.length - 1; i >= 0; i--) {
-            const heart = hearts[i];
-            heart.move();
-            heart.draw();
-
-            if (isColliding(heart, flower)) {
-                lives++;
-                updateLives();
-                hearts.splice(i, 1);
-                AudioManager.playHeartPlusSound();
-            }
-
-            if (heart.y > canvas.height) {
-                hearts.splice(i, 1);
-            }
-        }
-    }
-
-    function updateCoins(ctx, flower) {
-        for (let i = coins.length - 1; i >= 0; i--) {
-            const coin = coins[i];
-            coin.move();
-            coin.draw();
-
-            if (isColliding(coin, flower)) {
-                daisyCoins += 10; // Добавляем $Daisy
-                updateDaisyCoinCount();
-                coins.splice(i, 1);
-                AudioManager.playMoneySound();
-            }
-
-            if (coin.y > canvas.height) {
-                coins.splice(i, 1);
             }
         }
     }
@@ -318,63 +288,57 @@ const MiniGame = (function () {
     }
 
     function shakeScreen() {
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.style.animation = 'shake 0.1s';
-        setTimeout(() => gameScreen.style.animation = '', 100);
+        const gameScreen = document.getElementById("protect-flower-game");
+        gameScreen.style.animation = "shake 0.1s";
+        setTimeout(() => (gameScreen.style.animation = ""), 100);
     }
 
     function flashFlower() {
-        const flower = document.getElementById('game-canvas');
-        flower.style.filter = 'brightness(0.5)';
-        setTimeout(() => flower.style.filter = '', 100);
+        const flower = document.getElementById("game-canvas");
+        flower.style.filter = "brightness(0.5)";
+        setTimeout(() => (flower.style.filter = ""), 100);
     }
 
     function updateLives() {
-        const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
+        const lifeIcons = document.querySelectorAll("#game-lives .life-icon");
         lifeIcons.forEach((icon, index) => {
             if (index < lives) {
-                icon.style.opacity = '1';
+                icon.style.opacity = "1";
             } else {
-                icon.style.opacity = '0.3';
+                icon.style.opacity = "0.3";
             }
         });
     }
 
     function updateGameCoinCount() {
-        document.getElementById('game-coin-count').textContent = gameCoins;
-    }
-
-    function updateDaisyCoinCount() {
-        document.getElementById('daisy-coin-count').textContent = daisyCoins;
+        document.getElementById("game-coin-count").textContent = gameCoins;
     }
 
     function updateTicketCount() {
-        document.getElementById('ticket-count').textContent = tickets;
+        document.getElementById("ticket-count").textContent = tickets;
     }
 
     function formatTime(seconds) {
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
+        const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const s = (seconds % 60).toString().padStart(2, "0");
         return `${m}:${s}`;
     }
 
     function endGame() {
         clearInterval(beeInterval);
         clearInterval(gameTimerInterval);
-        clearInterval(heartInterval);
-        clearInterval(coinInterval);
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
-        const resultModal = document.createElement('div');
-        resultModal.style.position = 'fixed';
-        resultModal.style.top = '50%';
-        resultModal.style.left = '50%';
-        resultModal.style.transform = 'translate(-50%, -50%)';
-        resultModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        resultModal.style.color = 'white';
-        resultModal.style.textAlign = 'center';
-        resultModal.style.padding = '20px';
+        const resultModal = document.createElement("div");
+        resultModal.style.position = "fixed";
+        resultModal.style.top = "50%";
+        resultModal.style.left = "50%";
+        resultModal.style.transform = "translate(-50%, -50%)";
+        resultModal.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+        resultModal.style.color = "white";
+        resultModal.style.textAlign = "center";
+        resultModal.style.padding = "20px";
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
             <p>Вы заработали ${totalCoinsEarned} Coin.</p>
@@ -383,21 +347,21 @@ const MiniGame = (function () {
             </button>
             <button class="exit-btn">Домой</button>
         `;
-        const gameScreen = document.getElementById('protect-flower-game');
+        const gameScreen = document.getElementById("protect-flower-game");
         gameScreen.appendChild(resultModal);
 
-        const replayButton = resultModal.querySelector('.replay-btn');
-        const exitButton = resultModal.querySelector('.exit-btn');
+        const replayButton = resultModal.querySelector(".replay-btn");
+        const exitButton = resultModal.querySelector(".exit-btn");
 
-        replayButton.addEventListener('click', () => {
+        replayButton.addEventListener("click", () => {
             resultModal.remove();
             startGame();
         });
 
-        exitButton.addEventListener('click', () => {
+        exitButton.addEventListener("click", () => {
             resultModal.remove();
-            gameScreen.style.display = 'none';
-            document.querySelector('.game-container').style.display = 'flex';
+            gameScreen.style.display = "none";
+            document.querySelector(".game-container").style.display = "flex";
             totalCoinsEarned = 0;
             currentLevel = 1;
         });
@@ -406,6 +370,25 @@ const MiniGame = (function () {
     }
 
     return {
-        init
+        init,
     };
 })();
+
+// Добавляем анимации
+const style = document.createElement("style");
+style.textContent = `
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+`;
+document.head.appendChild(style);
