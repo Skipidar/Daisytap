@@ -8,6 +8,7 @@ const AudioManager = (function() {
     let heartPlusSound;
     let moneySound;
     let levelCompleteSound;
+	let BeeKillSound;
 
     let soundEnabled = true;
 
