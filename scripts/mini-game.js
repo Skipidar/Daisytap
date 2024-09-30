@@ -1,21 +1,49 @@
 const MiniGame = (function() {
-    let gameTime = 60; // Уровень длится 1 минуту
+    let gameTime = 60; // 1 минута для уровня
     let bees = [];
     let beeInterval;
     let gameTimerInterval;
     let lives = 3;
-    let gameCoins = 0; // Монеты $Daisy и Coin не обнуляются между играми
-    let daisyCoins = 0;
+    let gameCoins = 0;
+    let daisyCoins = 0; // Счетчик $Daisy
     let currentLevel = 1;
     let isGameRunning = false;
-    let totalCoinsEarned = 0;
     let ctx;
     let canvas;
-    let tickets = 200;
+    let totalCoinsEarned = 0;
+    let tickets = 200; // Начальное количество билетов для теста
+    let heartDropInterval;
 
     function init() {
         const startButton = document.getElementById('start-mini-game');
-        startButton.addEventListener('click', startGame);
+        startButton.addEventListener('click', startCountdown); // Обратный отсчет перед игрой
+    }
+
+    function startCountdown() {
+        let countdown = 3;
+        const countdownElement = document.createElement('div');
+        countdownElement.id = 'countdown';
+        countdownElement.style.position = 'fixed';
+        countdownElement.style.top = '50%';
+        countdownElement.style.left = '50%';
+        countdownElement.style.transform = 'translate(-50%, -50%)';
+        countdownElement.style.fontSize = '64px';
+        countdownElement.style.color = 'white';
+        countdownElement.style.zIndex = '1000';
+        document.body.appendChild(countdownElement);
+
+        const countdownInterval = setInterval(() => {
+            if (countdown > 1) {
+                countdownElement.textContent = countdown--;
+            } else if (countdown === 1) {
+                countdownElement.textContent = 'Поехали!';
+                countdown--;
+            } else {
+                clearInterval(countdownInterval);
+                document.body.removeChild(countdownElement);
+                startGame();
+            }
+        }, 1000);
     }
 
     function startGame() {
@@ -25,10 +53,11 @@ const MiniGame = (function() {
             return;
         }
 
-        tickets -= 1; // Списываем 1 билет за игру
+        tickets -= 1; // Списываем 1 Ticket за игру
         updateTicketCount();
 
         isGameRunning = true;
+
         const gameScreen = document.getElementById('protect-flower-game');
         canvas = document.getElementById('game-canvas');
         ctx = canvas.getContext('2d');
@@ -46,55 +75,76 @@ const MiniGame = (function() {
             }
         };
         flower.image.src = 'assets/images/PodsolnuhBEE.webp';
-        flower.image.onload = () => flower.draw();
+        flower.image.onload = () => {
+            flower.draw();
+        };
 
+        // Восстанавливаем жизни
         lives = 3;
         updateLives();
+
         bees = [];
         gameTime = 60;
-        daisyCoins = 0;
         updateGameCoinCount();
+        updateDaisyCoinCount(); // Обновление $Daisy
 
-        showCountdown(() => {
+        if (currentLevel === 1) {
             AudioManager.playOneLevelMusic();
+        } else {
+            AudioManager.playElectricChaosMusic();
+        }
 
-            const spawnInterval = currentLevel === 1 ? 1500 : 1000;
-            beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
+        const spawnInterval = currentLevel === 1 ? 1500 : 1000;
+        beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
-            gameTimerInterval = setInterval(() => {
-                gameTime--;
-                document.getElementById('game-timer').textContent = formatTime(gameTime);
+        heartDropInterval = setInterval(dropHeart, 20000); // Падает сердце каждые 20 секунд
 
-                if (gameTime <= 0) {
-                    if (currentLevel === 1) {
-                        showLevelCompleteModal();
-                    } else {
-                        endGame();
-                    }
+        gameTimerInterval = setInterval(() => {
+            gameTime--;
+            document.getElementById('game-timer').textContent = formatTime(gameTime);
+
+            if (gameTime <= 0) {
+                if (currentLevel === 1) {
+                    currentLevel = 2;
+                    gameTime = 60;
+                    AudioManager.pauseOneLevelMusic();
+                    AudioManager.playElectricChaosMusic();
+                    clearInterval(beeInterval);
+                    beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+                    updateBackgroundForHardMode();
+                } else {
+                    endGame();
                 }
-            }, 1000);
-        });
-    }
-
-    function showCountdown(callback) {
-        const countdownElement = document.createElement('div');
-        countdownElement.className = 'countdown';
-        document.body.appendChild(countdownElement);
-
-        let count = 3;
-        countdownElement.textContent = count;
-        const interval = setInterval(() => {
-            count--;
-            countdownElement.textContent = count > 0 ? count : "Поехали!";
-            countdownElement.style.opacity = "1";
-            setTimeout(() => countdownElement.style.opacity = "0", 500); // Исчезает плавно
-
-            if (count < 0) {
-                clearInterval(interval);
-                countdownElement.remove();
-                callback();
             }
         }, 1000);
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            flower.draw();
+            updateBees(ctx, flower);
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+
+        document.getElementById('start-mini-game').style.display = 'none';
+        canvas.addEventListener('click', handleCanvasClick);
+    }
+
+    function dropHeart() {
+        const heart = {
+            x: Math.random() * canvas.width,
+            y: -50,
+            width: 50,
+            height: 50,
+            speed: 2,
+            image: new Image(),
+            draw: function() {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            }
+        };
+        heart.image.src = 'assets/images/heart.png';
+        bees.push(heart);
     }
 
     function spawnBee(level) {
@@ -139,43 +189,99 @@ const MiniGame = (function() {
             if (xClick >= bee.x - bee.width / 2 && xClick <= bee.x + bee.width / 2 &&
                 yClick >= bee.y - bee.height / 2 && yClick <= bee.y + bee.height / 2) {
                 bees.splice(index, 1);
-                gameCoins += 1;
-                totalCoinsEarned += 1;
-                updateGameCoinCount();
-                AudioManager.playSound('assets/sounds/beekill.mp3');
+                if (bee.image.src.includes('goldcoin.webp')) {
+                    daisyCoins += 10; // Добавление $Daisy
+                    updateDaisyCoinCount();
+                    AudioManager.playMoneySound(); // Звук поимки монеты
+                } else if (bee.image.src.includes('heart.png')) {
+                    if (lives < 3) {
+                        lives++;
+                        updateLives();
+                        AudioManager.playHeartSound(); // Звук восстановления жизни
+                    }
+                } else {
+                    gameCoins += 1;
+                    totalCoinsEarned += 1;
+                    updateGameCoinCount();
+                    AudioManager.playClickSound();
 
-                if (navigator.vibrate) navigator.vibrate(100);
+                    if (navigator.vibrate) {
+                        navigator.vibrate(100);
+                    }
+                }
             }
         });
     }
 
     function updateBees(ctx, flower) {
-        bees.forEach((bee, index) => {
+        for (let i = bees.length - 1; i >= 0; i--) {
+            const bee = bees[i];
             bee.move(flower);
             bee.draw();
 
             if (isColliding(bee, flower)) {
                 lives--;
                 updateLives();
-                bees.splice(index, 1);
-                AudioManager.playSound('assets/sounds/udar.mp3');
+                bees.splice(i, 1);
+                AudioManager.playUdarSound();
                 shakeScreen();
                 flashFlower();
 
-                if (lives <= 0) endGame();
+                if (lives <= 0) {
+                    endGame();
+                }
             }
-        });
+
+            if (bee.x < -bee.width || bee.x > canvas.width + bee.width ||
+                bee.y < -bee.height || bee.y > canvas.height + bee.height) {
+                bees.splice(i, 1);
+            }
+        }
+    }
+
+    function updateBackgroundForHardMode() {
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.style.backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Заливка красным
+    }
+
+    function shakeScreen() {
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.style.animation = 'shake 0.1s';
+        setTimeout(() => gameScreen.style.animation = '', 100);
+    }
+
+    function flashFlower() {
+        const flower = document.getElementById('game-canvas');
+        flower.style.filter = 'brightness(0.5)';
+        setTimeout(() => flower.style.filter = '', 100);
+    }
+
+    function isColliding(obj1, obj2) {
+        return (
+            obj1.x < obj2.x + obj2.width / 2 &&
+            obj1.x + obj1.width / 2 > obj2.x &&
+            obj1.y < obj2.y + obj2.height / 2 &&
+            obj1.y + obj1.height / 2 > obj2.y
+        );
     }
 
     function updateLives() {
         const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
         lifeIcons.forEach((icon, index) => {
-            icon.style.opacity = index < lives ? '1' : '0.3';
+            if (index < lives) {
+                icon.style.opacity = '1';
+            } else {
+                icon.style.opacity = '0.3';
+            }
         });
     }
 
     function updateGameCoinCount() {
         document.getElementById('game-coin-count').textContent = gameCoins;
+    }
+
+    function updateDaisyCoinCount() {
+        document.getElementById('daisy-coin-count').textContent = daisyCoins;
     }
 
     function updateTicketCount() {
@@ -188,41 +294,22 @@ const MiniGame = (function() {
         return `${m}:${s}`;
     }
 
-    function showLevelCompleteModal() {
-        clearInterval(beeInterval);
-        clearInterval(gameTimerInterval);
-        AudioManager.playSound('assets/sounds/1levelcomplete.mp3');
-
-        const levelCompleteModal = document.createElement('div');
-        levelCompleteModal.className = 'modal-content';
-        levelCompleteModal.innerHTML = `
-            <h2>Уровень завершён!</h2>
-            <button class="next-level-btn">Переход на 2 уровень</button>
-            <button class="exit-btn">Забрать выигрыш</button>
-        `;
-        document.body.appendChild(levelCompleteModal);
-
-        document.querySelector('.next-level-btn').addEventListener('click', () => {
-            levelCompleteModal.remove();
-            currentLevel = 2;
-            gameTime = 60;
-            startGame();
-        });
-
-        document.querySelector('.exit-btn').addEventListener('click', () => {
-            levelCompleteModal.remove();
-            document.getElementById('protect-flower-game').style.display = 'none';
-            document.querySelector('.game-container').style.display = 'flex';
-        });
-    }
-
     function endGame() {
         clearInterval(beeInterval);
         clearInterval(gameTimerInterval);
-        AudioManager.playSound('assets/sounds/Electric Chaos.mp3');
+        clearInterval(heartDropInterval); // Останавливаем появление сердец
+        AudioManager.pauseOneLevelMusic();
+        AudioManager.playElectricChaosMusic();
 
         const resultModal = document.createElement('div');
-        resultModal.className = 'modal-content';
+        resultModal.style.position = 'fixed';
+        resultModal.style.top = '50%';
+        resultModal.style.left = '50%';
+        resultModal.style.transform = 'translate(-50%, -50%)';
+        resultModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        resultModal.style.color = 'white';
+        resultModal.style.textAlign = 'center';
+        resultModal.style.padding = '20px';
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
             <p>Вы заработали ${totalCoinsEarned} Coin и ${daisyCoins} $Daisy.</p>
@@ -233,16 +320,21 @@ const MiniGame = (function() {
         `;
         document.body.appendChild(resultModal);
 
-        document.querySelector('.replay-btn').addEventListener('click', () => {
+        const replayButton = resultModal.querySelector('.replay-btn');
+        const exitButton = resultModal.querySelector('.exit-btn');
+
+        replayButton.addEventListener('click', () => {
             resultModal.remove();
-            startGame();
+            startCountdown(); // Снова запускаем обратный отсчет перед игрой
         });
 
-        document.querySelector('.exit-btn').addEventListener('click', () => {
+        exitButton.addEventListener('click', () => {
             resultModal.remove();
-            document.getElementById('protect-flower-game').style.display = 'none';
+            const gameScreen = document.getElementById('protect-flower-game');
+            gameScreen.style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
             totalCoinsEarned = 0;
+            daisyCoins = 0;
             currentLevel = 1;
         });
 
@@ -253,3 +345,22 @@ const MiniGame = (function() {
         init
     };
 })();
+
+// Добавляем анимации
+const style = document.createElement('style');
+style.textContent = `
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+`;
+document.head.appendChild(style);
