@@ -225,6 +225,15 @@ const MiniGame = (function() {
         }
     }
 
+    function isColliding(obj1, obj2) {
+        return (
+            obj1.x < obj2.x + obj2.width / 2 &&
+            obj1.x + obj1.width / 2 > obj2.x &&
+            obj1.y < obj2.y + obj2.height / 2 &&
+            obj1.y + obj1.height / 2 > obj2.y
+        );
+    }
+
     function updateLives() {
         const lifeIcons = document.querySelectorAll('#game-lives .life-icon');
         lifeIcons.forEach((icon, index) => {
@@ -253,14 +262,9 @@ const MiniGame = (function() {
     function endGame() {
         clearInterval(beeInterval);
         clearInterval(gameTimerInterval);
-        clearInterval(heartInterval);
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
-        showResultModal();
-    }
-
-    function showResultModal() {
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
         resultModal.style.top = '50%';
