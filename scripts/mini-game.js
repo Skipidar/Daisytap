@@ -68,7 +68,6 @@ const MiniGame = (function() {
         const spawnInterval = currentLevel === 1 ? 1500 : 1000;
         beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
-        // Запуск летающих сердец
         heartInterval = setInterval(spawnHeart, 20000); // Сердце каждые 20 секунд
 
         gameTimerInterval = setInterval(() => {
@@ -78,7 +77,7 @@ const MiniGame = (function() {
             if (gameTime <= 0) {
                 if (currentLevel === 1) {
                     currentLevel = 2;
-                    gameTime = 60; // 1 минута для второго уровня
+                    gameTime = 60;
                     clearInterval(beeInterval);
                     beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
                     showLevelCompleteModal(); // Переход на второй уровень
@@ -100,7 +99,6 @@ const MiniGame = (function() {
         document.getElementById('start-mini-game').style.display = 'none';
         canvas.addEventListener('click', handleCanvasClick);
 
-        // Запускаем анимацию 3...2...1... Поехали!
         startCountdown();
     }
 
@@ -122,7 +120,7 @@ const MiniGame = (function() {
                 counter--;
             } else {
                 countdown.textContent = "Поехали!";
-                setTimeout(() => countdown.remove(), 1000); // Убираем "Поехали!" через 1 сек
+                setTimeout(() => countdown.remove(), 1000); 
                 clearInterval(countdownInterval);
             }
         }, 1000);
@@ -177,7 +175,7 @@ const MiniGame = (function() {
         heart.image.onload = () => {
             heart.draw();
         };
-        bees.push(heart); // Добавляем в массив, чтобы обрабатывать клики
+        bees.push(heart);
     }
 
     function handleCanvasClick(event) {
