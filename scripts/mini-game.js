@@ -11,6 +11,11 @@ const MiniGame = (function() {
     let canvas;
     let totalCoinsEarned = 0; // Всего заработанных монет за игру
     let tickets = 200; // Начальное количество билетов для теста
+    let isCountdownDone = false; // Проверка завершения отсчета
+
+    // Спавн сердец и монет
+    let heartInterval;
+    let coinInterval;
 
     function init() {
         const startButton = document.getElementById('start-mini-game');
@@ -28,6 +33,7 @@ const MiniGame = (function() {
         updateTicketCount();
 
         isGameRunning = true;
+        isCountdownDone = false;
 
         const gameScreen = document.getElementById('protect-flower-game');
         canvas = document.getElementById('game-canvas');
@@ -65,42 +71,47 @@ const MiniGame = (function() {
             AudioManager.playElectricChaosMusic();
         }
 
-        const spawnInterval = currentLevel === 1 ? 1500 : 1000;
-        beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
+        startCountdown(() => {
+            isCountdownDone = true;
+            const spawnInterval = currentLevel === 1 ? 1500 : 1000;
+            beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
-        gameTimerInterval = setInterval(() => {
-            gameTime--;
-            document.getElementById('game-timer').textContent = formatTime(gameTime);
+            gameTimerInterval = setInterval(() => {
+                gameTime--;
+                document.getElementById('game-timer').textContent = formatTime(gameTime);
 
-            if (gameTime <= 0) {
-                if (currentLevel === 1) {
-                    currentLevel = 2;
-                    gameTime = 60; // Следующий уровень также 1 минута
-                    AudioManager.pauseOneLevelMusic();
-                    AudioManager.playElectricChaosMusic();
-                    clearInterval(beeInterval);
-                    beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
-                    showLevelCompleteModal(); // Переход на второй уровень
-                } else {
-                    endGame();
+                if (gameTime <= 0) {
+                    if (currentLevel === 1) {
+                        currentLevel = 2;
+                        gameTime = 60; // Следующий уровень также 1 минута
+                        AudioManager.pauseOneLevelMusic();
+                        AudioManager.playElectricChaosMusic();
+                        clearInterval(beeInterval);
+                        beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+                        showLevelCompleteModal(); // Переход на второй уровень
+                    } else {
+                        endGame();
+                    }
                 }
+            }, 1000);
+
+            heartInterval = setInterval(spawnHeart, 25000); // Спавн сердец каждые 25 секунд
+            coinInterval = setInterval(spawnCoin, 20000); // Спавн монет каждые 20 секунд
+
+            // Основной игровой цикл
+            function gameLoop() {
+                if (!isCountdownDone) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                flower.draw();
+                updateBees(ctx, flower);
+                requestAnimationFrame(gameLoop);
             }
-        }, 1000);
 
-        // Основной игровой цикл
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            flower.draw();
-            updateBees(ctx, flower);
-            requestAnimationFrame(gameLoop);
-        }
-
-        gameLoop();
+            gameLoop();
+        });
 
         document.getElementById('start-mini-game').style.display = 'none';
         canvas.addEventListener('click', handleCanvasClick);
-
-        startCountdown(); // Старт анимации отсчета
     }
 
     function spawnBee(level) {
@@ -136,6 +147,44 @@ const MiniGame = (function() {
         bees.push(bee);
     }
 
+    // Спавн сердец, которые восстанавливают жизни
+    function spawnHeart() {
+        const heart = {
+            x: Math.random() * canvas.width,
+            y: 0,
+            width: 40,
+            height: 40,
+            image: new Image(),
+            draw: function() {
+                ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+            }
+        };
+        heart.image.src = 'assets/images/heart.png';
+        heart.image.onload = () => {
+            heart.draw();
+        };
+        AudioManager.playHeartPlusSound();
+    }
+
+    // Спавн монеток, дающих $Daisy
+    function spawnCoin() {
+        const coin = {
+            x: Math.random() * canvas.width,
+            y: 0,
+            width: 30,
+            height: 30,
+            image: new Image(),
+            draw: function() {
+                ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+            }
+        };
+        coin.image.src = 'assets/images/goldcoin.webp';
+        coin.image.onload = () => {
+            coin.draw();
+        };
+        AudioManager.playMoneySound();
+    }
+
     function handleCanvasClick(event) {
         const rect = canvas.getBoundingClientRect();
         const xClick = event.clientX - rect.left;
@@ -148,7 +197,7 @@ const MiniGame = (function() {
                 gameCoins += 1;
                 totalCoinsEarned += 1;
                 updateGameCoinCount();
-                AudioManager.playClickSound();
+                AudioManager.playBeeKillSound();
 
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
@@ -183,25 +232,32 @@ const MiniGame = (function() {
         }
     }
 
-    function isColliding(obj1, obj2) {
-        return (
-            obj1.x < obj2.x + obj2.width / 2 &&
-            obj1.x + obj1.width / 2 > obj2.x &&
-            obj1.y < obj2.y + obj2.height / 2 &&
-            obj1.y + obj1.height / 2 > obj2.y
-        );
-    }
+    // Отсчет "3, 2, 1, Поехали!"
+    function startCountdown(callback) {
+        let count = 3;
+        const countdownElement = document.createElement('div');
+        countdownElement.style.position = 'absolute';
+        countdownElement.style.top = '50%';
+        countdownElement.style.left = '50%';
+        countdownElement.style.transform = 'translate(-50%, -50%)';
+        countdownElement.style.fontSize = '48px';
+        countdownElement.style.color = 'white';
+        countdownElement.style.textAlign = 'center';
+        document.body.appendChild(countdownElement);
 
-    function shakeScreen() {
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.style.animation = 'shake 0.1s';
-        setTimeout(() => gameScreen.style.animation = '', 100);
-    }
-
-    function flashFlower() {
-        const flower = document.getElementById('game-canvas');
-        flower.style.filter = 'brightness(0.5)';
-        setTimeout(() => flower.style.filter = '', 100);
+        const countdownInterval = setInterval(() => {
+            if (count > 0) {
+                countdownElement.textContent = count;
+                count--;
+            } else if (count === 0) {
+                countdownElement.textContent = 'Поехали!';
+                setTimeout(() => {
+                    document.body.removeChild(countdownElement);
+                    clearInterval(countdownInterval);
+                    callback(); // Запускаем игру после отсчета
+                }, 1000);
+            }
+        }, 1000);
     }
 
     function updateLives() {
@@ -217,6 +273,7 @@ const MiniGame = (function() {
 
     function updateGameCoinCount() {
         document.getElementById('game-coin-count').textContent = gameCoins;
+        document.getElementById('coin-count').textContent = gameCoins; // Обновляем на главном экране
     }
 
     function updateTicketCount() {
@@ -229,37 +286,12 @@ const MiniGame = (function() {
         return `${m}:${s}`;
     }
 
-    function startCountdown() {
-        const countdown = document.createElement('div');
-        countdown.style.position = 'fixed';
-        countdown.style.top = '50%';
-        countdown.style.left = '50%';
-        countdown.style.transform = 'translate(-50%, -50%)';
-        countdown.style.fontSize = '48px';
-        countdown.style.color = 'white';
-        countdown.style.zIndex = '1001';
-        document.body.appendChild(countdown);
-
-        let counter = 3;
-        const countdownInterval = setInterval(() => {
-            if (counter > 0) {
-                countdown.textContent = counter;
-                counter--;
-            } else {
-                countdown.textContent = "Поехали!";
-                setTimeout(() => countdown.remove(), 1000); 
-                clearInterval(countdownInterval);
-            }
-        }, 1000);
-    }
-
     function endGame() {
         clearInterval(beeInterval);
         clearInterval(gameTimerInterval);
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
-        // Создаем модальное окно внутри экрана игры
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
         resultModal.style.top = '50%';
@@ -279,66 +311,26 @@ const MiniGame = (function() {
             <button class="exit-btn">Домой</button>
         `;
 
-        // Добавляем модальное окно в элемент с игрой
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.appendChild(resultModal);
 
-        // Обработчики кнопок
         const replayButton = resultModal.querySelector('.replay-btn');
         const exitButton = resultModal.querySelector('.exit-btn');
 
         replayButton.addEventListener('click', () => {
-            resultModal.remove(); // Удаляем модальное окно
-            startGame(); // Перезапускаем игру
-        });
-
-        exitButton.addEventListener('click', () => {
-            resultModal.remove(); // Удаляем модальное окно
-            gameScreen.style.display = 'none'; // Закрываем игру
-            document.querySelector('.game-container').style.display = 'flex'; // Возвращаемся на главный экран
-            totalCoinsEarned = 0;
-            currentLevel = 1;
-        });
-
-        isGameRunning = false;
-    }
-
-    function showLevelCompleteModal() {
-        const levelCompleteModal = document.createElement('div');
-        levelCompleteModal.style.position = 'fixed';
-        levelCompleteModal.style.top = '50%';
-        levelCompleteModal.style.left = '50%';
-        levelCompleteModal.style.transform = 'translate(-50%, -50%)';
-        levelCompleteModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        levelCompleteModal.style.color = 'white';
-        levelCompleteModal.style.textAlign = 'center';
-        levelCompleteModal.style.padding = '20px';
-        levelCompleteModal.style.zIndex = '1000'; // z-index, чтобы окно было выше остальных элементов
-        levelCompleteModal.innerHTML = `
-            <h2>Уровень 1 пройден!</h2>
-            <p>Переход на второй уровень или забрать выигрыш?</p>
-            <button class="next-level-btn">Перейти на второй уровень</button>
-            <button class="exit-btn">Забрать выигрыш</button>
-        `;
-
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.appendChild(levelCompleteModal);
-
-        const nextLevelButton = levelCompleteModal.querySelector('.next-level-btn');
-        const exitButton = levelCompleteModal.querySelector('.exit-btn');
-
-        nextLevelButton.addEventListener('click', () => {
-            levelCompleteModal.remove();
+            resultModal.remove();
             startGame();
         });
 
         exitButton.addEventListener('click', () => {
-            levelCompleteModal.remove();
+            resultModal.remove();
             gameScreen.style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
             totalCoinsEarned = 0;
             currentLevel = 1;
         });
+
+        isGameRunning = false;
     }
 
     return {
