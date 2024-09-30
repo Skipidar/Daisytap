@@ -98,7 +98,7 @@ const MiniGame = (function () {
                         gameTime = 60;
                         clearInterval(beeInterval);
                         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
-                        showLevelCompleteModal();
+                        showLevelCompleteModal(); // Останавливаем игру, просим начать 2 уровень
                     } else {
                         endGame();
                     }
@@ -150,7 +150,7 @@ const MiniGame = (function () {
     }
 
     function spawnBee(level) {
-        const size = Math.floor(Math.random() * 60) + 60; // Увеличиваем размер для удобства
+        const size = Math.floor(Math.random() * 60) + 40;
         const speed = level === 1 ? 2 : 3.5;
         let x, y;
 
@@ -204,8 +204,8 @@ const MiniGame = (function () {
         const heart = {
             x: Math.random() * canvas.width,
             y: -50,
-            width: 60, // Увеличен размер для удобства
-            height: 60,
+            width: 40,
+            height: 40,
             speed: 1.5,
             image: new Image(),
             draw: function () {
@@ -223,8 +223,8 @@ const MiniGame = (function () {
         const coin = {
             x: Math.random() * canvas.width,
             y: -50,
-            width: 50, // Увеличен размер для удобства
-            height: 50,
+            width: 30,
+            height: 30,
             speed: 1.5,
             image: new Image(),
             draw: function () {
@@ -408,7 +408,7 @@ const MiniGame = (function () {
         resultModal.innerHTML = `
             <h2>Уровень завершен!</h2>
             <p>Переход на следующий уровень.</p>
-            <button class="next-level-btn">Далее</button>
+            <button class="next-level-btn">Старт второго уровня</button>
         `;
 
         const gameScreen = document.getElementById('protect-flower-game');
@@ -417,7 +417,7 @@ const MiniGame = (function () {
         const nextLevelButton = resultModal.querySelector('.next-level-btn');
         nextLevelButton.addEventListener('click', () => {
             resultModal.remove();
-            startGame();
+            document.getElementById('start-mini-game').style.display = 'block'; // Показываем кнопку старта
         });
     }
 
