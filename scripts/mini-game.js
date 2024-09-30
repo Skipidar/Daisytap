@@ -1,8 +1,11 @@
 const MiniGame = (function () {
     let gameTime = 60; // 1 минута для уровня
     let bees = [];
+    let hearts = [];
+    let coins = [];
     let heartInterval;
     let beeInterval;
+    let coinInterval;
     let gameTimerInterval;
     let lives = 3;
     let gameCoins = 0;
@@ -56,6 +59,8 @@ const MiniGame = (function () {
         updateLives(); // Вызов обновления жизней
 
         bees = [];
+        hearts = [];
+        coins = [];
         gameTime = 60; // Уменьшаем время до 1 минуты
         updateGameCoinCount();
 
@@ -69,6 +74,7 @@ const MiniGame = (function () {
         beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
         heartInterval = setInterval(spawnHeart, 20000); // Сердце каждые 20 секунд
+        coinInterval = setInterval(spawnCoin, 15000); // Монеты каждые 15 секунд
 
         gameTimerInterval = setInterval(() => {
             gameTime--;
@@ -91,6 +97,8 @@ const MiniGame = (function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             flower.draw();
             updateBees(ctx, flower);
+            updateHearts(ctx, flower);
+            updateCoins(ctx, flower);
             requestAnimationFrame(gameLoop);
         }
 
@@ -181,13 +189,38 @@ const MiniGame = (function () {
             image: new Image(),
             draw: function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            },
+            move: function () {
+                this.y += this.speed;
             }
         };
         heart.image.src = 'assets/images/heart.png';
         heart.image.onload = () => {
             heart.draw();
         };
-        bees.push(heart);
+        hearts.push(heart);
+    }
+
+    function spawnCoin() {
+        const coin = {
+            x: Math.random() * canvas.width,
+            y: -50,
+            width: 30,
+            height: 30,
+            speed: 1.5,
+            image: new Image(),
+            draw: function () {
+                ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+            },
+            move: function () {
+                this.y += this.speed;
+            }
+        };
+        coin.image.src = 'assets/images/goldcoin.webp';
+        coin.image.onload = () => {
+            coin.draw();
+        };
+        coins.push(coin);
     }
 
     function handleCanvasClick(event) {
@@ -237,6 +270,44 @@ const MiniGame = (function () {
         }
     }
 
+    function updateHearts(ctx, flower) {
+        for (let i = hearts.length - 1; i >= 0; i--) {
+            const heart = hearts[i];
+            heart.move();
+            heart.draw();
+
+            if (isColliding(heart, flower)) {
+                lives++;
+                updateLives();
+                hearts.splice(i, 1);
+                AudioManager.playHeartPlusSound();
+            }
+
+            if (heart.y > canvas.height) {
+                hearts.splice(i, 1);
+            }
+        }
+    }
+
+    function updateCoins(ctx, flower) {
+        for (let i = coins.length - 1; i >= 0; i--) {
+            const coin = coins[i];
+            coin.move();
+            coin.draw();
+
+            if (isColliding(coin, flower)) {
+                daisyCoins += 10; // Добавляем $Daisy
+                updateDaisyCoinCount();
+                coins.splice(i, 1);
+                AudioManager.playMoneySound();
+            }
+
+            if (coin.y > canvas.height) {
+                coins.splice(i, 1);
+            }
+        }
+    }
+
     function isColliding(obj1, obj2) {
         return (
             obj1.x < obj2.x + obj2.width / 2 &&
@@ -273,6 +344,10 @@ const MiniGame = (function () {
         document.getElementById('game-coin-count').textContent = gameCoins;
     }
 
+    function updateDaisyCoinCount() {
+        document.getElementById('daisy-coin-count').textContent = daisyCoins;
+    }
+
     function updateTicketCount() {
         document.getElementById('ticket-count').textContent = tickets;
     }
@@ -286,6 +361,8 @@ const MiniGame = (function () {
     function endGame() {
         clearInterval(beeInterval);
         clearInterval(gameTimerInterval);
+        clearInterval(heartInterval);
+        clearInterval(coinInterval);
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
@@ -332,22 +409,3 @@ const MiniGame = (function () {
         init
     };
 })();
-
-// Добавляем анимации
-const style = document.createElement('style');
-style.textContent = `
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
-}
-`;
-document.head.appendChild(style);

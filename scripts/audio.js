@@ -1,3 +1,4 @@
+// scripts/audio.js
 const AudioManager = (function() {
     let backgroundMusic;
     let oneLevelMusic;
@@ -5,9 +6,6 @@ const AudioManager = (function() {
     let clickSound;
     let predictionSound;
     let udarSound;
-    let heartPlusSound;
-    let moneySound;
-    let levelCompleteSound;
 
     let soundEnabled = true;
 
@@ -18,20 +16,14 @@ const AudioManager = (function() {
         clickSound = new Audio('assets/sounds/click.mp3');
         predictionSound = new Audio('assets/sounds/prediction.mp3');
         udarSound = new Audio('assets/sounds/udar.mp3');
-        heartPlusSound = new Audio('assets/sounds/heartplus.mp3'); // Добавляем звук при поимке сердца
-        moneySound = new Audio('assets/sounds/moneyi.mp3'); // Добавляем звук при поимке монеты
-        levelCompleteSound = new Audio('assets/sounds/1levelcomplete.mp3'); // Добавляем звук завершения уровня
 
         // Установка громкости (уменьшено на 50%)
         backgroundMusic.volume = 0.25;
         oneLevelMusic.volume = 0.25;
         electricChaosMusic.volume = 0.25;
-        clickSound.volume = 0.1; 
+        clickSound.volume = 0.1; // Уменьшено для кликов
         predictionSound.volume = 0.1;
         udarSound.volume = 0.1;
-        heartPlusSound.volume = 0.2;
-        moneySound.volume = 0.2;
-        levelCompleteSound.volume = 0.3;
 
         backgroundMusic.loop = true;
         oneLevelMusic.loop = true;
@@ -75,18 +67,6 @@ const AudioManager = (function() {
         if (soundEnabled) udarSound.play();
     }
 
-    function playHeartPlusSound() {
-        if (soundEnabled) heartPlusSound.play(); // Воспроизведение звука при поимке сердца
-    }
-
-    function playMoneySound() {
-        if (soundEnabled) moneySound.play(); // Воспроизведение звука при поимке монеты
-    }
-
-    function playLevelCompleteSound() {
-        if (soundEnabled) levelCompleteSound.play(); // Воспроизведение звука завершения уровня
-    }
-
     function playOneLevelMusic() {
         if (soundEnabled) {
             backgroundMusic.pause();
@@ -119,9 +99,6 @@ const AudioManager = (function() {
         playClickSound,
         playPredictionSound,
         playUdarSound,
-        playHeartPlusSound, // Добавляем метод для воспроизведения звука при поимке сердца
-        playMoneySound, // Добавляем метод для воспроизведения звука при поимке монеты
-        playLevelCompleteSound, // Добавляем метод для воспроизведения звука завершения уровня
         playOneLevelMusic,
         pauseOneLevelMusic,
         playElectricChaosMusic,

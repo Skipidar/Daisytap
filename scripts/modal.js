@@ -28,26 +28,7 @@ const Modal = (function() {
     }
 
     function open(modalId) {
-        const modal = document.getElementById(modalId);
-        modal.style.display = 'flex';
-        
-        if (modalId === 'game-over-modal') {
-            // Окно окончания игры, добавляем обработчики кнопок
-            const replayBtn = modal.querySelector('.replay-btn');
-            const exitBtn = modal.querySelector('.exit-btn');
-
-            replayBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для перезапуска игры
-                MiniGame.startGame(); // замените на правильную функцию перезапуска игры
-            });
-
-            exitBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для возврата на главный экран
-                document.querySelector('.game-container').style.display = 'flex';
-            });
-        }
+        document.getElementById(modalId).style.display = 'flex';
     }
 
     function setupPredictionModal() {
@@ -79,6 +60,8 @@ const Modal = (function() {
         });
 
         observer.observe(predictionModal, { childList: true, subtree: true });
+
+        // Не скрывать уведомление
     }
 
     function setupAirdropModal() {
