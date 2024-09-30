@@ -1,6 +1,8 @@
 const MiniGame = (function () {
     let gameTime = 60; // 1 минута для уровня
     let bees = [];
+    let hearts = [];
+    let coins = [];
     let heartInterval;
     let coinInterval;
     let beeInterval;
@@ -65,6 +67,8 @@ const MiniGame = (function () {
         updateLives();
 
         bees = [];
+        hearts = [];
+        coins = [];
         gameTime = 60;
         updateGameCoinCount();
 
@@ -105,6 +109,8 @@ const MiniGame = (function () {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 flower.draw();
                 updateBees(ctx, flower);
+                updateHearts();
+                updateCoins();
                 requestAnimationFrame(gameLoop);
             }
 
@@ -210,7 +216,7 @@ const MiniGame = (function () {
         heart.image.onload = () => {
             heart.draw();
         };
-        bees.push(heart);
+        hearts.push(heart);
     }
 
     function spawnCoin() {
@@ -229,7 +235,27 @@ const MiniGame = (function () {
         coin.image.onload = () => {
             coin.draw();
         };
-        bees.push(coin);
+        coins.push(coin);
+    }
+
+    function updateHearts() {
+        hearts.forEach((heart, index) => {
+            heart.y += heart.speed;
+            heart.draw();
+            if (heart.y > canvas.height) {
+                hearts.splice(index, 1);
+            }
+        });
+    }
+
+    function updateCoins() {
+        coins.forEach((coin, index) => {
+            coin.y += coin.speed;
+            coin.draw();
+            if (coin.y > canvas.height) {
+                coins.splice(index, 1);
+            }
+        });
     }
 
     function handleCanvasClick(event) {
@@ -255,6 +281,36 @@ const MiniGame = (function () {
                 }
             }
         });
+
+        // Проверка на клик по монетке
+        coins.forEach((coin, index) => {
+            if (
+                xClick >= coin.x - coin.width / 2 &&
+                xClick <= coin.x + coin.width / 2 &&
+                yClick >= coin.y - coin.height / 2 &&
+                yClick <= coin.y + coin.height / 2
+            ) {
+                coins.splice(index, 1);
+                daisyCoins += 10; // +10 $Daisy
+                updateGameCoinCount();
+                AudioManager.playMoneySound();
+            }
+        });
+
+        // Проверка на клик по сердцу
+        hearts.forEach((heart, index) => {
+            if (
+                xClick >= heart.x - heart.width / 2 &&
+                xClick <= heart.x + heart.width / 2 &&
+                yClick >= heart.y - heart.height / 2 &&
+                yClick <= heart.y + heart.height / 2
+            ) {
+                hearts.splice(index, 1);
+                lives = Math.min(lives + 1, 3); // Восстанавливаем жизнь
+                updateLives();
+                AudioManager.playHeartPlusSound();
+            }
+        });
     }
 
     function updateBees(ctx, flower) {
@@ -268,7 +324,7 @@ const MiniGame = (function () {
                 updateLives();
                 bees.splice(i, 1);
                 AudioManager.playUdarSound();
-                shakeScreen(); // Тряска при столкновении с цветком
+                shakeScreen();
                 flashFlower();
 
                 if (lives <= 0) {
@@ -328,9 +384,38 @@ const MiniGame = (function () {
     }
 
     function formatTime(seconds) {
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const m = Math.floor(seconds / 60)
+            .toString()
+            .padStart(2, '0');
         const s = (seconds % 60).toString().padStart(2, '0');
         return `${m}:${s}`;
+    }
+
+    function showLevelCompleteModal() {
+        const resultModal = document.createElement('div');
+        resultModal.style.position = 'fixed';
+        resultModal.style.top = '50%';
+        resultModal.style.left = '50%';
+        resultModal.style.transform = 'translate(-50%, -50%)';
+        resultModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        resultModal.style.color = 'white';
+        resultModal.style.textAlign = 'center';
+        resultModal.style.padding = '20px';
+        resultModal.style.zIndex = '1000'; // z-index, чтобы окно было выше остальных элементов
+        resultModal.innerHTML = `
+            <h2>Уровень завершен!</h2>
+            <p>Переход на следующий уровень.</p>
+            <button class="next-level-btn">Далее</button>
+        `;
+
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.appendChild(resultModal);
+
+        const nextLevelButton = resultModal.querySelector('.next-level-btn');
+        nextLevelButton.addEventListener('click', () => {
+            resultModal.remove();
+            startGame();
+        });
     }
 
     function endGame() {
@@ -356,6 +441,7 @@ const MiniGame = (function () {
             </button>
             <button class="exit-btn">Домой</button>
         `;
+
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.appendChild(resultModal);
 
