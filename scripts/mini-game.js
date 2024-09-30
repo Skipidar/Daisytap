@@ -150,7 +150,7 @@ const MiniGame = (function () {
     }
 
     function spawnBee(level) {
-        const size = Math.floor(Math.random() * 60) + 40;
+        const size = Math.floor(Math.random() * 60) + 60; // Увеличиваем размер для удобства
         const speed = level === 1 ? 2 : 3.5;
         let x, y;
 
@@ -204,8 +204,8 @@ const MiniGame = (function () {
         const heart = {
             x: Math.random() * canvas.width,
             y: -50,
-            width: 40,
-            height: 40,
+            width: 60, // Увеличен размер для удобства
+            height: 60,
             speed: 1.5,
             image: new Image(),
             draw: function () {
@@ -223,8 +223,8 @@ const MiniGame = (function () {
         const coin = {
             x: Math.random() * canvas.width,
             y: -50,
-            width: 30,
-            height: 30,
+            width: 50, // Увеличен размер для удобства
+            height: 50,
             speed: 1.5,
             image: new Image(),
             draw: function () {
@@ -478,22 +478,3 @@ const MiniGame = (function () {
         init,
     };
 })();
-
-// Добавляем анимации
-const style = document.createElement('style');
-style.textContent = `
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
-}
-`;
-document.head.appendChild(style);
