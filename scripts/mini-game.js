@@ -8,8 +8,8 @@ const MiniGame = (function () {
     let beeInterval;
     let gameTimerInterval;
     let lives = 3;
-    let gameCoins = 0;
-    let daisyCoins = 0; // $Daisy
+    let gameCoins = 0; // Это Coin
+    let daisyCoins = 0; // Это $Daisy
     let currentLevel = 1;
     let isGameRunning = false;
     let ctx;
@@ -70,6 +70,8 @@ const MiniGame = (function () {
         hearts = [];
         coins = [];
         gameTime = 60;
+        gameCoins = 0;
+        daisyCoins = 0;
         updateGameCoinCount();
 
         if (currentLevel === 1) {
@@ -269,10 +271,10 @@ const MiniGame = (function () {
                 yClick <= bee.y + bee.height / 2
             ) {
                 bees.splice(index, 1);
-                gameCoins += 1;
+                gameCoins += 1; // Coin
                 totalCoinsEarned += 1;
                 updateGameCoinCount();
-                AudioManager.playBeeKillSound(); // Убедитесь, что используется правильный звук
+                AudioManager.playBeeKillSound();
 
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
@@ -288,7 +290,7 @@ const MiniGame = (function () {
                 yClick <= coin.y + coin.height / 2
             ) {
                 coins.splice(index, 1);
-                daisyCoins += 10; // +10 $Daisy
+                daisyCoins += 10; // $Daisy
                 updateGameCoinCount();
                 AudioManager.playMoneySound();
             }
@@ -302,7 +304,7 @@ const MiniGame = (function () {
                 yClick <= heart.y + heart.height / 2
             ) {
                 hearts.splice(index, 1);
-                lives = Math.min(lives + 1, 3); // Восстанавливаем жизнь
+                lives = Math.min(lives + 1, 3);
                 updateLives();
                 AudioManager.playHeartPlusSound();
             }
@@ -372,8 +374,12 @@ const MiniGame = (function () {
     }
 
     function updateGameCoinCount() {
+        // Обновляем счетчики в мини-игре
         document.getElementById('game-coin-count').textContent = gameCoins;
-        document.getElementById('daisy-coin-count').textContent = daisyCoins; // Синхронизация с главным экраном
+
+        // Обновляем счетчики на главном экране
+        document.getElementById('spin-coin-count').textContent = gameCoins; // Coin
+        document.getElementById('coin-count').textContent = daisyCoins; // $Daisy
     }
 
     function updateTicketCount() {
@@ -398,7 +404,7 @@ const MiniGame = (function () {
         resultModal.style.color = 'white';
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
-        resultModal.style.zIndex = '1000'; 
+        resultModal.style.zIndex = '1000';
         resultModal.innerHTML = `
             <h2>Уровень завершен!</h2>
             <p>Переход на следующий уровень.</p>
@@ -423,6 +429,9 @@ const MiniGame = (function () {
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
 
+        // Обновляем счетчики на главном экране после окончания игры
+        updateGameCoinCount();
+
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
         resultModal.style.top = '50%';
@@ -434,11 +443,11 @@ const MiniGame = (function () {
         resultModal.style.padding = '20px';
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
-            <p>Вы заработали ${totalCoinsEarned} Coin и ${daisyCoins} $Daisy.</p>
-            <button class="replay-btn">
+            <p>Вы заработали ${gameCoins} Coin и ${daisyCoins} $Daisy.</p>
+            <button class="replay-btn" style="width: 120px; margin: 5px;">
                 <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} Tickets)
             </button>
-            <button class="exit-btn">Домой</button>
+            <button class="exit-btn" style="width: 120px; margin: 5px;">Домой</button>
         `;
 
         const gameScreen = document.getElementById('protect-flower-game');
@@ -455,11 +464,11 @@ const MiniGame = (function () {
         exitButton.addEventListener('click', () => {
             resultModal.remove();
             gameScreen.style.display = 'none';
-            document.querySelector('.game-container').style.display = 'flex';
+            document.querySelector('.game-container').style.display = 'block';
             totalCoinsEarned = 0;
-            daisyCoins = 0; // Обнуляем $Daisy после выхода
+            daisyCoins = 0;
             currentLevel = 1;
-            updateGameCoinCount(); // Синхронизируем с главным экраном
+            updateGameCoinCount();
         });
 
         isGameRunning = false;
