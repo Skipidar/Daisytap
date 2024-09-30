@@ -232,6 +232,14 @@ const MiniGame = (function() {
         }
     }
 
+    // Проверка столкновения пчелы и цветка
+    function isColliding(bee, flower) {
+        const distX = Math.abs(bee.x - flower.x);
+        const distY = Math.abs(bee.y - flower.y);
+        const distance = Math.sqrt(distX * distX + distY * distY);
+        return distance < (bee.width / 2 + flower.width / 2);
+    }
+
     // Отсчет "3, 2, 1, Поехали!"
     function startCountdown(callback) {
         let count = 3;
@@ -252,7 +260,9 @@ const MiniGame = (function() {
             } else if (count === 0) {
                 countdownElement.textContent = 'Поехали!';
                 setTimeout(() => {
-                    document.body.removeChild(countdownElement);
+                    if (countdownElement && countdownElement.parentNode) {
+                        countdownElement.parentNode.removeChild(countdownElement);
+                    }
                     clearInterval(countdownInterval);
                     callback(); // Запускаем игру после отсчета
                 }, 1000);
