@@ -1,4 +1,4 @@
-const MiniGame = (function() {
+const MiniGame = (function () {
     let gameTime = 60; // 1 минута для уровня
     let bees = [];
     let heartInterval;
@@ -43,7 +43,7 @@ const MiniGame = (function() {
             width: 100,
             height: 100,
             image: new Image(),
-            draw: function() {
+            draw: function () {
                 ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
             }
         };
@@ -120,7 +120,7 @@ const MiniGame = (function() {
                 counter--;
             } else {
                 countdown.textContent = "Поехали!";
-                setTimeout(() => countdown.remove(), 1000); 
+                setTimeout(() => countdown.remove(), 1000);
                 clearInterval(countdownInterval);
             }
         }, 1000);
@@ -133,10 +133,22 @@ const MiniGame = (function() {
 
         const side = Math.floor(Math.random() * 4);
         switch (side) {
-            case 0: x = Math.random() * canvas.width; y = -size; break;
-            case 1: x = canvas.width + size; y = Math.random() * canvas.height; break;
-            case 2: x = Math.random() * canvas.width; y = canvas.height + size; break;
-            case 3: x = -size; y = Math.random() * canvas.height; break;
+            case 0:
+                x = Math.random() * canvas.width;
+                y = -size;
+                break;
+            case 1:
+                x = canvas.width + size;
+                y = Math.random() * canvas.height;
+                break;
+            case 2:
+                x = Math.random() * canvas.width;
+                y = canvas.height + size;
+                break;
+            case 3:
+                x = -size;
+                y = Math.random() * canvas.height;
+                break;
         }
 
         const bee = {
@@ -146,10 +158,10 @@ const MiniGame = (function() {
             height: size,
             speed: speed,
             image: new Image(),
-            draw: function() {
+            draw: function () {
                 ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
             },
-            move: function(flower) {
+            move: function (flower) {
                 const angle = Math.atan2(flower.y - this.y, flower.x - this.x);
                 this.x += Math.cos(angle) * this.speed;
                 this.y += Math.sin(angle) * this.speed;
@@ -167,7 +179,7 @@ const MiniGame = (function() {
             height: 40,
             speed: 1.5,
             image: new Image(),
-            draw: function() {
+            draw: function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
             }
         };
@@ -234,7 +246,6 @@ const MiniGame = (function() {
         );
     }
 
-    // Определение функции shakeScreen
     function shakeScreen() {
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.style.animation = 'shake 0.1s';
@@ -321,3 +332,22 @@ const MiniGame = (function() {
         init
     };
 })();
+
+// Добавляем анимации
+const style = document.createElement('style');
+style.textContent = `
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+`;
+document.head.appendChild(style);
