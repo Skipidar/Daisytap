@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -48,12 +49,6 @@
             </div>
         </div>
 
-        <!-- Счётчик для $Daisy -->
-        <div id="daisy-coin-counter" class="counter">
-            <img src="assets/images/goldcoin.webp" alt="Gold Coin" class="coin-icon">
-            <span id="daisy-coin-count">0</span> $Daisy
-        </div>
-
         <!-- Ромашка -->
         <div class="chamomile-container">
             <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
@@ -90,7 +85,7 @@
             </div>
             <div id="predictions-history">
                 <h3>История предсказаний:</h3>
-                <!-- История предсказаний -->
+                <!-- Здесь будут отображаться предыдущие предсказания -->
             </div>
         </div>
     </div>
@@ -111,7 +106,8 @@
             <span class="close-btn">&times;</span>
             <h2>Рейтинг игроков</h2>
             <div id="rating-list">
-                <!-- Рейтинг -->
+                <!-- Тестовый текст -->
+                <p>Тестовый рейтинг скоро будет доступен.</p>
             </div>
         </div>
     </div>
@@ -137,7 +133,8 @@
             <h2>Друзья</h2>
             <p>Приглашайте друзей! Вы и ваш друг получите бонус в виде монет. Для Telegram друзей с Telegram Premium - особые условия!</p>
             <div id="friends-list">
-                <!-- Список друзей -->
+                <!-- Тестовый текст -->
+                <p>Тестовый список друзей скоро будет доступен.</p>
             </div>
         </div>
     </div>
@@ -152,10 +149,20 @@
         </div>
     </div>
 
+    <!-- Модальное окно покупки скина -->
+    <div id="skin-purchase-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Поздравляем!</h2>
+            <p>Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
+            <button id="close-gift-btn">Закрыть</button>
+        </div>
+    </div>
+
     <!-- Мини-игра "Защити цветок" -->
     <div id="protect-flower-game" class="game-screen" style="display: none;">
         <canvas id="game-canvas"></canvas>
-        <div id="game-timer">01:00</div> <!-- Установил таймер на 1 минуту -->
+        <div id="game-timer">02:00</div>
         <div id="game-lives">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">

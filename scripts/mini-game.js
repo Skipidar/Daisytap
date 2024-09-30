@@ -78,7 +78,6 @@ const MiniGame = (function () {
             AudioManager.playElectricChaosMusic();
         }
 
-        // Запускаем отсчёт и начинаем игру после слова "Поехали!"
         startCountdown(() => {
             isCountdownDone = true;
             const spawnInterval = currentLevel === 1 ? 1500 : 1000;
@@ -97,7 +96,7 @@ const MiniGame = (function () {
                         gameTime = 60;
                         clearInterval(beeInterval);
                         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
-                        showLevelCompleteModal(); // Переход на второй уровень
+                        showLevelCompleteModal();
                     } else {
                         endGame();
                     }
@@ -105,7 +104,7 @@ const MiniGame = (function () {
             }, 1000);
 
             function gameLoop() {
-                if (!isCountdownDone) return; // Ждем окончания отсчёта
+                if (!isCountdownDone) return;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 flower.draw();
                 updateBees(ctx, flower);
@@ -121,7 +120,6 @@ const MiniGame = (function () {
         canvas.addEventListener('click', handleCanvasClick);
     }
 
-    // Отсчёт "3, 2, 1, Поехали!"
     function startCountdown(callback) {
         const countdown = document.createElement('div');
         countdown.style.position = 'fixed';
@@ -142,8 +140,8 @@ const MiniGame = (function () {
                 countdown.textContent = 'Поехали!';
                 setTimeout(() => {
                     countdown.remove();
-                    callback(); // Запуск игры
-                }, 1000); // Ждем 1 секунду после "Поехали!"
+                    callback();
+                }, 1000);
                 clearInterval(countdownInterval);
             }
         }, 1000);
@@ -274,7 +272,7 @@ const MiniGame = (function () {
                 gameCoins += 1;
                 totalCoinsEarned += 1;
                 updateGameCoinCount();
-                AudioManager.playClickSound();
+                AudioManager.playBeeKillSound(); // Убедитесь, что используется правильный звук
 
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
@@ -282,7 +280,6 @@ const MiniGame = (function () {
             }
         });
 
-        // Проверка на клик по монетке
         coins.forEach((coin, index) => {
             if (
                 xClick >= coin.x - coin.width / 2 &&
@@ -297,7 +294,6 @@ const MiniGame = (function () {
             }
         });
 
-        // Проверка на клик по сердцу
         hearts.forEach((heart, index) => {
             if (
                 xClick >= heart.x - heart.width / 2 &&
@@ -377,6 +373,7 @@ const MiniGame = (function () {
 
     function updateGameCoinCount() {
         document.getElementById('game-coin-count').textContent = gameCoins;
+        document.getElementById('daisy-coin-count').textContent = daisyCoins; // Синхронизация с главным экраном
     }
 
     function updateTicketCount() {
@@ -401,7 +398,7 @@ const MiniGame = (function () {
         resultModal.style.color = 'white';
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
-        resultModal.style.zIndex = '1000'; // z-index, чтобы окно было выше остальных элементов
+        resultModal.style.zIndex = '1000'; 
         resultModal.innerHTML = `
             <h2>Уровень завершен!</h2>
             <p>Переход на следующий уровень.</p>
@@ -420,6 +417,8 @@ const MiniGame = (function () {
 
     function endGame() {
         clearInterval(beeInterval);
+        clearInterval(coinInterval);
+        clearInterval(heartInterval);
         clearInterval(gameTimerInterval);
         AudioManager.pauseOneLevelMusic();
         AudioManager.playElectricChaosMusic();
@@ -435,7 +434,7 @@ const MiniGame = (function () {
         resultModal.style.padding = '20px';
         resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
-            <p>Вы заработали ${totalCoinsEarned} Coin.</p>
+            <p>Вы заработали ${totalCoinsEarned} Coin и ${daisyCoins} $Daisy.</p>
             <button class="replay-btn">
                 <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} Tickets)
             </button>
@@ -458,7 +457,9 @@ const MiniGame = (function () {
             gameScreen.style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
             totalCoinsEarned = 0;
+            daisyCoins = 0; // Обнуляем $Daisy после выхода
             currentLevel = 1;
+            updateGameCoinCount(); // Синхронизируем с главным экраном
         });
 
         isGameRunning = false;
