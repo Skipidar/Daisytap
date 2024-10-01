@@ -10,17 +10,14 @@ body {
 }
 
 .game-container {
-    width: 100%;
-    max-width: 360px; /* Ширина под формат 9:16 */
+    width: 360px; /* Фиксированная ширина для формата 9:16 */
+    height: 640px; /* Фиксированная высота для формата 9:16 */
     margin: 0 auto;
-    height: 100vh;
     background: radial-gradient(circle at center, #000000, #4B0082);
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-    border: 2px solid #FFD700; /* Обрамление */
-    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -81,7 +78,8 @@ body {
 
 .counters {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
     width: 90%;
     padding: 10px;
     font-size: 16px;
@@ -94,6 +92,7 @@ body {
     padding: 10px;
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 }
 
 .coin-icon {
@@ -200,7 +199,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    top: -50px;
+    top: -20px;
 }
 
 #chamomile {
@@ -231,7 +230,7 @@ body {
     }
 }
 
-/* Счетчик энергии */
+/* Энергия */
 .energy {
     color: #FFD700;
 }
@@ -493,14 +492,12 @@ footer .icon {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 360px;
+    height: 640px;
     background: url('assets/images/gamepole.webp') no-repeat center center;
     background-size: cover;
     z-index: 300;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: none; /* По умолчанию скрыто */
 }
 
 #game-canvas {
@@ -555,8 +552,8 @@ footer .icon {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 360px;
+    height: 640px;
     pointer-events: none;
     z-index: 250;
 }
@@ -655,4 +652,19 @@ footer .icon {
 @keyframes fadeInLetters {
     0% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+/* Анимация тряски */
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
 }

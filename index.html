@@ -2,12 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Игра Ромашка</title>
+    <title>Daisy Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Подключение нового шрифта Dela Gothic One -->
+    <!-- Подключение шрифта Dela Gothic One -->
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -25,60 +24,54 @@
     <button id="language-toggle">EN</button>
 
     <!-- Кнопка отключения звука -->
-    <button id="sound-toggle">
-        <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
-    </button>
+    <img src="assets/images/on.webp" alt="Звук включен" id="sound-toggle">
 
     <div class="game-container" style="display: none;">
         <!-- Информация об игроке -->
         <div class="player-info">
-            <div class="level-container">
-                <span>Уровень: <span id="player-level">1</span></span>
-                <div class="progress-bar">
-                    <div class="progress" id="level-progress"></div>
-                </div>
-            </div>
             <!-- Счётчики -->
             <div class="counters">
                 <div id="coin-counter" class="counter">
-                    <img src="assets/images/goldcoin.webp" alt="Gold Coin" class="coin-icon">
-                    <span class="daisy-coin" id="coin-count">10000</span> $Daisy
+                    <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
+                    <span class="daisy-coin" id="coin-count">10000</span>
                 </div>
-                <div id="secondary-counter-container">
-                    <div id="secondary-coin-counter" class="counter">
-                        <img src="assets/images/silvercoin.webp" alt="Silver Coin" class="coin-icon">
-                        <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
-                    </div>
-                    <div id="energy-counter" class="counter">Энергия: <span class="energy" id="energy-count">1000</span></div>
-                    <button id="booster">Бустер 6/6 (01:00)</button>
+                <div id="spin-coin-counter" class="counter">
+                    <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+                    <span class="spin-coin" id="spin-coin-count">10000</span>
                 </div>
             </div>
-            <!-- Билеты под $Daisy -->
-            <div class="tickets-container">
-                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">10000</span>
+
+            <!-- Билеты и уровень под $Daisy -->
+            <div class="tickets-level-container">
+                <div class="tickets-container">
+                    <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+                    <span id="ticket-count">200</span>
+                </div>
+                <div class="level-container">
+                    <span>Уровень: <span id="player-level">1</span></span>
+                    <div class="progress-bar">
+                        <div class="progress" id="level-progress"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Ромашка -->
             <div class="chamomile-container">
-                <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
+                <img src="assets/images/chamomile.webp" id="chamomile" alt="Крутить ромашку">
             </div>
 
             <!-- Кнопка "Играть" -->
             <button id="play-button">Играть</button>
 
             <!-- Таймер до следующего предсказания -->
-            <div id="prediction-timer">До следующего предсказания: <span id="prediction-countdown">00:00</span></div>
+            <div id="prediction-timer">До следующего предсказания: <span id="prediction-countdown">06:00:00</span></div>
         </div>
 
         <footer>
             <button id="airdrop-btn">Airdrop</button>
             <button id="rating-btn">Рейтинг</button>
-            <!-- Убрали кнопку магазина -->
-            <!-- <button id="shop-btn">
-                <img src="assets/images/shop.webp" alt="Магазин" class="icon">
-                Магазин
-            </button> -->
+            <!-- Кнопка магазина без значка -->
+            <button id="shop-btn">Магазин</button>
             <button id="friends-btn">Друзья</button>
             <button id="tasks-btn">Задачи</button>
         </footer>
@@ -127,6 +120,22 @@
         </div>
     </div>
 
+    <!-- Магазин -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Магазин</h2>
+            <div class="shop-tabs">
+                <button class="shop-tab active" data-tab="daisy">$Daisy</button>
+                <button class="shop-tab" data-tab="coin">Coin</button>
+                <button class="shop-tab" data-tab="premium">Премиум</button>
+            </div>
+            <div id="shop-content">
+                <!-- Здесь будут отображаться товары магазина -->
+            </div>
+        </div>
+    </div>
+
     <!-- Друзья -->
     <div id="friends-modal" class="modal">
         <div class="modal-content">
@@ -153,7 +162,7 @@
     <!-- Мини-игра "Защити цветок" -->
     <div id="protect-flower-game" class="game-screen" style="display: none;">
         <canvas id="game-canvas"></canvas>
-        <div id="game-timer">02:00</div>
+        <div id="game-timer">01:00</div>
         <div id="game-lives">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
@@ -180,9 +189,6 @@
     <script src="scripts/shop.js"></script>
     <script src="scripts/game.js"></script>
     <script src="scripts/mini-game.js"></script>
-
-    <!-- Подключаем скрипт локализации -->
-    <script src="scripts/locale.js"></script>
     <script src="scripts/main.js"></script>
 </body>
 </html>

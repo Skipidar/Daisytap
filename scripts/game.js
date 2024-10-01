@@ -5,21 +5,27 @@ const Game = (function() {
     let boosterCharges = 6;
     let lastClickTime = 0;
     let rotationAngle = 0;
-    let lastPredictionTime = 0;
-    let playerLevel = 1;
-    let playerExperience = 0;
+    let lastPredictionTime = parseInt(localStorage.getItem('lastPredictionTime')) || 0;
+    let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 1;
+    let playerExperience = parseInt(localStorage.getItem('playerExperience')) || 0;
 
     // Для неповторяющихся предсказаний
-    let usedPredictions = [];
-    let predictionHistory = [];
+    let usedPredictions = JSON.parse(localStorage.getItem('usedPredictions')) || [];
+    let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
 
     // Переменные билетов
-    let tickets = 10000; // Начальное количество билетов для теста
-    let lastTicketClaim = 0;
+    let tickets = parseInt(localStorage.getItem('tickets')) || 10000;
+    let coins = parseInt(localStorage.getItem('coins')) || 10000;
+    let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
 
     function init() {
-        // Обновление начальных значений билетов
+        // Обновление начальных значений билетов и монет
         updateTicketCount();
+        updateBalance();
+
+        // Обновление уровня и опыта
+        document.getElementById('player-level').textContent = playerLevel;
+        updateProgressBar();
 
         // Обработчик клика по ромашке
         const chamomile = document.getElementById('chamomile');
@@ -34,38 +40,20 @@ const Game = (function() {
         updateBoosterTimer();
         setInterval(updateBoosterTimer, 1000); // Обновление таймера каждую секунду
 
-        // Инициализация получения новых бустеров каждый час
-        setInterval(() => {
-            if (boosterCharges < 6) {
-                boosterCharges++;
-                updateBoosterTimer();
-            }
-        }, 60 * 60 * 1000); // Каждый час
-
         // Обновление энергии
         updateEnergyBar();
 
         // Запуск восполнения энергии
         setInterval(replenishEnergy, 1000); // Каждую секунду
 
-        // Обработчик кнопки "Играть"
-        const playButton = document.getElementById('play-button');
-        playButton.addEventListener('click', () => {
-            Modal.open('protect-flower-game');
-        });
-
         // Запуск таймера до следующего предсказания
         startPredictionCountdown();
 
-        // Обработчик кнопки "назад" на телефоне
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' || event.key === 'Backspace') {
-                if (isGameRunning) {
-                    endGame();
-                    document.getElementById('protect-flower-game').style.display = 'none';
-                    document.querySelector('.game-container').style.display = 'block';
-                }
-            }
+        // Обработчик кнопки переключения языка
+        const languageToggle = document.getElementById('language-toggle');
+        languageToggle.addEventListener('click', () => {
+            const newLocale = currentLocale === 'ru' ? 'en' : 'ru';
+            setLocale(newLocale);
         });
     }
 
@@ -81,14 +69,18 @@ const Game = (function() {
 
             // Вращение по часовой стрелке
             rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
-            this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-            this.style.transform = `rotate(${rotationAngle}deg)`;
+            chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            chamomile.style.transform = `rotate(${rotationAngle}deg)`;
 
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
             updateEnergyBar();
 
-            if (navigator.vibrate) navigator.vibrate(100);
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            // Сохранение монет и энергии
+            updateBalance();
+            localStorage.setItem('energy', energy);
         }
     }
 
@@ -96,6 +88,7 @@ const Game = (function() {
         const now = Date.now();
         if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
             lastPredictionTime = now;
+            localStorage.setItem('lastPredictionTime', lastPredictionTime);
             AudioManager.playPredictionSound();
             Modal.open('prediction-modal');
 
@@ -104,6 +97,7 @@ const Game = (function() {
 
             coins += Math.floor(Math.random() * (550 - 250 + 1)) + 250;
             document.getElementById('coin-count').textContent = coins;
+            updateBalance();
             startPredictionCountdown();
             createConfetti();
 
@@ -112,36 +106,22 @@ const Game = (function() {
             predictionHistory.unshift({ prediction, date });
             updatePredictionHistory();
 
+            // Сохраняем историю и использованные предсказания
+            localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
+            localStorage.setItem('usedPredictions', JSON.stringify(usedPredictions));
+
             // Выдача билетиков за предсказание
             const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
             tickets += ticketAmount;
             document.getElementById('ticket-count').textContent = tickets;
             showTicketNotification(ticketAmount);
+            localStorage.setItem('tickets', tickets);
         }
     }
 
     function getRandomPrediction() {
         const predictions = [
-            "Сегодня удача улыбнется вам во всех начинаниях. Не упустите свой шанс!",
-            "Впереди вас ждет важная встреча, которая может изменить вашу жизнь. Будьте готовы!",
-            "Улыбайтесь чаще, и мир улыбнется вам в ответ. Позитивный настрой - ключ к успеху!",
-            "Удача будет сопровождать вас весь день. Смело беритесь за новые проекты!",
-            "Сегодня вы найдете решение давней проблемы. Доверьтесь своей интуиции!",
-            "Неожиданная хорошая новость поднимет вам настроение и вдохновит на новые свершения.",
-            "Приятный сюрприз ожидает вас сегодня. Будьте внимательны к мелочам!",
-            "Вас ждет неожиданное, но очень приятное событие. Готовьтесь к приятным переменам!",
-            "Встреча с давним другом принесет не только радость, но и новые возможности.",
-            "Терпение и труд все перетрут. Сегодня ваше упорство будет вознаграждено!",
-            "Важный разговор, которого вы ждали, наконец состоится. Будьте честны и открыты.",
-            "Сегодня ваш день! Все будет складываться наилучшим образом.",
-            "Ваши усилия не пройдут даром. Скоро вы увидите плоды своего труда.",
-            "Любовь витает в воздухе. Будьте открыты для новых отношений или укрепления существующих.",
-            "Путешествие, о котором вы мечтали, скоро станет реальностью. Начинайте планировать!",
-            "Сегодня лучше не торопиться. Всему своё время, и ваше время придёт совсем скоро.",
-            "Завтрашний день принесет ещё больше возможностей. Готовьтесь к ним уже сегодня!",
-            "Сохраняйте спокойствие и уверенность, даже если всё идет не по плану. Это ключ к успеху.",
-            "Романтический вечер не за горами. Приготовьтесь к незабываемым моментам!",
-            "Приятный сюрприз ждет вас за ближайшим углом. Будьте внимательны и не пропустите его!"
+            // ... ваши предсказания ...
         ];
         let availablePredictions = predictions.filter(p => !usedPredictions.includes(p));
         if (availablePredictions.length === 0) {
@@ -243,6 +223,7 @@ const Game = (function() {
             energy += 1; // Восполнение по 1 единице каждую секунду
             document.getElementById('energy-count').textContent = energy;
             updateEnergyBar();
+            localStorage.setItem('energy', energy);
         }
     }
 
@@ -274,12 +255,14 @@ const Game = (function() {
             boosterCharges--;
             updateBoosterTimer();
             updateEnergyBar();
+            localStorage.setItem('energy', energy);
+            localStorage.setItem('boosterCharges', boosterCharges);
         }
     }
 
     function updateBoosterTimer() {
         const boosterBtn = document.getElementById('booster');
-        boosterBtn.textContent = `Бустер ${boosterCharges}/6 (01:00)`;
+        boosterBtn.textContent = `Бустер ${boosterCharges}/6`;
     }
 
     function updateTicketCount() {
@@ -300,8 +283,10 @@ const Game = (function() {
             playerExperience -= experienceToLevelUp;
             playerLevel++;
             document.getElementById('player-level').textContent = playerLevel;
+            localStorage.setItem('playerLevel', playerLevel);
         }
         updateProgressBar();
+        localStorage.setItem('playerExperience', playerExperience);
     }
 
     function updateProgressBar() {

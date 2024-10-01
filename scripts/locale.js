@@ -46,7 +46,7 @@ function updateTexts() {
     document.getElementById('friends-btn').textContent = locales[currentLocale].friends;
     document.getElementById('tasks-btn').textContent = locales[currentLocale].tasks;
     document.getElementById('energy-counter').innerHTML = `${locales[currentLocale].energy}: <span class="energy" id="energy-count">1000</span>`;
-    document.getElementById('booster').textContent = `${locales[currentLocale].booster} 6/6 (01:00)`;
+    document.getElementById('booster').textContent = `${locales[currentLocale].booster} 6/6`;
     document.querySelector('.level-container span').textContent = `${locales[currentLocale].level}: <span id="player-level">1</span>`;
     document.getElementById('prediction-timer').textContent = `${locales[currentLocale].next_prediction} <span id="prediction-countdown">00:00</span>`;
     // Кнопка переключения языка
