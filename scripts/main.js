@@ -1,4 +1,7 @@
 // scripts/main.js
+let coins = 10000; // Начальное количество $Daisy для тестирования
+let spinCoins = 10000; // Начальное количество Coin для тестирования
+
 document.addEventListener('DOMContentLoaded', function() {
     // Инициализация модальных окон
     Modal.init();
@@ -20,10 +23,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initMain() {
+    // Загрузка монет из localStorage
+    coins = parseInt(localStorage.getItem('coins')) || coins;
+    spinCoins = parseInt(localStorage.getItem('spinCoins')) || spinCoins;
+    document.getElementById('coin-count').textContent = coins;
+    document.getElementById('spin-coin-count').textContent = spinCoins;
+
     // Анимация загрузки
     setTimeout(() => {
         fadeOutLoadingScreen();
-    }, 3000); // 3 секунды загрузки
+    }, 4000); // 4 секунды загрузки
 
     // Функция плавного исчезновения экрана загрузки
     function fadeOutLoadingScreen() {

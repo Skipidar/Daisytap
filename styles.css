@@ -4,19 +4,64 @@ body {
     margin: 0;
     padding: 0;
     background-color: #000000;
-    font-family: 'Roboto', sans-serif; /* Более красивый шрифт */
+    font-family: 'Dela Gothic One', sans-serif; /* Новый красивый шрифт */
     color: #FFD700;
     overflow: hidden;
 }
 
 .game-container {
     width: 100%;
+    max-width: 360px; /* Ширина под формат 9:16 */
+    margin: 0 auto;
     height: 100vh;
-    background: radial-gradient(circle at center, #000000, #4B0082); /* Градиент от черного к фиолетовому, исходящий из центра */
+    background: radial-gradient(circle at center, #000000, #4B0082);
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
+    border: 2px solid #FFD700; /* Обрамление */
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Кнопка переключения языка */
+#language-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #FFD700;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* Информация об игроке */
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.level-container {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100px;
+    height: 10px;
+    background-color: #333;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background-color: #FFD700;
 }
 
 /* Билеты и $Daisy */
@@ -72,7 +117,7 @@ body {
 }
 
 #booster {
-    background-color: rgba(50, 205, 50, 0.5); /* Прозрачный зелёный */
+    background-color: rgba(50, 205, 50, 0.5);
     color: white;
     padding: 10px 20px;
     border-radius: 10px;
@@ -98,7 +143,8 @@ body {
     animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
     position: absolute;
-    bottom: 100px; /* Под ромашкой */
+    bottom: 100px;
+    left: calc(50% - 70px); /* Центрируем кнопку */
 }
 
 #play-button:hover {
@@ -117,16 +163,44 @@ body {
     }
 }
 
+/* Кнопка отключения звука */
+#sound-toggle {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    bottom: 100px;
+    left: calc(50% + 70px);
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 150;
+}
+
+#sound-toggle img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Таймер до следующего предсказания */
+#prediction-timer {
+    position: absolute;
+    bottom: 60px;
+    font-size: 14px;
+    color: #FFD700;
+    text-align: center;
+    width: 100%;
+}
+
 /* Ромашка */
 .chamomile-container {
     position: relative;
-    width: 300px; /* Увеличено на 1.5 раза (200px * 1.5 = 300px) */
+    width: 300px;
     height: 300px;
     margin: auto;
     display: flex;
     justify-content: center;
     align-items: center;
-    top: -50px; /* Поднимаем ромашку выше по центру */
+    top: -50px;
 }
 
 #chamomile {
@@ -247,7 +321,7 @@ footer .icon {
 }
 
 #prediction-title {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Dela Gothic One', sans-serif;
     font-size: 24px;
     font-weight: bold;
     margin-top: 20px;
@@ -382,89 +456,36 @@ footer .icon {
     height: 100%;
     background: #FFD700;
     border-radius: 5px;
-    animation: load 3s forwards;
+    animation: load 4s forwards;
+    position: relative;
+    overflow: hidden;
 }
 
 @keyframes load {
     from { width: 0%; }
-    to { width: 80%; }
+    to { width: 100%; }
+}
+
+/* Анимация бликов на загрузочной полоске */
+.loading-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50px;
+    width: 50px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    animation: shine 2s infinite;
+}
+
+@keyframes shine {
+    from { left: -50px; }
+    to { left: 100%; }
 }
 
 .fade-out {
     opacity: 0;
     transition: opacity 1s ease-out;
-}
-
-/* Кнопка отключения звука */
-#sound-toggle {
-    width: 60px;
-    height: 60px;
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 150;
-}
-
-#sound-toggle img {
-    width: 100%;
-    height: 100%;
-}
-
-/* Магазин */
-.shop-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.shop-tab {
-    padding: 10px 20px;
-    background-color: rgba(255, 215, 0, 0.3);
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    font-family: 'Roboto', sans-serif;
-    font-size: 12px;
-}
-
-.shop-tab.active, .shop-tab:hover {
-    background-color: rgba(255, 215, 0, 0.6);
-}
-
-.shop-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 20px;
-}
-
-.skin-item {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.skin-item:hover {
-    transform: scale(1.05);
-}
-
-.shop-item-image {
-    width: auto;
-    height: 60px;
-    object-fit: contain;
-}
-
-.skin-price {
-    margin-top: 5px;
-    font-weight: bold;
-    font-size: 12px;
 }
 
 /* Мини-игра "Защити цветок" */
@@ -509,7 +530,7 @@ footer .icon {
     margin-left: 5px;
 }
 
-#game-coins {
+#game-coins, #game-daisy-coins {
     position: absolute;
     top: 10px;
     left: 10px;
@@ -519,7 +540,11 @@ footer .icon {
     color: #FFFFFF;
 }
 
-#game-coins .coin-icon {
+#game-daisy-coins {
+    top: 50px; /* Смещаем вниз, чтобы не перекрывались */
+}
+
+#game-coins .coin-icon, #game-daisy-coins .coin-icon {
     width: 24px;
     height: 24px;
     margin-right: 5px;
@@ -559,7 +584,8 @@ footer .icon {
     border-radius: 10px;
     cursor: pointer;
     font-size: 14px;
-    margin: 10px;
+    margin: 5px;
+    width: 120px;
 }
 
 .replay-btn {
@@ -625,51 +651,8 @@ footer .icon {
     font-weight: bold;
 }
 
-/* Адаптация для мобильных устройств 9:16 */
-@media (max-width: 768px) {
-    .game-container, #protect-flower-game {
-        width: 100%;
-        height: 100vh;
-    }
-
-    #play-button {
-        position: absolute;
-        bottom: 100px; /* Под ромашкой */
-    }
-
-    #sound-toggle {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-    }
-
-    #start-mini-game {
-        bottom: 50px;
-    }
-}
-
-/* Фиксированное соотношение сторон для десктопа */
-@media (min-width: 769px) {
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #000;
-    }
-
-    .game-container, #protect-flower-game {
-        width: 360px; /* Соотношение 9:16 */
-        height: 640px;
-        border: 2px solid #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        position: relative;
-    }
-}
-
 /* Анимация появления букв "Daisy" */
 @keyframes fadeInLetters {
     0% { opacity: 0; }
     100% { opacity: 1; }
 }
-

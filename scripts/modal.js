@@ -1,4 +1,4 @@
-// scripts/modal.js
+// modal.js
 const Modal = (function() {
     function init() {
         // Закрытие модальных окон при нажатии на крестик
@@ -25,29 +25,14 @@ const Modal = (function() {
         setupFriendsModal();
         setupTasksModal();
         setupGiftModal();
+
+        // Локализация
+        setupLocalization();
     }
 
     function open(modalId) {
         const modal = document.getElementById(modalId);
         modal.style.display = 'flex';
-        
-        if (modalId === 'game-over-modal') {
-            // Окно окончания игры, добавляем обработчики кнопок
-            const replayBtn = modal.querySelector('.replay-btn');
-            const exitBtn = modal.querySelector('.exit-btn');
-
-            replayBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для перезапуска игры
-                MiniGame.startGame(); // замените на правильную функцию перезапуска игры
-            });
-
-            exitBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для возврата на главный экран
-                document.querySelector('.game-container').style.display = 'flex';
-            });
-        }
     }
 
     function setupPredictionModal() {
@@ -65,20 +50,6 @@ const Modal = (function() {
             // Логика для опубликовать историю
             alert('Опубликовать историю: Функция в разработке.');
         });
-
-        // Оповещение о получении билетов
-        const observer = new MutationObserver(function(mutationsList, observer) {
-            for(let mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    if (predictionModal.style.display === 'flex') {
-                        // Показать оповещение о билетах
-                        ticketNotification.style.display = 'block';
-                    }
-                }
-            }
-        });
-
-        observer.observe(predictionModal, { childList: true, subtree: true });
     }
 
     function setupAirdropModal() {
@@ -123,6 +94,59 @@ const Modal = (function() {
                 document.getElementById('skin-purchase-modal').style.display = 'none';
             });
         }
+    }
+
+    function setupLocalization() {
+        const locales = {
+            en: {
+                play: "Play",
+                shop: "Shop",
+                airdrop: "Airdrop",
+                rating: "Rating",
+                friends: "Friends",
+                tasks: "Tasks",
+                // Добавьте остальные строки для перевода
+            },
+            ru: {
+                play: "Играть",
+                shop: "Магазин",
+                airdrop: "Airdrop",
+                rating: "Рейтинг",
+                friends: "Друзья",
+                tasks: "Задачи",
+                // Добавьте остальные строки для перевода
+            }
+        };
+
+        let currentLocale = 'ru';
+
+        function setLocale(locale) {
+            currentLocale = locale;
+            localStorage.setItem('locale', locale);
+            updateTexts();
+        }
+
+        function updateTexts() {
+            document.getElementById('play-button').textContent = locales[currentLocale].play;
+            document.getElementById('shop-btn').textContent = locales[currentLocale].shop;
+            document.getElementById('airdrop-btn').textContent = locales[currentLocale].airdrop;
+            document.getElementById('rating-btn').textContent = locales[currentLocale].rating;
+            document.getElementById('friends-btn').textContent = locales[currentLocale].friends;
+            document.getElementById('tasks-btn').textContent = locales[currentLocale].tasks;
+            document.getElementById('language-toggle').textContent = currentLocale === 'ru' ? 'EN' : 'RU';
+            // Обновите остальные элементы интерфейса
+        }
+
+        document.getElementById('language-toggle').addEventListener('click', () => {
+            const newLocale = currentLocale === 'ru' ? 'en' : 'ru';
+            setLocale(newLocale);
+        });
+
+        // При загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLocale = localStorage.getItem('locale') || 'ru';
+            setLocale(savedLocale);
+        });
     }
 
     return {
