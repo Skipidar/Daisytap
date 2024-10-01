@@ -21,7 +21,6 @@ const Modal = (function() {
         setupPredictionModal();
         setupAirdropModal();
         setupRatingModal();
-        setupShopModal();
         setupFriendsModal();
         setupTasksModal();
         setupGiftModal();
@@ -32,66 +31,87 @@ const Modal = (function() {
 
     function open(modalId) {
         const modal = document.getElementById(modalId);
-        modal.style.display = 'flex';
+        if (modal) {
+            modal.style.display = 'flex';
+        }
     }
 
     function setupPredictionModal() {
         const predictionModal = document.getElementById('prediction-modal');
-        const shareBtn = predictionModal.querySelector('.share-btn');
-        const publishBtn = predictionModal.querySelector('.publish-btn');
-        const ticketNotification = document.getElementById('ticket-notification');
+        if (predictionModal) {
+            const shareBtn = predictionModal.querySelector('.share-btn');
+            const publishBtn = predictionModal.querySelector('.publish-btn');
+            const ticketNotification = document.getElementById('ticket-notification');
 
-        shareBtn.addEventListener('click', () => {
-            // Логика для поделиться с друзьями
-            alert('Поделиться с друзьями: Функция в разработке.');
-        });
+            if (shareBtn) {
+                shareBtn.addEventListener('click', () => {
+                    // Логика для поделиться с друзьями
+                    alert('Поделиться с друзьями: Функция в разработке.');
+                });
+            }
 
-        publishBtn.addEventListener('click', () => {
-            // Логика для опубликовать историю
-            alert('Опубликовать историю: Функция в разработке.');
-        });
+            if (publishBtn) {
+                publishBtn.addEventListener('click', () => {
+                    // Логика для опубликовать историю
+                    alert('Опубликовать историю: Функция в разработке.');
+                });
+            }
+        }
     }
 
     function setupAirdropModal() {
         const airdropBtn = document.getElementById('airdrop-btn');
-        airdropBtn.addEventListener('click', () => {
-            Modal.open('airdrop-modal');
-        });
+        if (airdropBtn) {
+            airdropBtn.addEventListener('click', () => {
+                Modal.open('airdrop-modal');
+            });
+        }
     }
 
     function setupRatingModal() {
         const ratingBtn = document.getElementById('rating-btn');
-        ratingBtn.addEventListener('click', () => {
-            Modal.open('rating-modal');
-        });
+        if (ratingBtn) {
+            ratingBtn.addEventListener('click', () => {
+                Modal.open('rating-modal');
+            });
+        }
     }
 
     function setupShopModal() {
         const shopBtn = document.getElementById('shop-btn');
-        shopBtn.addEventListener('click', () => {
-            Modal.open('shop-modal');
-        });
+        if (shopBtn) {
+            shopBtn.addEventListener('click', () => {
+                Modal.open('shop-modal');
+            });
+        }
     }
 
     function setupFriendsModal() {
         const friendsBtn = document.getElementById('friends-btn');
-        friendsBtn.addEventListener('click', () => {
-            Modal.open('friends-modal');
-        });
+        if (friendsBtn) {
+            friendsBtn.addEventListener('click', () => {
+                Modal.open('friends-modal');
+            });
+        }
     }
 
     function setupTasksModal() {
         const tasksBtn = document.getElementById('tasks-btn');
-        tasksBtn.addEventListener('click', () => {
-            Modal.open('tasks-modal');
-        });
+        if (tasksBtn) {
+            tasksBtn.addEventListener('click', () => {
+                Modal.open('tasks-modal');
+            });
+        }
     }
 
     function setupGiftModal() {
         const closeGiftBtn = document.getElementById('close-gift-btn');
         if (closeGiftBtn) {
             closeGiftBtn.addEventListener('click', () => {
-                document.getElementById('skin-purchase-modal').style.display = 'none';
+                const skinPurchaseModal = document.getElementById('skin-purchase-modal');
+                if (skinPurchaseModal) {
+                    skinPurchaseModal.style.display = 'none';
+                }
             });
         }
     }
@@ -105,6 +125,7 @@ const Modal = (function() {
                 rating: "Rating",
                 friends: "Friends",
                 tasks: "Tasks",
+                spinChamomile: "Spin Chamomile",
                 // Добавьте остальные строки для перевода
             },
             ru: {
@@ -114,6 +135,7 @@ const Modal = (function() {
                 rating: "Рейтинг",
                 friends: "Друзья",
                 tasks: "Задачи",
+                spinChamomile: "Крутить ромашку",
                 // Добавьте остальные строки для перевода
             }
         };
@@ -128,19 +150,25 @@ const Modal = (function() {
 
         function updateTexts() {
             document.getElementById('play-button').textContent = locales[currentLocale].play;
-            document.getElementById('shop-btn').textContent = locales[currentLocale].shop;
+            const shopBtn = document.getElementById('shop-btn');
+            if (shopBtn) shopBtn.textContent = locales[currentLocale].shop;
             document.getElementById('airdrop-btn').textContent = locales[currentLocale].airdrop;
             document.getElementById('rating-btn').textContent = locales[currentLocale].rating;
             document.getElementById('friends-btn').textContent = locales[currentLocale].friends;
             document.getElementById('tasks-btn').textContent = locales[currentLocale].tasks;
             document.getElementById('language-toggle').textContent = currentLocale === 'ru' ? 'EN' : 'RU';
+            document.getElementById('start-mini-game').textContent = locales[currentLocale].play;
+            document.getElementById('chamomile').alt = locales[currentLocale].spinChamomile;
             // Обновите остальные элементы интерфейса
         }
 
-        document.getElementById('language-toggle').addEventListener('click', () => {
-            const newLocale = currentLocale === 'ru' ? 'en' : 'ru';
-            setLocale(newLocale);
-        });
+        const languageToggle = document.getElementById('language-toggle');
+        if (languageToggle) {
+            languageToggle.addEventListener('click', () => {
+                const newLocale = currentLocale === 'ru' ? 'en' : 'ru';
+                setLocale(newLocale);
+            });
+        }
 
         // При загрузке страницы
         document.addEventListener('DOMContentLoaded', () => {
