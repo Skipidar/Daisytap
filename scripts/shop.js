@@ -5,22 +5,25 @@ const Shop = (function() {
     let skins = [];
 
     function init() {
-        // Инициализация кнопки магазина (пока скрываем кнопку, если она не нужна)
-        // document.getElementById('shop-btn').addEventListener('click', openShop);
+        // Если кнопка магазина удалена, то обработчик не нужен
+        // Но функция init() всё ещё необходима для инициализации баланса и скинов
 
-        // Инициализация вкладок магазина
-        document.querySelectorAll('.shop-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                const tabName = this.getAttribute('data-tab');
-                loadShopItems(tabName);
+        // Инициализация вкладок магазина (если магазин всё ещё используется)
+        const shopTabs = document.querySelectorAll('.shop-tab');
+        if (shopTabs.length > 0) {
+            shopTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    const tabName = this.getAttribute('data-tab');
+                    loadShopItems(tabName);
+                });
             });
-        });
+        }
 
         // Загрузка сохранённых данных скинов
         const savedSkins = JSON.parse(localStorage.getItem('skins'));
-        if (savedSkins) {
+        if (savedSkins && savedSkins.length > 0) {
             skins = savedSkins;
         } else {
             // Инициализируем скины, если данных нет
@@ -36,6 +39,8 @@ const Shop = (function() {
                 },
                 // Добавьте остальные скины
             ];
+            // Сохраняем скины в localStorage
+            localStorage.setItem('skins', JSON.stringify(skins));
         }
 
         // Обновляем баланс из localStorage
@@ -51,6 +56,8 @@ const Shop = (function() {
 
     function loadShopItems(tabName) {
         const shopContent = document.getElementById('shop-content');
+        if (!shopContent) return;
+
         shopContent.innerHTML = '';
 
         let items = [];
@@ -96,13 +103,24 @@ const Shop = (function() {
 
     function applySkin(skinImage) {
         const chamomile = document.getElementById('chamomile');
-        chamomile.src = skinImage;
+        if (chamomile) {
+            chamomile.src = skinImage;
+        }
     }
 
     // Функции для обновления баланса
     function updateBalance() {
-        document.getElementById('coin-count').textContent = coins;
-        document.getElementById('spin-coin-count').textContent = spinCoins;
+        const coinCountElem = document.getElementById('coin-count');
+        const spinCoinCountElem = document.getElementById('spin-coin-count');
+
+        if (coinCountElem) {
+            coinCountElem.textContent = Math.floor(coins);
+        }
+
+        if (spinCoinCountElem) {
+            spinCoinCountElem.textContent = Math.floor(spinCoins);
+        }
+
         localStorage.setItem('coins', coins);
         localStorage.setItem('spinCoins', spinCoins);
     }
@@ -127,3 +145,4 @@ const Shop = (function() {
         updateBalance
     };
 })();
+
