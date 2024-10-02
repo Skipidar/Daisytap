@@ -1,31 +1,27 @@
-// scripts/game.js
 const Game = (function() {
     let energy = 1000;
     let isFlowerClickable = true;
     let boosterCharges = 6;
     let lastClickTime = 0;
     let rotationAngle = 0;
-    let lastPredictionTime = parseInt(localStorage.getItem('lastPredictionTime')) || 0;
-    let playerLevel = parseInt(localStorage.getItem('playerLevel')) || 1;
-    let playerExperience = parseInt(localStorage.getItem('playerExperience')) || 0;
+    let lastPredictionTime = 0;
+    let playerLevel = 1;
+    let playerExperience = 0;
 
-    // Для неповторяющихся предсказаний
-    let usedPredictions = JSON.parse(localStorage.getItem('usedPredictions')) || [];
-    let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
-
-    // Переменные билетов
-    let tickets = parseInt(localStorage.getItem('tickets')) || 10000;
     let coins = parseInt(localStorage.getItem('coins')) || 10000;
     let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
+    
+    // Для неповторяющихся предсказаний
+    let usedPredictions = [];
+    let predictionHistory = [];
+
+    // Переменные билетов
+    let tickets = 10000; // Начальное количество билетов для теста
+    let lastTicketClaim = 0;
 
     function init() {
-        // Обновление начальных значений билетов и монет
+        // Обновление начальных значений билетов
         updateTicketCount();
-        updateBalance();
-
-        // Обновление уровня и опыта
-        document.getElementById('player-level').textContent = playerLevel;
-        updateProgressBar();
 
         // Обработчик клика по ромашке
         const chamomile = document.getElementById('chamomile');
@@ -40,20 +36,38 @@ const Game = (function() {
         updateBoosterTimer();
         setInterval(updateBoosterTimer, 1000); // Обновление таймера каждую секунду
 
+        // Инициализация получения новых бустеров каждый час
+        setInterval(() => {
+            if (boosterCharges < 6) {
+                boosterCharges++;
+                updateBoosterTimer();
+            }
+        }, 60 * 60 * 1000); // Каждый час
+
         // Обновление энергии
         updateEnergyBar();
 
         // Запуск восполнения энергии
         setInterval(replenishEnergy, 1000); // Каждую секунду
 
+        // Обработчик кнопки "Играть"
+        const playButton = document.getElementById('play-button');
+        playButton.addEventListener('click', () => {
+            Modal.open('protect-flower-game');
+        });
+
         // Запуск таймера до следующего предсказания
         startPredictionCountdown();
 
-        // Обработчик кнопки переключения языка
-        const languageToggle = document.getElementById('language-toggle');
-        languageToggle.addEventListener('click', () => {
-            const newLocale = currentLocale === 'ru' ? 'en' : 'ru';
-            setLocale(newLocale);
+        // Обработчик кнопки "назад" на телефоне
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.key === 'Backspace') {
+                if (isGameRunning) {
+                    endGame();
+                    document.getElementById('protect-flower-game').style.display = 'none';
+                    document.querySelector('.game-container').style.display = 'block';
+                }
+            }
         });
     }
 
@@ -69,26 +83,21 @@ const Game = (function() {
 
             // Вращение по часовой стрелке
             rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
-            chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-            chamomile.style.transform = `rotate(${rotationAngle}deg)`;
+            this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            this.style.transform = `rotate(${rotationAngle}deg)`;
 
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
             updateEnergyBar();
 
-            if (navigator.vibrate) navigator.vibrate(50);
-
-            // Сохранение монет и энергии
-            updateBalance();
-            localStorage.setItem('energy', energy);
+            if (navigator.vibrate) navigator.vibrate(50); // Укороченный виброотклик
         }
     }
 
     function handleChamomileDblClick() {
         const now = Date.now();
-        if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
+        if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) { // Таймер 6 часов
             lastPredictionTime = now;
-            localStorage.setItem('lastPredictionTime', lastPredictionTime);
             AudioManager.playPredictionSound();
             Modal.open('prediction-modal');
 
@@ -97,7 +106,6 @@ const Game = (function() {
 
             coins += Math.floor(Math.random() * (550 - 250 + 1)) + 250;
             document.getElementById('coin-count').textContent = coins;
-            updateBalance();
             startPredictionCountdown();
             createConfetti();
 
@@ -106,22 +114,17 @@ const Game = (function() {
             predictionHistory.unshift({ prediction, date });
             updatePredictionHistory();
 
-            // Сохраняем историю и использованные предсказания
-            localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
-            localStorage.setItem('usedPredictions', JSON.stringify(usedPredictions));
-
             // Выдача билетиков за предсказание
             const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
             tickets += ticketAmount;
             document.getElementById('ticket-count').textContent = tickets;
             showTicketNotification(ticketAmount);
-            localStorage.setItem('tickets', tickets);
         }
     }
 
     function getRandomPrediction() {
         const predictions = [
-            // ... ваши предсказания ...
+            // предсказания
         ];
         let availablePredictions = predictions.filter(p => !usedPredictions.includes(p));
         if (availablePredictions.length === 0) {
@@ -223,7 +226,6 @@ const Game = (function() {
             energy += 1; // Восполнение по 1 единице каждую секунду
             document.getElementById('energy-count').textContent = energy;
             updateEnergyBar();
-            localStorage.setItem('energy', energy);
         }
     }
 
@@ -255,14 +257,12 @@ const Game = (function() {
             boosterCharges--;
             updateBoosterTimer();
             updateEnergyBar();
-            localStorage.setItem('energy', energy);
-            localStorage.setItem('boosterCharges', boosterCharges);
         }
     }
 
     function updateBoosterTimer() {
         const boosterBtn = document.getElementById('booster');
-        boosterBtn.textContent = `Бустер ${boosterCharges}/6`;
+        boosterBtn.textContent = `Бустер ${boosterCharges}/6 (01:00)`;
     }
 
     function updateTicketCount() {
@@ -270,12 +270,26 @@ const Game = (function() {
         ticketCount.textContent = tickets;
     }
 
-    function showTicketNotification(amount) {
-        const ticketNotification = document.getElementById('ticket-notification');
-        ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
-        ticketNotification.style.display = 'block';
+   function declensionTickets(amount) {
+    amount = Math.abs(amount);
+    if (amount % 100 >= 11 && amount % 100 <= 19) {
+        return 'билетов';
+    } else {
+        switch (amount % 10) {
+            case 1: return 'билет';
+            case 2:
+            case 3:
+            case 4: return 'билета';
+            default: return 'билетов';
+        }
     }
+}
 
+   function showTicketNotification(amount) {
+    const ticketNotification = document.getElementById('ticket-notification');
+    ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> ${declensionTickets(amount)}.`;
+    ticketNotification.style.display = 'block';
+   }
     function addExperience(amount) {
         playerExperience += amount;
         const experienceToLevelUp = playerLevel * 1000;
@@ -283,10 +297,8 @@ const Game = (function() {
             playerExperience -= experienceToLevelUp;
             playerLevel++;
             document.getElementById('player-level').textContent = playerLevel;
-            localStorage.setItem('playerLevel', playerLevel);
         }
         updateProgressBar();
-        localStorage.setItem('playerExperience', playerExperience);
     }
 
     function updateProgressBar() {

@@ -1,14 +1,10 @@
-// shop.js
 const Shop = (function() {
     let coins = 10000; // Начальное количество $Daisy для тестирования
     let spinCoins = 10000; // Начальное количество Coin для тестирования
     let skins = [];
 
     function init() {
-        // Если кнопка магазина удалена, то обработчик не нужен
-        // Но функция init() всё ещё необходима для инициализации баланса и скинов
-
-        // Инициализация вкладок магазина (если магазин всё ещё используется)
+        // Инициализация вкладок магазина
         const shopTabs = document.querySelectorAll('.shop-tab');
         if (shopTabs.length > 0) {
             shopTabs.forEach(tab => {
@@ -39,7 +35,6 @@ const Shop = (function() {
                 },
                 // Добавьте остальные скины
             ];
-            // Сохраняем скины в localStorage
             localStorage.setItem('skins', JSON.stringify(skins));
         }
 
@@ -93,7 +88,6 @@ const Shop = (function() {
             coins -= skin.basePrice * skin.level;
             skin.level++;
             updateBalance();
-            // Сохраните уровень скина в localStorage
             localStorage.setItem('skins', JSON.stringify(skins));
             loadShopItems('daisy'); // Обновите отображение магазина
         } else {
@@ -108,7 +102,6 @@ const Shop = (function() {
         }
     }
 
-    // Функции для обновления баланса
     function updateBalance() {
         const coinCountElem = document.getElementById('coin-count');
         const spinCoinCountElem = document.getElementById('spin-coin-count');
@@ -125,7 +118,6 @@ const Shop = (function() {
         localStorage.setItem('spinCoins', spinCoins);
     }
 
-    // Начисление прибыли в час
     function startIncomeTimer() {
         setInterval(() => {
             let totalProfit = 0;
@@ -137,7 +129,6 @@ const Shop = (function() {
         }, 1000);
     }
 
-    // Запуск таймера прибыли при загрузке
     startIncomeTimer();
 
     return {
@@ -145,4 +136,3 @@ const Shop = (function() {
         updateBalance
     };
 })();
-

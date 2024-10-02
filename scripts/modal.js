@@ -1,4 +1,3 @@
-// modal.js
 const Modal = (function() {
     function init() {
         // Закрытие модальных окон при нажатии на крестик
