@@ -251,6 +251,11 @@ const Game = (function() {
 
     function startPredictionCountdown() {
         const countdownElement = document.getElementById('prediction-countdown');
+        if (!countdownElement) {
+            console.error('Элемент с id prediction-countdown не найден');
+            return; // Останавливаем выполнение, если элемента нет
+        }
+
         const interval = setInterval(() => {
             const now = Date.now();
             const remainingTime = (lastPredictionTime + 6 * 60 * 60 * 1000) - now;

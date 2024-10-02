@@ -1,14 +1,10 @@
-// shop.js
 const Shop = (function() {
     let coins = 10000; // Начальное количество $Daisy для тестирования
     let spinCoins = 10000; // Начальное количество Coin для тестирования
     let skins = [];
 
     function init() {
-        // Если кнопка магазина удалена, то обработчик не нужен
-        // Но функция init() всё ещё необходима для инициализации баланса и скинов
-
-        // Инициализация вкладок магазина (если магазин всё ещё используется)
+        // Инициализация вкладок магазина
         const shopTabs = document.querySelectorAll('.shop-tab');
         if (shopTabs.length > 0) {
             shopTabs.forEach(tab => {
@@ -28,18 +24,13 @@ const Shop = (function() {
         } else {
             // Инициализируем скины, если данных нет
             skins = [
-                {
-                    name: 'Chamomile',
-                    level: 1,
-                    maxLevel: 20,
-                    basePrice: 100,
-                    profitPerHour: 10,
-                    image: 'assets/images/chamomile.webp',
-                    installed: true
-                },
-                // Добавьте остальные скины
+                { name: 'Bubble', basePrice: 100, level: 1, maxLevel: 20, profitPerHour: 10, image: 'assets/images/bubble.webp' },
+                { name: 'Rose', basePrice: 200, level: 1, maxLevel: 20, profitPerHour: 20, image: 'assets/images/Rose.webp' },
+                { name: 'Pizza', basePrice: 300, level: 1, maxLevel: 20, profitPerHour: 30, image: 'assets/images/pizza.webp' },
+                { name: 'Pechenka', basePrice: 400, level: 1, maxLevel: 20, profitPerHour: 40, image: 'assets/images/Pechenka.webp' },
+                { name: 'Panda', basePrice: 500, level: 1, maxLevel: 20, profitPerHour: 50, image: 'assets/images/panda.webp' },
+                { name: 'Luna', basePrice: 600, level: 1, maxLevel: 20, profitPerHour: 60, image: 'assets/images/luna.webp' }
             ];
-            // Сохраняем скины в localStorage
             localStorage.setItem('skins', JSON.stringify(skins));
         }
 
@@ -64,9 +55,18 @@ const Shop = (function() {
         if (tabName === 'daisy') {
             items = skins.filter(skin => skin.basePrice > 0);
         } else if (tabName === 'coin') {
-            // Добавьте скины, доступные за Coin
+            items = [
+                { name: 'Vinyl', price: 1, image: 'assets/images/vinyl.webp' },
+                { name: 'Lotus', price: 1, image: 'assets/images/lotus.webp' },
+                { name: 'Pingvin', price: 1, image: 'assets/images/pingvin.webp' },
+                { name: 'Spinner', price: 1, image: 'assets/images/spinner.webp' },
+                { name: 'lpodsolnuh', price: 1, image: 'assets/images/lpodsolnuh.webp' }
+            ];
         } else if (tabName === 'premium') {
-            // Добавьте премиум-скины
+            items = [
+                { name: 'Lion', price: 5000, image: 'assets/images/lion.webp' },
+                { name: 'Fish', price: 5000, image: 'assets/images/fish.webp' }
+            ];
         }
 
         items.forEach(item => {
@@ -74,9 +74,8 @@ const Shop = (function() {
             itemDiv.className = 'skin-item';
             itemDiv.innerHTML = `
                 <img src="${item.image}" alt="${item.name}" class="shop-item-image">
-                <div>${item.name} (Уровень ${item.level}/${item.maxLevel})</div>
-                <div class="skin-price">${item.basePrice * item.level} $Daisy</div>
-                <div class="skin-profit">Прибыль: ${item.profitPerHour * item.level} Coin/час</div>
+                <div>${item.name} (Уровень ${item.level || 1}/${item.maxLevel || 'N/A'})</div>
+                <div class="skin-price">${item.price || item.basePrice} ${tabName === 'coin' ? 'Coin' : '$Daisy'}</div>
             `;
 
             if (item.installed) {
@@ -93,7 +92,6 @@ const Shop = (function() {
             coins -= skin.basePrice * skin.level;
             skin.level++;
             updateBalance();
-            // Сохраните уровень скина в localStorage
             localStorage.setItem('skins', JSON.stringify(skins));
             loadShopItems('daisy'); // Обновите отображение магазина
         } else {
@@ -108,7 +106,6 @@ const Shop = (function() {
         }
     }
 
-    // Функции для обновления баланса
     function updateBalance() {
         const coinCountElem = document.getElementById('coin-count');
         const spinCoinCountElem = document.getElementById('spin-coin-count');
@@ -125,7 +122,6 @@ const Shop = (function() {
         localStorage.setItem('spinCoins', spinCoins);
     }
 
-    // Начисление прибыли в час
     function startIncomeTimer() {
         setInterval(() => {
             let totalProfit = 0;
@@ -137,7 +133,6 @@ const Shop = (function() {
         }, 1000);
     }
 
-    // Запуск таймера прибыли при загрузке
     startIncomeTimer();
 
     return {
@@ -145,4 +140,3 @@ const Shop = (function() {
         updateBalance
     };
 })();
-

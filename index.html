@@ -38,47 +38,49 @@
                     <div class="progress" id="level-progress"></div>
                 </div>
             </div>
-            <!-- Счётчики -->
-            <div class="counters">
-                <div id="coin-counter" class="counter">
-                    <img src="assets/images/goldcoin.webp" alt="Gold Coin" class="coin-icon">
-                    <span class="daisy-coin" id="coin-count">10000</span> $Daisy
-                </div>
-                <div id="secondary-counter-container">
-                    <div id="secondary-coin-counter" class="counter">
-                        <img src="assets/images/silvercoin.webp" alt="Silver Coin" class="coin-icon">
-                        <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
-                    </div>
-                    <div id="energy-counter" class="counter">Энергия: <span class="energy" id="energy-count">1000</span></div>
-                    <button id="booster">Бустер 6/6 (01:00)</button>
-                </div>
-            </div>
-            <!-- Билеты под $Daisy -->
-            <div class="tickets-container">
-                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">200</span>
-            </div>
-
-            <!-- Ромашка -->
-            <div class="chamomile-container">
-                <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
-            </div>
-
-            <!-- Кнопка "Играть" -->
-            <button id="play-button">Играть</button>
-
-            <!-- Таймер до следующего предсказания -->
-            <div id="prediction-timer">До следующего предсказания: <span id="prediction-countdown">06:00:00</span></div>
+        </div>
+        <!-- Таймер предсказаний -->
+        <div id="prediction-timer">
+            До следующего предсказания: <span id="prediction-countdown">06:00:00</span>
         </div>
 
-        <footer>
-            <button id="airdrop-btn">Airdrop</button>
-            <button id="rating-btn">Рейтинг</button>
-            <button id="shop-btn">Магазин</button>
-            <button id="friends-btn">Друзья</button>
-            <button id="tasks-btn">Задачи</button>
-        </footer>
+        <!-- Счётчики -->
+        <div class="counters">
+            <div id="coin-counter" class="counter">
+                <img src="assets/images/goldcoin.webp" alt="Gold Coin" class="coin-icon">
+                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
+            </div>
+            <div id="secondary-counter-container">
+                <div id="secondary-coin-counter" class="counter">
+                    <img src="assets/images/silvercoin.webp" alt="Silver Coin" class="coin-icon">
+                    <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
+                </div>
+                <div id="energy-counter" class="counter">Энергия: <span class="energy" id="energy-count">1000</span></div>
+                <button id="booster">Бустер 6/6 (01:00)</button>
+            </div>
+        </div>
+        <!-- Билеты -->
+        <div class="tickets-container">
+            <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+            <span id="ticket-count">200</span>
+        </div>
+
+        <!-- Ромашка -->
+        <div class="chamomile-container">
+            <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
+        </div>
+
+        <!-- Кнопка "Играть" -->
+        <button id="play-button">Играть</button>
     </div>
+
+    <footer>
+        <button id="airdrop-btn">Airdrop</button>
+        <button id="rating-btn">Рейтинг</button>
+        <button id="shop-btn">Магазин</button>
+        <button id="friends-btn">Друзья</button>
+        <button id="tasks-btn">Задачи</button>
+    </footer>
 
     <!-- Модальные окна -->
     <!-- Предсказание -->
@@ -96,7 +98,6 @@
             </div>
             <div id="predictions-history">
                 <h3>История предсказаний:</h3>
-                <!-- Здесь будут отображаться предыдущие предсказания -->
             </div>
         </div>
     </div>
@@ -117,7 +118,6 @@
             <span class="close-btn">&times;</span>
             <h2>Рейтинг игроков</h2>
             <div id="rating-list">
-                <!-- Тестовый текст -->
                 <p>Тестовый рейтинг скоро будет доступен.</p>
             </div>
         </div>
@@ -130,7 +130,6 @@
             <h2>Друзья</h2>
             <p>Приглашайте друзей! Вы и ваш друг получите бонус в виде монет. Для Telegram друзей с Telegram Premium - особые условия!</p>
             <div id="friends-list">
-                <!-- Тестовый текст -->
                 <p>Тестовый список друзей скоро будет доступен.</p>
             </div>
         </div>
@@ -163,7 +162,6 @@
             <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
             <span id="game-daisy-coin-count">0</span>
         </div>
-        <!-- Кнопка "Старт" внутри мини-игры -->
         <button id="start-mini-game">Старт</button>
     </div>
 
@@ -176,8 +174,6 @@
     <script src="scripts/shop.js"></script>
     <script src="scripts/game.js"></script>
     <script src="scripts/mini-game.js"></script>
-
-    <!-- Подключаем скрипт локализации -->
     <script src="scripts/locale.js"></script>
     <script src="scripts/main.js"></script>
 </body>
