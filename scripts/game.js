@@ -1,3 +1,4 @@
+// scripts/game.js
 const Game = (function() {
     let energy = 1000;
     let isFlowerClickable = true;
@@ -8,15 +9,12 @@ const Game = (function() {
     let playerLevel = 1;
     let playerExperience = 0;
 
-    let coins = parseInt(localStorage.getItem('coins')) || 10000;
-    let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
-    
     // Для неповторяющихся предсказаний
     let usedPredictions = [];
     let predictionHistory = [];
 
     // Переменные билетов
-    let tickets = 10000; // Начальное количество билетов для теста
+    let tickets = 200; // Начальное количество билетов для теста
     let lastTicketClaim = 0;
 
     function init() {
@@ -90,13 +88,13 @@ const Game = (function() {
             animateCoin(e.clientX, e.clientY);
             updateEnergyBar();
 
-            if (navigator.vibrate) navigator.vibrate(50); // Укороченный виброотклик
+            if (navigator.vibrate) navigator.vibrate(100);
         }
     }
 
     function handleChamomileDblClick() {
         const now = Date.now();
-        if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) { // Таймер 6 часов
+        if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
             lastPredictionTime = now;
             AudioManager.playPredictionSound();
             Modal.open('prediction-modal');
@@ -124,7 +122,26 @@ const Game = (function() {
 
     function getRandomPrediction() {
         const predictions = [
-            // предсказания
+            "Сегодня удача улыбнется вам во всех начинаниях. Не упустите свой шанс!",
+            "Впереди вас ждет важная встреча, которая может изменить вашу жизнь. Будьте готовы!",
+            "Улыбайтесь чаще, и мир улыбнется вам в ответ. Позитивный настрой - ключ к успеху!",
+            "Удача будет сопровождать вас весь день. Смело беритесь за новые проекты!",
+            "Сегодня вы найдете решение давней проблемы. Доверьтесь своей интуиции!",
+            "Неожиданная хорошая новость поднимет вам настроение и вдохновит на новые свершения.",
+            "Приятный сюрприз ожидает вас сегодня. Будьте внимательны к мелочам!",
+            "Вас ждет неожиданное, но очень приятное событие. Готовьтесь к приятным переменам!",
+            "Встреча с давним другом принесет не только радость, но и новые возможности.",
+            "Терпение и труд все перетрут. Сегодня ваше упорство будет вознаграждено!",
+            "Важный разговор, которого вы ждали, наконец состоится. Будьте честны и открыты.",
+            "Сегодня ваш день! Все будет складываться наилучшим образом.",
+            "Ваши усилия не пройдут даром. Скоро вы увидите плоды своего труда.",
+            "Любовь витает в воздухе. Будьте открыты для новых отношений или укрепления существующих.",
+            "Путешествие, о котором вы мечтали, скоро станет реальностью. Начинайте планировать!",
+            "Сегодня лучше не торопиться. Всему своё время, и ваше время придёт совсем скоро.",
+            "Завтрашний день принесет ещё больше возможностей. Готовьтесь к ним уже сегодня!",
+            "Сохраняйте спокойствие и уверенность, даже если всё идет не по плану. Это ключ к успеху.",
+            "Романтический вечер не за горами. Приготовьтесь к незабываемым моментам!",
+            "Приятный сюрприз ждет вас за ближайшим углом. Будьте внимательны и не пропустите его!"
         ];
         let availablePredictions = predictions.filter(p => !usedPredictions.includes(p));
         if (availablePredictions.length === 0) {
@@ -270,7 +287,7 @@ const Game = (function() {
         ticketCount.textContent = tickets;
     }
 
-   function declensionTickets(amount) {
+    function declensionTickets(amount) {
     amount = Math.abs(amount);
     if (amount % 100 >= 11 && amount % 100 <= 19) {
         return 'билетов';
@@ -285,11 +302,12 @@ const Game = (function() {
     }
 }
 
-   function showTicketNotification(amount) {
+    function showTicketNotification(amount) {
     const ticketNotification = document.getElementById('ticket-notification');
     ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> ${declensionTickets(amount)}.`;
     ticketNotification.style.display = 'block';
-   }
+}
+
     function addExperience(amount) {
         playerExperience += amount;
         const experienceToLevelUp = playerLevel * 1000;

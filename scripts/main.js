@@ -1,3 +1,4 @@
+// scripts/main.js
 let coins = 10000; // Начальное количество $Daisy для тестирования
 let spinCoins = 10000; // Начальное количество Coin для тестирования
 
@@ -52,7 +53,7 @@ function initMain() {
             span.style.opacity = '0';
             setTimeout(() => {
                 span.style.opacity = '1';
-            }, index * 300); // Задержка 0.3s между буквами
+            }, index * 400); // Задержка 0.3s между буквами
         });
     }
 }

@@ -1,3 +1,4 @@
+// scripts/audio.js
 const AudioManager = (function() {
     let backgroundMusic;
     let oneLevelMusic;
@@ -24,7 +25,6 @@ const AudioManager = (function() {
         levelCompleteSound = new Audio('assets/sounds/1levelcomplete.mp3');
         beeKillSound = new Audio('assets/sounds/beekill.mp3');
 
-        // Настройки громкости
         backgroundMusic.volume = 0.25;
         oneLevelMusic.volume = 0.25;
         electricChaosMusic.volume = 0.25;

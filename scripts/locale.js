@@ -1,3 +1,4 @@
+// scripts/locale.js
 const locales = {
     en: {
         play: "Play",
@@ -55,10 +56,4 @@ function updateTexts() {
 document.addEventListener('DOMContentLoaded', () => {
     const savedLocale = localStorage.getItem('locale') || 'ru';
     setLocale(savedLocale);
-
-    // Переключение языка
-    document.getElementById('language-toggle').addEventListener('click', () => {
-        const newLocale = currentLocale === 'ru' ? 'en' : 'ru';
-        setLocale(newLocale);
-    });
 });

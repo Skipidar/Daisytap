@@ -639,3 +639,20 @@ footer .icon {
 #start-mini-game:hover {
     background-color: #e6c200;
 }
+
+/* Оповещение о получении билетов */
+.ticket-notification {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: rgba(50, 205, 50, 0.8);
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+}
+
+/* Анимация появления букв "Daisy" */
+@keyframes fadeInLetters {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
