@@ -81,12 +81,15 @@ const Game = (function() {
 
             // Вращение по часовой стрелке
             rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
-            this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-            this.style.transform = `rotate(${rotationAngle}deg)`;
+            chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            chamomile.style.transform = `rotate(${rotationAngle}deg)`;
 
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
             updateEnergyBar();
+
+            // Добавляем опыт за клик по ромашке
+            addExperience(50); // Например, 50 опыта за клик
 
             if (navigator.vibrate) navigator.vibrate(100);
         }
@@ -288,25 +291,25 @@ const Game = (function() {
     }
 
     function declensionTickets(amount) {
-    amount = Math.abs(amount);
-    if (amount % 100 >= 11 && amount % 100 <= 19) {
-        return 'билетов';
-    } else {
-        switch (amount % 10) {
-            case 1: return 'билет';
-            case 2:
-            case 3:
-            case 4: return 'билета';
-            default: return 'билетов';
+        amount = Math.abs(amount);
+        if (amount % 100 >= 11 && amount % 100 <= 19) {
+            return 'билетов';
+        } else {
+            switch (amount % 10) {
+                case 1: return 'билет';
+                case 2:
+                case 3:
+                case 4: return 'билета';
+                default: return 'билетов';
+            }
         }
     }
-}
 
     function showTicketNotification(amount) {
-    const ticketNotification = document.getElementById('ticket-notification');
-    ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> ${declensionTickets(amount)}.`;
-    ticketNotification.style.display = 'block';
-}
+        const ticketNotification = document.getElementById('ticket-notification');
+        ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> ${declensionTickets(amount)}.`;
+        ticketNotification.style.display = 'block';
+    }
 
     function addExperience(amount) {
         playerExperience += amount;
@@ -314,7 +317,12 @@ const Game = (function() {
         if (playerExperience >= experienceToLevelUp) {
             playerExperience -= experienceToLevelUp;
             playerLevel++;
-            document.getElementById('player-level').textContent = playerLevel;
+
+            // Проверка наличия элемента
+            const playerLevelElement = document.getElementById('player-level');
+            if (playerLevelElement) {
+                playerLevelElement.textContent = playerLevel;
+            }
         }
         updateProgressBar();
     }
@@ -322,7 +330,12 @@ const Game = (function() {
     function updateProgressBar() {
         const experienceToLevelUp = playerLevel * 1000;
         const progressPercent = (playerExperience / experienceToLevelUp) * 100;
-        document.getElementById('level-progress').style.width = progressPercent + '%';
+
+        // Проверка наличия элемента
+        const progressBarElement = document.getElementById('level-progress');
+        if (progressBarElement) {
+            progressBarElement.style.width = progressPercent + '%';
+        }
     }
 
     function updateBalance() {

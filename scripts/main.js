@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Инициализация игры
     Game.init();
 
+    // Запуск таймера предсказаний
+    startPredictionCountdown();
+	
     // Инициализация мини-игры
     MiniGame.init();
 
