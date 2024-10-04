@@ -1,4 +1,3 @@
-// scripts/mini-game.js
 const MiniGame = (function () {
     let gameTime = 60; // 1 минута для уровня
     let bees = [];

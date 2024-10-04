@@ -67,15 +67,12 @@ const Game = (function() {
 
             // Вращение по часовой стрелке
             rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
-            e.target.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-            e.target.style.transform = `rotate(${rotationAngle}deg)`;
+            this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            this.style.transform = `rotate(${rotationAngle}deg)`;
 
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
             updateEnergyBar();
-
-            // Вибро-отклик при нажатии
-            navigator.vibrate(100);
         }
     }
 

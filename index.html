@@ -1,5 +1,10 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ru">
+<!-- Кнопка смены локализации -->
+<button id="language-toggle">
+    <img src="assets/images/language-icon.webp" alt="Язык" class="language-icon">
+</button>
 <head>
     <meta charset="UTF-8">
     <title>Игра Ромашка</title>
@@ -10,11 +15,6 @@
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Кнопка смены локализации -->
-    <button id="language-toggle" style="position: fixed; top: 20px; left: 20px; z-index: 100;">
-        <img src="assets/images/language-icon.webp" alt="Язык" class="language-icon">
-    </button>
-
     <!-- Анимация загрузки -->
     <div id="loading-screen">
         <div class="loading-text">
@@ -26,7 +26,7 @@
     </div>
 
     <!-- Кнопка отключения звука -->
-    <button id="sound-toggle" style="position: fixed; top: 20px; right: 20px; z-index: 100;">
+    <button id="sound-toggle">
         <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
     </button>
 
@@ -59,7 +59,7 @@
         </div>
 
         <!-- Кнопка "Играть" -->
-        <button id="play-button" style="position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 100;">Играть</button>
+        <button id="play-button">Играть</button>
 
         <footer>
             <button id="airdrop-btn">Airdrop</button>
@@ -153,10 +153,20 @@
         </div>
     </div>
 
+    <!-- Модальное окно покупки скина -->
+    <div id="skin-purchase-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Поздравляем!</h2>
+            <p>Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
+            <button id="close-gift-btn">Закрыть</button>
+        </div>
+    </div>
+
     <!-- Мини-игра "Защити цветок" -->
     <div id="protect-flower-game" class="game-screen" style="display: none;">
         <canvas id="game-canvas"></canvas>
-        <div id="game-timer">02:00</div>
+        <div id="game-timer">01:00</div>
         <div id="game-lives">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
@@ -175,7 +185,7 @@
 
     <!-- Подключаем скрипты -->
     <script src="scripts/audio.js"></script>
-    <script src="scripts/localization.js"></script>
+	<script src="scripts/localization.js"></script>
     <script src="scripts/modal.js"></script>
     <script src="scripts/shop.js"></script>
     <script src="scripts/game.js"></script>
