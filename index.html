@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -23,19 +22,19 @@
         </div>
     </div>
 
-	<!-- Кнопки переключения языка и звука на уровне кнопки "Играть" -->
-	<div class="button-group">
-		<!-- Кнопка смены локализации -->
-		<button id="language-toggle">RU</button>
+    <!-- Главные кнопки на главном экране -->
+    <div class="button-group">
+        <!-- Кнопка смены локализации -->
+        <button id="language-toggle">RU</button>
 
-		<!-- Кнопка "Играть" -->
-		<button id="play-button">Играть</button>
+        <!-- Кнопка "Играть" -->
+        <button id="play-button">Играть</button>
 
-		<!-- Кнопка отключения звука -->
-		<button id="sound-toggle">
-		<img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
-		</button>
-	</div>
+        <!-- Кнопка отключения звука -->
+        <button id="sound-toggle">
+            <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
+        </button>
+    </div>
 
     <div class="game-container" style="display: none;">
         <!-- Билеты под $Daisy -->
@@ -170,7 +169,7 @@
     <!-- Мини-игра "Защити цветок" -->
     <div id="protect-flower-game" class="game-screen" style="display: none;">
         <canvas id="game-canvas"></canvas>
-        <div id="game-timer">02:00</div>
+        <div id="game-timer">01:00</div>
         <div id="game-lives">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
@@ -188,8 +187,8 @@
     <canvas id="confetti-canvas"></canvas>
 
     <!-- Подключаем скрипты -->
-	<script src="scripts/loading.js"></script>
-	<script src="scripts/localization.js"></script>
+    <script src="scripts/loading.js"></script>
+    <script src="scripts/localization.js"></script>
     <script src="scripts/audio.js"></script>
     <script src="scripts/modal.js"></script>
     <script src="scripts/shop.js"></script>
