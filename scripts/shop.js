@@ -1,7 +1,27 @@
 // scripts/shop.js
 const Shop = (function() {
-    let coins = 200; // Начальное количество $Daisy
-    let spinCoins = 0;
+    let coins = parseInt(localStorage.getItem('coins')) || 10000;
+    let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
+    let ownedSkins = JSON.parse(localStorage.getItem('ownedSkins')) || {'chamomile': {level: 1, equipped: true}}; // Ромашка установлена по умолчанию
+    let incomePerHour = parseInt(localStorage.getItem('incomePerHour')) || 0;
+
+    const skinsData = {
+        // Скины доступные в магазине
+        'chamomile': {name: 'Chamomile', price: 0, currency: '$Daisy', image: 'assets/images/chamomile.webp', income: 1},
+        'bubble': {name: 'Bubble', price: 100, currency: '$Daisy', image: 'assets/images/bubble.webp', income: 2},
+        'rose': {name: 'Rose', price: 200, currency: '$Daisy', image: 'assets/images/Rose.webp', income: 3},
+        'pizza': {name: 'Pizza', price: 300, currency: '$Daisy', image: 'assets/images/pizza.webp', income: 4},
+        'pechenka': {name: 'Pechenka', price: 400, currency: '$Daisy', image: 'assets/images/Pechenka.webp', income: 5},
+        'panda': {name: 'Panda', price: 500, currency: '$Daisy', image: 'assets/images/panda.webp', income: 6},
+        'luna': {name: 'Luna', price: 600, currency: '$Daisy', image: 'assets/images/luna.webp', income: 7},
+        'vinyl': {name: 'Vinyl', price: 1000, currency: 'Coin', image: 'assets/images/vinyl.webp', income: 1},
+        'lotus': {name: 'Lotus', price: 1000, currency: 'Coin', image: 'assets/images/lotus.webp', income: 1},
+        'pingvin': {name: 'Pingvin', price: 1000, currency: 'Coin', image: 'assets/images/pingvin.webp', income: 1},
+        'spinner': {name: 'Spinner', price: 1000, currency: 'Coin', image: 'assets/images/spinner.webp', income: 1},
+        'lpodsolnuh': {name: 'Lpodsolnuh', price: 1000, currency: 'Coin', image: 'assets/images/lpodsolnuh.webp', income: 1},
+        'lion': {name: 'Lion', price: 5000, currency: '$Daisy', image: 'assets/images/lion.webp', income: 10},
+        'fish': {name: 'Fish', price: 5000, currency: '$Daisy', image: 'assets/images/fish.webp', income: 10}
+    };
 
     function init() {
         // Инициализация кнопки магазина
@@ -16,6 +36,14 @@ const Shop = (function() {
                 loadShopItems(tabName);
             });
         });
+
+        // Обновляем пассивный доход
+        calculateIncomePerHour();
+        document.getElementById('income-per-hour').textContent = incomePerHour;
+        localStorage.setItem('incomePerHour', incomePerHour);
+
+        // Устанавливаем текущий скин
+        setEquippedSkin();
     }
 
     function openShop() {
@@ -28,28 +56,15 @@ const Shop = (function() {
         shopContent.innerHTML = '';
 
         let items = [];
-        if (tabName === 'daisy') {
-            items = [
-                { name: 'Bubble', price: 100, image: 'assets/images/bubble.webp' },
-                { name: 'Rose', price: 200, image: 'assets/images/Rose.webp' },
-                { name: 'Pizza', price: 300, image: 'assets/images/pizza.webp' },
-                { name: 'Pechenka', price: 400, image: 'assets/images/Pechenka.webp' },
-                { name: 'Panda', price: 500, image: 'assets/images/panda.webp' },
-                { name: 'Luna', price: 600, image: 'assets/images/luna.webp' }
-            ];
-        } else if (tabName === 'coin') {
-            items = [
-                { name: 'Vinyl', price: 1, image: 'assets/images/vinyl.webp' },
-                { name: 'Lotus', price: 1, image: 'assets/images/lotus.webp' },
-                { name: 'Pingvin', price: 1, image: 'assets/images/pingvin.webp' },
-                { name: 'Spinner', price: 1, image: 'assets/images/spinner.webp' },
-                { name: 'lpodsolnuh', price: 1, image: 'assets/images/lpodsolnuh.webp' }
-            ];
-        } else if (tabName === 'premium') {
-            items = [
-                { name: 'Lion', price: 5000, image: 'assets/images/lion.webp' },
-                { name: 'Fish', price: 5000, image: 'assets/images/fish.webp' }
-            ];
+        for (let key in skinsData) {
+            const skin = skinsData[key];
+            if (tabName === 'daisy' && skin.currency === '$Daisy' && skin.price < 5000) {
+                items.push({...skin, id: key});
+            } else if (tabName === 'coin' && skin.currency === 'Coin') {
+                items.push({...skin, id: key});
+            } else if (tabName === 'premium' && skin.price >= 5000) {
+                items.push({...skin, id: key});
+            }
         }
 
         items.forEach(item => {
@@ -58,35 +73,134 @@ const Shop = (function() {
             itemDiv.innerHTML = `
                 <img src="${item.image}" alt="${item.name}" class="shop-item-image">
                 <div>${item.name}</div>
-                <div class="skin-price">${item.price} ${tabName === 'coin' ? 'Coin' : '$Daisy'}</div>
+                <div class="skin-price">${item.price} ${item.currency}</div>
+                <div class="skin-level">${getSkinStatus(item.id)}</div>
             `;
-            itemDiv.addEventListener('click', () => purchaseItem(item, tabName));
+            itemDiv.addEventListener('click', () => purchaseOrUpgradeItem(item));
             shopContent.appendChild(itemDiv);
         });
     }
 
-    function purchaseItem(item, tabName) {
-        const coinCount = document.getElementById('coin-count');
-        const spinCoinCount = document.getElementById('spin-coin-count');
+    function getSkinStatus(skinId) {
+        if (ownedSkins[skinId]) {
+            if (ownedSkins[skinId].equipped) {
+                return 'Установлено';
+            } else {
+                return `Уровень ${ownedSkins[skinId].level}`;
+            }
+        } else {
+            return '';
+        }
+    }
 
-        if ((tabName === 'daisy' && coins >= item.price) || (tabName === 'coin' && spinCoins >= item.price)) {
-            if (tabName === 'daisy') {
+    function purchaseOrUpgradeItem(item) {
+        if (ownedSkins[item.id]) {
+            // Если скин уже куплен, предлагаем улучшить или установить
+            showSkinOptions(item);
+        } else {
+            // Иначе предлагаем купить
+            purchaseItem(item);
+        }
+    }
+
+    function showSkinOptions(item) {
+        const options = confirm(`Скин "${item.name}" уже куплен. Хотите улучшить уровень или установить его?\nOK - Улучшить\nОтмена - Установить`);
+        if (options) {
+            upgradeSkin(item);
+        } else {
+            applySkin(item.id);
+            alert(`Скин "${item.name}" установлен.`);
+            loadShopItems(document.querySelector('.shop-tab.active').getAttribute('data-tab'));
+        }
+    }
+
+    function purchaseItem(item) {
+        if ((item.currency === '$Daisy' && coins >= item.price) || (item.currency === 'Coin' && spinCoins >= item.price)) {
+            if (item.currency === '$Daisy') {
                 coins -= item.price;
-                coinCount.textContent = coins;
+                document.getElementById('coin-count').textContent = coins;
+                localStorage.setItem('coins', coins);
             } else {
                 spinCoins -= item.price;
-                spinCoinCount.textContent = spinCoins;
+                document.getElementById('spin-coin-count').textContent = spinCoins;
+                localStorage.setItem('spinCoins', spinCoins);
             }
-            applySkin(item.image);
+            ownedSkins[item.id] = {level: 1, equipped: false};
+            localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
+            calculateIncomePerHour();
+            applySkin(item.id);
+            loadShopItems(document.querySelector('.shop-tab.active').getAttribute('data-tab'));
             showSkinPurchaseModal(item.name);
         } else {
             alert('Недостаточно средств!');
         }
     }
 
-    function applySkin(skinImage) {
+    function upgradeSkin(item) {
+        const skin = ownedSkins[item.id];
+        if (skin.level >= 20) {
+            alert('Максимальный уровень достигнут!');
+            return;
+        }
+        const upgradeCost = calculateUpgradeCost(item, skin.level);
+        if ((item.currency === '$Daisy' && coins >= upgradeCost) || (item.currency === 'Coin' && spinCoins >= upgradeCost)) {
+            if (item.currency === '$Daisy') {
+                coins -= upgradeCost;
+                document.getElementById('coin-count').textContent = coins;
+                localStorage.setItem('coins', coins);
+            } else {
+                spinCoins -= upgradeCost;
+                document.getElementById('spin-coin-count').textContent = spinCoins;
+                localStorage.setItem('spinCoins', spinCoins);
+            }
+            skin.level += 1;
+            ownedSkins[item.id] = skin;
+            localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
+            calculateIncomePerHour();
+            loadShopItems(document.querySelector('.shop-tab.active').getAttribute('data-tab'));
+            alert(`Скин "${item.name}" улучшен до уровня ${skin.level}!`);
+        } else {
+            alert('Недостаточно средств для улучшения!');
+        }
+    }
+
+    function calculateUpgradeCost(item, currentLevel) {
+        // Формула увеличения стоимости с каждым уровнем
+        return Math.floor(item.price * (currentLevel + 1) * 1.5);
+    }
+
+    function calculateIncomePerHour() {
+        incomePerHour = 0;
+        for (let skinId in ownedSkins) {
+            const skin = ownedSkins[skinId];
+            const skinData = skinsData[skinId];
+            incomePerHour += skinData.income * skin.level;
+        }
+        document.getElementById('income-per-hour').textContent = incomePerHour;
+        localStorage.setItem('incomePerHour', incomePerHour);
+    }
+
+    function applySkin(skinId) {
+        // Снимаем предыдущий скин
+        for (let id in ownedSkins) {
+            ownedSkins[id].equipped = false;
+        }
+        // Устанавливаем новый скин
+        ownedSkins[skinId].equipped = true;
+        localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
+
         const chamomile = document.getElementById('chamomile');
-        chamomile.src = skinImage;
+        chamomile.src = skinsData[skinId].image;
+    }
+
+    function setEquippedSkin() {
+        for (let skinId in ownedSkins) {
+            if (ownedSkins[skinId].equipped) {
+                const chamomile = document.getElementById('chamomile');
+                chamomile.src = skinsData[skinId].image;
+                break;
+            }
+        }
     }
 
     function showSkinPurchaseModal(skinName) {
@@ -100,6 +214,7 @@ const Shop = (function() {
         let tickets = parseInt(document.getElementById('ticket-count').textContent, 10);
         tickets += giftAmount;
         document.getElementById('ticket-count').textContent = tickets;
+        localStorage.setItem('tickets', tickets);
     }
 
     // Функции для обновления баланса из других модулей

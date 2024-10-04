@@ -25,28 +25,20 @@ const Modal = (function() {
         setupFriendsModal();
         setupTasksModal();
         setupGiftModal();
+
+        // Обработчик кнопки "Играть"
+        document.getElementById('play-button').addEventListener('click', function() {
+            document.querySelector('.game-container').style.display = 'none';
+            document.getElementById('protect-flower-game').style.display = 'flex';
+        });
     }
 
     function open(modalId) {
         const modal = document.getElementById(modalId);
         modal.style.display = 'flex';
-        
-        if (modalId === 'game-over-modal') {
-            // Окно окончания игры, добавляем обработчики кнопок
-            const replayBtn = modal.querySelector('.replay-btn');
-            const exitBtn = modal.querySelector('.exit-btn');
 
-            replayBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для перезапуска игры
-                MiniGame.startGame(); // замените на правильную функцию перезапуска игры
-            });
-
-            exitBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для возврата на главный экран
-                document.querySelector('.game-container').style.display = 'flex';
-            });
+        if (modalId === 'prediction-modal') {
+            updatePredictionHistory();
         }
     }
 
@@ -57,62 +49,46 @@ const Modal = (function() {
         const ticketNotification = document.getElementById('ticket-notification');
 
         shareBtn.addEventListener('click', () => {
-            // Логика для поделиться с друзьями
             alert('Поделиться с друзьями: Функция в разработке.');
         });
 
         publishBtn.addEventListener('click', () => {
-            // Логика для опубликовать историю
             alert('Опубликовать историю: Функция в разработке.');
         });
-
-        // Оповещение о получении билетов
-        const observer = new MutationObserver(function(mutationsList, observer) {
-            for(let mutation of mutationsList) {
-                if (mutation.type === 'childList') {
-                    if (predictionModal.style.display === 'flex') {
-                        // Показать оповещение о билетах
-                        ticketNotification.style.display = 'block';
-                    }
-                }
-            }
-        });
-
-        observer.observe(predictionModal, { childList: true, subtree: true });
     }
 
     function setupAirdropModal() {
         const airdropBtn = document.getElementById('airdrop-btn');
         airdropBtn.addEventListener('click', () => {
-            Modal.open('airdrop-modal');
+            open('airdrop-modal');
         });
     }
 
     function setupRatingModal() {
         const ratingBtn = document.getElementById('rating-btn');
         ratingBtn.addEventListener('click', () => {
-            Modal.open('rating-modal');
+            open('rating-modal');
         });
     }
 
     function setupShopModal() {
         const shopBtn = document.getElementById('shop-btn');
         shopBtn.addEventListener('click', () => {
-            Modal.open('shop-modal');
+            open('shop-modal');
         });
     }
 
     function setupFriendsModal() {
         const friendsBtn = document.getElementById('friends-btn');
         friendsBtn.addEventListener('click', () => {
-            Modal.open('friends-modal');
+            open('friends-modal');
         });
     }
 
     function setupTasksModal() {
         const tasksBtn = document.getElementById('tasks-btn');
         tasksBtn.addEventListener('click', () => {
-            Modal.open('tasks-modal');
+            open('tasks-modal');
         });
     }
 
@@ -125,8 +101,25 @@ const Modal = (function() {
         }
     }
 
+    function updatePredictionHistory() {
+        const predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
+        const historyContainer = document.getElementById('predictions-history');
+        historyContainer.innerHTML = '<h3 data-localize="prediction_history">История предсказаний:</h3>';
+        predictionHistory.forEach(item => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <p>${item.prediction}</p>
+                <p class="history-date">${item.date}</p>
+            `;
+            historyContainer.appendChild(historyItem);
+        });
+    }
+
     return {
         init,
         open
     };
 })();
+
+document.addEventListener('DOMContentLoaded', Modal.init);

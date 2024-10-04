@@ -1,3 +1,4 @@
+// scripts/audio.js
 const AudioManager = (function() {
     let backgroundMusic;
     let oneLevelMusic;
@@ -8,9 +9,10 @@ const AudioManager = (function() {
     let heartPlusSound;
     let moneySound;
     let levelCompleteSound;
-    let beeKillSound; // Добавляем переменную для звука убийства пчелы
+    let beeKillSound;
 
-    let soundEnabled = true;
+    let soundEnabled = JSON.parse(localStorage.getItem('soundEnabled'));
+    if (soundEnabled === null) soundEnabled = true;
 
     function init() {
         backgroundMusic = new Audio('assets/sounds/backgroundmusic.mp3');
@@ -22,9 +24,9 @@ const AudioManager = (function() {
         heartPlusSound = new Audio('assets/sounds/heartplus.mp3');
         moneySound = new Audio('assets/sounds/moneyi.mp3');
         levelCompleteSound = new Audio('assets/sounds/1levelcomplete.mp3');
-        beeKillSound = new Audio('assets/sounds/beekill.mp3'); // Добавляем звук убийства пчелы
+        beeKillSound = new Audio('assets/sounds/beekill.mp3');
 
-        // Установка громкости (уменьшено на 50%)
+        // Установка громкости
         backgroundMusic.volume = 0.25;
         oneLevelMusic.volume = 0.25;
         electricChaosMusic.volume = 0.25;
@@ -34,35 +36,55 @@ const AudioManager = (function() {
         heartPlusSound.volume = 0.2;
         moneySound.volume = 0.2;
         levelCompleteSound.volume = 0.3;
-        beeKillSound.volume = 0.2; // Устанавливаем громкость для звука убийства пчелы
+        beeKillSound.volume = 0.2;
 
         backgroundMusic.loop = true;
         oneLevelMusic.loop = true;
         electricChaosMusic.loop = true;
 
         // Автоматическое воспроизведение фоновой музыки
-        backgroundMusic.play().catch(error => {
-            console.warn('Автоматическое воспроизведение музыки заблокировано:', error);
-        });
+        if (soundEnabled) {
+            backgroundMusic.play().catch(error => {
+                console.warn('Автоматическое воспроизведение музыки заблокировано:', error);
+            });
+        }
 
         // Обработка кнопки отключения звука
         const soundToggle = document.getElementById('sound-toggle');
         soundToggle.addEventListener('click', toggleSound);
+
+        updateSoundIcon();
     }
 
     function toggleSound() {
         soundEnabled = !soundEnabled;
-        const soundIcon = document.getElementById('sound-icon');
+        localStorage.setItem('soundEnabled', soundEnabled);
+        updateSoundIcon();
+
         if (soundEnabled) {
-            soundIcon.src = 'assets/images/on.webp';
             backgroundMusic.play();
             if (!oneLevelMusic.paused) oneLevelMusic.play();
             if (!electricChaosMusic.paused) electricChaosMusic.play();
         } else {
-            soundIcon.src = 'assets/images/off.webp';
             backgroundMusic.pause();
             oneLevelMusic.pause();
             electricChaosMusic.pause();
+            clickSound.pause();
+            predictionSound.pause();
+            udarSound.pause();
+            heartPlusSound.pause();
+            moneySound.pause();
+            levelCompleteSound.pause();
+            beeKillSound.pause();
+        }
+    }
+
+    function updateSoundIcon() {
+        const soundIcon = document.getElementById('sound-icon');
+        if (soundEnabled) {
+            soundIcon.src = 'assets/images/on.webp';
+        } else {
+            soundIcon.src = 'assets/images/off.webp';
         }
     }
 
@@ -91,7 +113,7 @@ const AudioManager = (function() {
     }
 
     function playBeeKillSound() {
-        if (soundEnabled) beeKillSound.play(); // Воспроизведение звука убийства пчелы
+        if (soundEnabled) beeKillSound.play();
     }
 
     function playOneLevelMusic() {
@@ -104,7 +126,6 @@ const AudioManager = (function() {
 
     function pauseOneLevelMusic() {
         oneLevelMusic.pause();
-        backgroundMusic.play();
     }
 
     function playElectricChaosMusic() {
@@ -117,7 +138,12 @@ const AudioManager = (function() {
 
     function pauseElectricChaosMusic() {
         electricChaosMusic.pause();
-        backgroundMusic.play();
+    }
+
+    function playBackgroundMusic() {
+        if (soundEnabled) {
+            backgroundMusic.play();
+        }
     }
 
     return {
@@ -129,10 +155,11 @@ const AudioManager = (function() {
         playHeartPlusSound,
         playMoneySound,
         playLevelCompleteSound,
-        playBeeKillSound, // Добавляем метод для воспроизведения звука убийства пчелы
+        playBeeKillSound,
         playOneLevelMusic,
         pauseOneLevelMusic,
         playElectricChaosMusic,
-        pauseElectricChaosMusic
+        pauseElectricChaosMusic,
+        playBackgroundMusic
     };
 })();

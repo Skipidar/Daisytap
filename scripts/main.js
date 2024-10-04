@@ -1,10 +1,13 @@
 // scripts/main.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация модальных окон
-    Modal.init();
-
     // Инициализация аудио
     AudioManager.init();
+
+    // Инициализация локализации
+    Localization.init();
+
+    // Инициализация модальных окон
+    Modal.init();
 
     // Инициализация магазина
     Shop.init();
