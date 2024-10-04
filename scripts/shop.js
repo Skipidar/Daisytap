@@ -1,43 +1,21 @@
+// scripts/shop.js
 const Shop = (function() {
-    let coins = 10000; // Начальное количество $Daisy для тестирования
-    let spinCoins = 10000; // Начальное количество Coin для тестирования
-    let skins = [];
+    let coins = 200; // Начальное количество $Daisy
+    let spinCoins = 0;
 
     function init() {
+        // Инициализация кнопки магазина
+        document.getElementById('shop-btn').addEventListener('click', openShop);
+
         // Инициализация вкладок магазина
-        const shopTabs = document.querySelectorAll('.shop-tab');
-        if (shopTabs.length > 0) {
-            shopTabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    const tabName = this.getAttribute('data-tab');
-                    loadShopItems(tabName);
-                });
+        document.querySelectorAll('.shop-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const tabName = this.getAttribute('data-tab');
+                loadShopItems(tabName);
             });
-        }
-
-        // Загрузка сохранённых данных скинов
-        const savedSkins = JSON.parse(localStorage.getItem('skins'));
-        if (savedSkins && savedSkins.length > 0) {
-            skins = savedSkins;
-        } else {
-            // Инициализируем скины, если данных нет
-            skins = [
-                { name: 'Bubble', basePrice: 100, level: 1, maxLevel: 20, profitPerHour: 10, image: 'assets/images/bubble.webp' },
-                { name: 'Rose', basePrice: 200, level: 1, maxLevel: 20, profitPerHour: 20, image: 'assets/images/Rose.webp' },
-                { name: 'Pizza', basePrice: 300, level: 1, maxLevel: 20, profitPerHour: 30, image: 'assets/images/pizza.webp' },
-                { name: 'Pechenka', basePrice: 400, level: 1, maxLevel: 20, profitPerHour: 40, image: 'assets/images/Pechenka.webp' },
-                { name: 'Panda', basePrice: 500, level: 1, maxLevel: 20, profitPerHour: 50, image: 'assets/images/panda.webp' },
-                { name: 'Luna', basePrice: 600, level: 1, maxLevel: 20, profitPerHour: 60, image: 'assets/images/luna.webp' }
-            ];
-            localStorage.setItem('skins', JSON.stringify(skins));
-        }
-
-        // Обновляем баланс из localStorage
-        coins = parseInt(localStorage.getItem('coins')) || coins;
-        spinCoins = parseInt(localStorage.getItem('spinCoins')) || spinCoins;
-        updateBalance();
+        });
     }
 
     function openShop() {
@@ -47,13 +25,18 @@ const Shop = (function() {
 
     function loadShopItems(tabName) {
         const shopContent = document.getElementById('shop-content');
-        if (!shopContent) return;
-
         shopContent.innerHTML = '';
 
         let items = [];
         if (tabName === 'daisy') {
-            items = skins.filter(skin => skin.basePrice > 0);
+            items = [
+                { name: 'Bubble', price: 100, image: 'assets/images/bubble.webp' },
+                { name: 'Rose', price: 200, image: 'assets/images/Rose.webp' },
+                { name: 'Pizza', price: 300, image: 'assets/images/pizza.webp' },
+                { name: 'Pechenka', price: 400, image: 'assets/images/Pechenka.webp' },
+                { name: 'Panda', price: 500, image: 'assets/images/panda.webp' },
+                { name: 'Luna', price: 600, image: 'assets/images/luna.webp' }
+            ];
         } else if (tabName === 'coin') {
             items = [
                 { name: 'Vinyl', price: 1, image: 'assets/images/vinyl.webp' },
@@ -74,66 +57,58 @@ const Shop = (function() {
             itemDiv.className = 'skin-item';
             itemDiv.innerHTML = `
                 <img src="${item.image}" alt="${item.name}" class="shop-item-image">
-                <div>${item.name} (Уровень ${item.level || 1}/${item.maxLevel || 'N/A'})</div>
-                <div class="skin-price">${item.price || item.basePrice} ${tabName === 'coin' ? 'Coin' : '$Daisy'}</div>
+                <div>${item.name}</div>
+                <div class="skin-price">${item.price} ${tabName === 'coin' ? 'Coin' : '$Daisy'}</div>
             `;
-
-            if (item.installed) {
-                itemDiv.innerHTML += '<div class="installed-label">Установлено</div>';
-            }
-
-            itemDiv.addEventListener('click', () => purchaseSkin(item));
+            itemDiv.addEventListener('click', () => purchaseItem(item, tabName));
             shopContent.appendChild(itemDiv);
         });
     }
 
-    function purchaseSkin(skin) {
-        if (skin.level < skin.maxLevel && coins >= skin.basePrice * skin.level) {
-            coins -= skin.basePrice * skin.level;
-            skin.level++;
-            updateBalance();
-            localStorage.setItem('skins', JSON.stringify(skins));
-            loadShopItems('daisy'); // Обновите отображение магазина
+    function purchaseItem(item, tabName) {
+        const coinCount = document.getElementById('coin-count');
+        const spinCoinCount = document.getElementById('spin-coin-count');
+
+        if ((tabName === 'daisy' && coins >= item.price) || (tabName === 'coin' && spinCoins >= item.price)) {
+            if (tabName === 'daisy') {
+                coins -= item.price;
+                coinCount.textContent = coins;
+            } else {
+                spinCoins -= item.price;
+                spinCoinCount.textContent = spinCoins;
+            }
+            applySkin(item.image);
+            showSkinPurchaseModal(item.name);
         } else {
-            alert('Недостаточно средств или максимальный уровень достигнут!');
+            alert('Недостаточно средств!');
         }
     }
 
     function applySkin(skinImage) {
         const chamomile = document.getElementById('chamomile');
-        if (chamomile) {
-            chamomile.src = skinImage;
-        }
+        chamomile.src = skinImage;
     }
 
-    function updateBalance() {
-        const coinCountElem = document.getElementById('coin-count');
-        const spinCoinCountElem = document.getElementById('spin-coin-count');
+    function showSkinPurchaseModal(skinName) {
+        const skinPurchaseModal = document.getElementById('skin-purchase-modal');
+        skinPurchaseModal.style.display = 'flex';
 
-        if (coinCountElem) {
-            coinCountElem.textContent = Math.floor(coins);
-        }
+        const giftAmount = Math.floor(Math.random() * 5) + 1; // Выдача 1-5 билетов
+        document.getElementById('gift-amount').textContent = giftAmount;
 
-        if (spinCoinCountElem) {
-            spinCoinCountElem.textContent = Math.floor(spinCoins);
-        }
-
-        localStorage.setItem('coins', coins);
-        localStorage.setItem('spinCoins', spinCoins);
+        // Обновление баланса билетов
+        let tickets = parseInt(document.getElementById('ticket-count').textContent, 10);
+        tickets += giftAmount;
+        document.getElementById('ticket-count').textContent = tickets;
     }
 
-    function startIncomeTimer() {
-        setInterval(() => {
-            let totalProfit = 0;
-            skins.forEach(skin => {
-                totalProfit += skin.profitPerHour * skin.level;
-            });
-            spinCoins += totalProfit / 3600; // Прибыль каждую секунду
-            updateBalance();
-        }, 1000);
+    // Функции для обновления баланса из других модулей
+    function updateBalance(newCoins, newSpinCoins) {
+        coins = newCoins;
+        spinCoins = newSpinCoins;
+        document.getElementById('coin-count').textContent = coins;
+        document.getElementById('spin-coin-count').textContent = spinCoins;
     }
-
-    startIncomeTimer();
 
     return {
         init,

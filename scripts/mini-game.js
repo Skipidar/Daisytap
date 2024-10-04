@@ -1,4 +1,3 @@
-// mini-game.js
 const MiniGame = (function () {
     let gameTime = 60; // 1 минута для уровня
     let bees = [];
@@ -22,17 +21,6 @@ const MiniGame = (function () {
     function init() {
         const startButton = document.getElementById('start-mini-game');
         startButton.addEventListener('click', startGame);
-
-        // Обработчик кнопки "Назад" на телефоне
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' || event.key === 'Backspace') {
-                if (isGameRunning) {
-                    endGame();
-                    document.getElementById('protect-flower-game').style.display = 'none';
-                    document.querySelector('.game-container').style.display = 'flex';
-                }
-            }
-        });
     }
 
     function startGame() {
@@ -98,7 +86,7 @@ const MiniGame = (function () {
             beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
 
             heartInterval = setInterval(spawnHeart, 20000);
-            coinInterval = setInterval(spawnCoin, currentLevel === 1 ? 25000 : 10000); // Монеты падают чаще на втором уровне
+            coinInterval = setInterval(spawnCoin, 25000);
 
             gameTimerInterval = setInterval(() => {
                 gameTime--;
@@ -110,7 +98,7 @@ const MiniGame = (function () {
                         gameTime = 60;
                         clearInterval(beeInterval);
                         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
-                        showLevelCompleteModal(); // Останавливаем игру, предлагаем начать второй уровень
+                        showLevelCompleteModal();
                     } else {
                         endGame();
                     }
@@ -208,7 +196,7 @@ const MiniGame = (function () {
                 this.y += Math.sin(angle) * this.speed;
             },
         };
-        bee.image.src = level === 2 ? 'assets/images/BeeRed.webp' : 'assets/images/Bee.webp';
+        bee.image.src = 'assets/images/Bee.webp';
         bees.push(bee);
     }
 
@@ -294,37 +282,31 @@ const MiniGame = (function () {
             }
         });
 
-        hearts.forEach((heart, index) => {
-            if (
-                xClick >= heart.x &&
-                xClick <= heart.x + heart.width &&
-                yClick >= heart.y &&
-                yClick <= heart.y + heart.height
-            ) {
-                hearts.splice(index, 1);
-                lives = Math.min(lives + 1, 3);
-                updateLives();
-                AudioManager.playHeartPlusSound();
-                if (navigator.vibrate) {
-                    navigator.vibrate([200, 100, 200]);
-                }
-            }
-        });
-
         coins.forEach((coin, index) => {
             if (
-                xClick >= coin.x &&
-                xClick <= coin.x + coin.width &&
-                yClick >= coin.y &&
-                yClick <= coin.y + coin.height
+                xClick >= coin.x - coin.width / 2 &&
+                xClick <= coin.x + coin.width / 2 &&
+                yClick >= coin.y - coin.height / 2 &&
+                yClick <= coin.y + coin.height / 2
             ) {
                 coins.splice(index, 1);
                 daisyCoins += 10; // $Daisy
                 updateGameCoinCount();
                 AudioManager.playMoneySound();
-                if (navigator.vibrate) {
-                    navigator.vibrate(100);
-                }
+            }
+        });
+
+        hearts.forEach((heart, index) => {
+            if (
+                xClick >= heart.x - heart.width / 2 &&
+                xClick <= heart.x + heart.width / 2 &&
+                yClick >= heart.y - heart.height / 2 &&
+                yClick <= heart.y + heart.height / 2
+            ) {
+                hearts.splice(index, 1);
+                lives = Math.min(lives + 1, 3);
+                updateLives();
+                AudioManager.playHeartPlusSound();
             }
         });
     }
@@ -340,7 +322,7 @@ const MiniGame = (function () {
                 updateLives();
                 bees.splice(i, 1);
                 AudioManager.playUdarSound();
-                shakeScreen(); // Тряска при попадании
+                shakeScreen();
                 flashFlower();
 
                 if (lives <= 0) {
@@ -394,7 +376,6 @@ const MiniGame = (function () {
     function updateGameCoinCount() {
         // Обновляем счетчики в мини-игре
         document.getElementById('game-coin-count').textContent = gameCoins;
-        document.getElementById('game-daisy-coin-count').textContent = daisyCoins;
 
         // Обновляем счетчики на главном экране
         document.getElementById('spin-coin-count').textContent = gameCoins; // Coin
@@ -427,7 +408,7 @@ const MiniGame = (function () {
         resultModal.innerHTML = `
             <h2>Уровень завершен!</h2>
             <p>Переход на следующий уровень.</p>
-            <button class="next-level-btn">Старт второго уровня</button>
+            <button class="next-level-btn">Далее</button>
         `;
 
         const gameScreen = document.getElementById('protect-flower-game');
@@ -436,7 +417,6 @@ const MiniGame = (function () {
         const nextLevelButton = resultModal.querySelector('.next-level-btn');
         nextLevelButton.addEventListener('click', () => {
             resultModal.remove();
-            // Запускаем второй уровень
             startGame();
         });
     }
@@ -447,7 +427,7 @@ const MiniGame = (function () {
         clearInterval(heartInterval);
         clearInterval(gameTimerInterval);
         AudioManager.pauseOneLevelMusic();
-        AudioManager.playBackgroundMusic(); // Исправление проблемы с музыкой
+        AudioManager.playElectricChaosMusic();
 
         // Обновляем счетчики на главном экране после окончания игры
         updateGameCoinCount();
@@ -484,7 +464,7 @@ const MiniGame = (function () {
         exitButton.addEventListener('click', () => {
             resultModal.remove();
             gameScreen.style.display = 'none';
-            document.querySelector('.game-container').style.display = 'flex';
+            document.querySelector('.game-container').style.display = 'block';
             totalCoinsEarned = 0;
             daisyCoins = 0;
             currentLevel = 1;
