@@ -1,3 +1,4 @@
+// audio.js
 const AudioManager = (function() {
     let backgroundMusic;
     let oneLevelMusic;
@@ -11,6 +12,13 @@ const AudioManager = (function() {
     let beeKillSound; // Добавляем переменную для звука убийства пчелы
 
     let soundEnabled = true;
+
+    // Задача 1: Изменение шрифта на Dela Gothic One
+    const newFontLink = document.createElement('link');
+    newFontLink.href = "https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap";
+    newFontLink.rel = "stylesheet";
+    document.head.appendChild(newFontLink);
+    document.body.style.fontFamily = 'Dela Gothic One, sans-serif';
 
     function init() {
         backgroundMusic = new Audio('assets/sounds/backgroundmusic.mp3');
@@ -28,7 +36,7 @@ const AudioManager = (function() {
         backgroundMusic.volume = 0.25;
         oneLevelMusic.volume = 0.25;
         electricChaosMusic.volume = 0.25;
-        clickSound.volume = 0.1; 
+        clickSound.volume = 0.1;
         predictionSound.volume = 0.1;
         udarSound.volume = 0.1;
         heartPlusSound.volume = 0.2;

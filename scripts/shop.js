@@ -5,7 +5,10 @@ const Shop = (function() {
 
     function init() {
         // Инициализация кнопки магазина
-        document.getElementById('shop-btn').addEventListener('click', openShop);
+        const shopBtn = document.getElementById('shop-btn');
+        if (shopBtn) {
+            shopBtn.addEventListener('click', openShop);
+        }
 
         // Инициализация вкладок магазина
         document.querySelectorAll('.shop-tab').forEach(tab => {
@@ -16,6 +19,9 @@ const Shop = (function() {
                 loadShopItems(tabName);
             });
         });
+
+        // Загрузка начального баланса монет из localStorage
+        loadBalanceFromLocalStorage();
     }
 
     function openShop() {
@@ -25,6 +31,8 @@ const Shop = (function() {
 
     function loadShopItems(tabName) {
         const shopContent = document.getElementById('shop-content');
+        if (!shopContent) return;
+        
         shopContent.innerHTML = '';
 
         let items = [];
@@ -79,6 +87,9 @@ const Shop = (function() {
             }
             applySkin(item.image);
             showSkinPurchaseModal(item.name);
+
+            // Синхронизация с localStorage
+            syncBalanceToLocalStorage();
         } else {
             alert('Недостаточно средств!');
         }
@@ -86,11 +97,15 @@ const Shop = (function() {
 
     function applySkin(skinImage) {
         const chamomile = document.getElementById('chamomile');
-        chamomile.src = skinImage;
+        if (chamomile) {
+            chamomile.src = skinImage;
+        }
     }
 
     function showSkinPurchaseModal(skinName) {
         const skinPurchaseModal = document.getElementById('skin-purchase-modal');
+        if (!skinPurchaseModal) return;
+
         skinPurchaseModal.style.display = 'flex';
 
         const giftAmount = Math.floor(Math.random() * 5) + 1; // Выдача 1-5 билетов
@@ -106,6 +121,31 @@ const Shop = (function() {
     function updateBalance(newCoins, newSpinCoins) {
         coins = newCoins;
         spinCoins = newSpinCoins;
+        document.getElementById('coin-count').textContent = coins;
+        document.getElementById('spin-coin-count').textContent = spinCoins;
+
+        // Синхронизация с localStorage
+        syncBalanceToLocalStorage();
+    }
+
+    // Синхронизация баланса монет с localStorage
+    function syncBalanceToLocalStorage() {
+        localStorage.setItem('coins', coins);
+        localStorage.setItem('spinCoins', spinCoins);
+    }
+
+    // Загрузка баланса монет из localStorage
+    function loadBalanceFromLocalStorage() {
+        const savedCoins = localStorage.getItem('coins');
+        const savedSpinCoins = localStorage.getItem('spinCoins');
+
+        if (savedCoins !== null) {
+            coins = parseInt(savedCoins, 10);
+        }
+        if (savedSpinCoins !== null) {
+            spinCoins = parseInt(savedSpinCoins, 10);
+        }
+
         document.getElementById('coin-count').textContent = coins;
         document.getElementById('spin-coin-count').textContent = spinCoins;
     }

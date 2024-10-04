@@ -29,46 +29,60 @@ const Modal = (function() {
 
     function open(modalId) {
         const modal = document.getElementById(modalId);
+        if (!modal) return;
+
         modal.style.display = 'flex';
         
         if (modalId === 'game-over-modal') {
-            // Окно окончания игры, добавляем обработчики кнопок
+            // Окно окончания игры, добавляем обработчики кнопок, если они еще не добавлены
             const replayBtn = modal.querySelector('.replay-btn');
             const exitBtn = modal.querySelector('.exit-btn');
 
-            replayBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для перезапуска игры
-                MiniGame.startGame(); // замените на правильную функцию перезапуска игры
-            });
+            if (replayBtn && !replayBtn.dataset.listener) {
+                replayBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    // Логика для перезапуска игры
+                    MiniGame.init(); // Используем правильный метод инициализации игры
+                });
+                replayBtn.dataset.listener = "true";
+            }
 
-            exitBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-                // Логика для возврата на главный экран
-                document.querySelector('.game-container').style.display = 'flex';
-            });
+            if (exitBtn && !exitBtn.dataset.listener) {
+                exitBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    // Логика для возврата на главный экран
+                    document.querySelector('.game-container').style.display = 'flex';
+                });
+                exitBtn.dataset.listener = "true";
+            }
         }
     }
 
     function setupPredictionModal() {
         const predictionModal = document.getElementById('prediction-modal');
+        if (!predictionModal) return;
+
         const shareBtn = predictionModal.querySelector('.share-btn');
         const publishBtn = predictionModal.querySelector('.publish-btn');
         const ticketNotification = document.getElementById('ticket-notification');
 
-        shareBtn.addEventListener('click', () => {
-            // Логика для поделиться с друзьями
-            alert('Поделиться с друзьями: Функция в разработке.');
-        });
+        if (shareBtn) {
+            shareBtn.addEventListener('click', () => {
+                // Логика для поделиться с друзьями
+                alert('Поделиться с друзьями: Функция в разработке.');
+            });
+        }
 
-        publishBtn.addEventListener('click', () => {
-            // Логика для опубликовать историю
-            alert('Опубликовать историю: Функция в разработке.');
-        });
+        if (publishBtn) {
+            publishBtn.addEventListener('click', () => {
+                // Логика для опубликовать историю
+                alert('Опубликовать историю: Функция в разработке.');
+            });
+        }
 
         // Оповещение о получении билетов
-        const observer = new MutationObserver(function(mutationsList, observer) {
-            for(let mutation of mutationsList) {
+        const observer = new MutationObserver(function(mutationsList) {
+            for (let mutation of mutationsList) {
                 if (mutation.type === 'childList') {
                     if (predictionModal.style.display === 'flex') {
                         // Показать оповещение о билетах
@@ -83,37 +97,47 @@ const Modal = (function() {
 
     function setupAirdropModal() {
         const airdropBtn = document.getElementById('airdrop-btn');
-        airdropBtn.addEventListener('click', () => {
-            Modal.open('airdrop-modal');
-        });
+        if (airdropBtn) {
+            airdropBtn.addEventListener('click', () => {
+                Modal.open('airdrop-modal');
+            });
+        }
     }
 
     function setupRatingModal() {
         const ratingBtn = document.getElementById('rating-btn');
-        ratingBtn.addEventListener('click', () => {
-            Modal.open('rating-modal');
-        });
+        if (ratingBtn) {
+            ratingBtn.addEventListener('click', () => {
+                Modal.open('rating-modal');
+            });
+        }
     }
 
     function setupShopModal() {
         const shopBtn = document.getElementById('shop-btn');
-        shopBtn.addEventListener('click', () => {
-            Modal.open('shop-modal');
-        });
+        if (shopBtn) {
+            shopBtn.addEventListener('click', () => {
+                Modal.open('shop-modal');
+            });
+        }
     }
 
     function setupFriendsModal() {
         const friendsBtn = document.getElementById('friends-btn');
-        friendsBtn.addEventListener('click', () => {
-            Modal.open('friends-modal');
-        });
+        if (friendsBtn) {
+            friendsBtn.addEventListener('click', () => {
+                Modal.open('friends-modal');
+            });
+        }
     }
 
     function setupTasksModal() {
         const tasksBtn = document.getElementById('tasks-btn');
-        tasksBtn.addEventListener('click', () => {
-            Modal.open('tasks-modal');
-        });
+        if (tasksBtn) {
+            tasksBtn.addEventListener('click', () => {
+                Modal.open('tasks-modal');
+            });
+        }
     }
 
     function setupGiftModal() {

@@ -6,18 +6,20 @@
     <title>Игра Ромашка</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="styles.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
-<body>
+<body style="font-family: 'Dela Gothic One', sans-serif;">
     <!-- Анимация загрузки -->
     <div id="loading-screen">
         <div class="loading-text">
             <span>D</span><span>a</span><span>i</span><span>s</span><span>y</span>
         </div>
         <div class="loading-overlay">
-            <div class="loading-bar"></div>
+            <div class="loading-bar">
+                <div class="loading-glint"></div>
+            </div>
         </div>
     </div>
 
@@ -25,6 +27,12 @@
     <button id="sound-toggle">
         <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
     </button>
+
+    <!-- Кнопка смены локализации -->
+    <button id="language-toggle" style="position: absolute; top: 20px; right: 20px; background: none; border: none; color: #FFD700; font-size: 20px; cursor: pointer;">
+    	RU
+    </button>
+
 
     <div class="game-container" style="display: none;">
         <!-- Билеты под $Daisy -->
@@ -180,6 +188,8 @@
     <canvas id="confetti-canvas"></canvas>
 
     <!-- Подключаем скрипты -->
+	<script src="scripts/loading.js"></script>
+	<script src="scripts/localization.js"></script>
     <script src="scripts/audio.js"></script>
     <script src="scripts/modal.js"></script>
     <script src="scripts/shop.js"></script>
