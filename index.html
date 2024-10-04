@@ -5,36 +5,30 @@
     <title>Игра Ромашка</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="styles.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
-<body style="font-family: 'Dela Gothic One', sans-serif;">
+<body>
+    <!-- Кнопка смены локализации -->
+    <button id="language-toggle" style="position: fixed; top: 20px; left: 20px; z-index: 100;">
+        <img src="assets/images/language-icon.webp" alt="Язык" class="language-icon">
+    </button>
+
     <!-- Анимация загрузки -->
     <div id="loading-screen">
         <div class="loading-text">
             <span>D</span><span>a</span><span>i</span><span>s</span><span>y</span>
         </div>
         <div class="loading-overlay">
-            <div class="loading-bar">
-                <div class="loading-glint"></div>
-            </div>
+            <div class="loading-bar"></div>
         </div>
     </div>
 
-    <!-- Главные кнопки на главном экране -->
-    <div class="button-group">
-        <!-- Кнопка смены локализации -->
-        <button id="language-toggle">RU</button>
-
-        <!-- Кнопка "Играть" -->
-        <button id="play-button">Играть</button>
-
-        <!-- Кнопка отключения звука -->
-        <button id="sound-toggle">
-            <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
-        </button>
-    </div>
+    <!-- Кнопка отключения звука -->
+    <button id="sound-toggle" style="position: fixed; top: 20px; right: 20px; z-index: 100;">
+        <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
+    </button>
 
     <div class="game-container" style="display: none;">
         <!-- Билеты под $Daisy -->
@@ -63,6 +57,9 @@
         <div class="chamomile-container">
             <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
         </div>
+
+        <!-- Кнопка "Играть" -->
+        <button id="play-button" style="position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 100;">Играть</button>
 
         <footer>
             <button id="airdrop-btn">Airdrop</button>
@@ -156,20 +153,10 @@
         </div>
     </div>
 
-    <!-- Модальное окно покупки скина -->
-    <div id="skin-purchase-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Поздравляем!</h2>
-            <p>Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
-            <button id="close-gift-btn">Закрыть</button>
-        </div>
-    </div>
-
     <!-- Мини-игра "Защити цветок" -->
     <div id="protect-flower-game" class="game-screen" style="display: none;">
         <canvas id="game-canvas"></canvas>
-        <div id="game-timer">01:00</div>
+        <div id="game-timer">02:00</div>
         <div id="game-lives">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
             <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
@@ -187,9 +174,8 @@
     <canvas id="confetti-canvas"></canvas>
 
     <!-- Подключаем скрипты -->
-    <script src="scripts/loading.js"></script>
-    <script src="scripts/localization.js"></script>
     <script src="scripts/audio.js"></script>
+    <script src="scripts/localization.js"></script>
     <script src="scripts/modal.js"></script>
     <script src="scripts/shop.js"></script>
     <script src="scripts/game.js"></script>
