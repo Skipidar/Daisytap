@@ -99,7 +99,9 @@ body {
     animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
     position: absolute;
-    bottom: 100px; /* Под ромашкой */
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%); /* Центрируем кнопку по горизонтали */
 }
 
 #play-button:hover {
@@ -123,7 +125,7 @@ body {
     width: 90px;
     height: 50px;
     position: absolute;
-    bottom: 100px; /* На уровне кнопки "Играть" */
+    bottom: 20px; /* На уровне кнопки "Играть" */
     left: 20px; /* Слева от кнопки "Играть" */
     background-color: #FFD700;
     color: #000;
@@ -156,6 +158,7 @@ body {
     width: 100%;
     height: 100%;
 }
+
 
 /* Ромашка */
 .chamomile-container {
@@ -448,24 +451,6 @@ footer .icon {
 .fade-out {
     opacity: 0;
     transition: opacity 1s ease-out;
-}
-
-/* Кнопка отключения звука */
-#sound-toggle {
-    width: 90px; /* Увеличена в 1.5 раза */
-    height: 90px; /* Увеличена в 1.5 раза */
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 150;
-}
-
-#sound-toggle img {
-    width: 100%;
-    height: 100%;
 }
 
 /* Магазин */
