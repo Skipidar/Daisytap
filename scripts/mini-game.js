@@ -19,10 +19,6 @@ const MiniGame = (function () {
     let tickets = parseInt(localStorage.getItem('tickets')) || 200;
     let isCountdownDone = false;
 
-    // Добавлено: Получение spinCoins и coins из localStorage
-    let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
-    let coinsMain = parseInt(localStorage.getItem('coins')) || 10000;
-
     function init() {
         const startButton = document.getElementById('start-mini-game');
         startButton.addEventListener('click', startGame);
@@ -416,11 +412,11 @@ const MiniGame = (function () {
 
         // Обновляем счетчики на главном экране
         document.getElementById('spin-coin-count').textContent = spinCoins + gameCoins; // Coin
-        document.getElementById('coin-count').textContent = coinsMain + daisyCoins; // $Daisy
+        document.getElementById('coin-count').textContent = coins + daisyCoins; // $Daisy
 
         // Сохраняем в localStorage
         localStorage.setItem('spinCoins', spinCoins + gameCoins);
-        localStorage.setItem('coins', coinsMain + daisyCoins);
+        localStorage.setItem('coins', coins + daisyCoins);
     }
 
     function updateTicketCount() {
@@ -447,9 +443,9 @@ const MiniGame = (function () {
         resultModal.style.padding = '20px';
         resultModal.style.zIndex = '1000';
         resultModal.innerHTML = `
-            <h2>Level Complete!</h2>
-            <p>Proceeding to the next level.</p>
-            <button class="next-level-btn">Next</button>
+            <h2>Уровень завершен!</h2>
+            <p>Переход на следующий уровень.</p>
+            <button class="next-level-btn">Далее</button>
         `;
 
         const gameScreen = document.getElementById('protect-flower-game');
@@ -479,9 +475,9 @@ const MiniGame = (function () {
 
         // Обновляем счетчики на главном экране после окончания игры
         spinCoins += gameCoins;
-        coinsMain += daisyCoins;
+        coins += daisyCoins;
         localStorage.setItem('spinCoins', spinCoins);
-        localStorage.setItem('coins', coinsMain);
+        localStorage.setItem('coins', coins);
         updateGameCoinCount();
 
         const resultModal = document.createElement('div');
@@ -495,12 +491,12 @@ const MiniGame = (function () {
         resultModal.style.padding = '20px';
         resultModal.style.zIndex = '1000';
         resultModal.innerHTML = `
-            <h2>Game Over!</h2>
-            <p>You earned ${gameCoins} Coin and ${daisyCoins} $Daisy.</p>
+            <h2>Игра окончена!</h2>
+            <p>Вы заработали ${gameCoins} Coin и ${daisyCoins} $Daisy.</p>
             <button class="replay-btn" style="width: 120px; margin: 5px;">
-                Replay (${tickets} Tickets)
+                <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} Tickets)
             </button>
-            <button class="exit-btn" style="width: 120px; margin: 5px;">Home</button>
+            <button class="exit-btn" style="width: 120px; margin: 5px;">Домой</button>
         `;
 
         const gameScreen = document.getElementById('protect-flower-game');
@@ -530,5 +526,3 @@ const MiniGame = (function () {
         init,
     };
 })();
-
-document.addEventListener('DOMContentLoaded', MiniGame.init);

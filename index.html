@@ -11,8 +11,27 @@
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Верхняя панель: Уровень игрока и кнопки звук/язык -->
-    <div class="top-bar">
+    <!-- Кнопка смены локализации -->
+    <button id="language-toggle">
+        <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
+    </button>
+
+    <!-- Кнопка отключения звука -->
+    <button id="sound-toggle">
+        <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
+    </button>
+
+    <!-- Анимация загрузки -->
+    <div id="loading-screen">
+        <div class="loading-text">
+            <span>D</span><span>a</span><span>i</span><span>s</span><span>y</span>
+        </div>
+        <div class="loading-overlay">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
+
+    <div class="game-container" style="display: none;">
         <!-- Уровень игрока и прогресс -->
         <div id="player-level">
             <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
@@ -20,69 +39,59 @@
                 <div id="level-progress"></div>
             </div>
         </div>
-        <!-- Кнопки звук и локализация -->
-        <div class="top-buttons">
-            <!-- Кнопка смены локализации -->
-            <button id="language-toggle">
-                <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
-            </button>
-            <!-- Кнопка отключения звука -->
-            <button id="sound-toggle">
-                <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
-            </button>
-        </div>
-    </div>
 
-    <!-- Счётчики -->
-    <div class="counters">
-        <div class="left-counters">
+        <!-- Прибыль в час -->
+        <div id="income-counter" class="counter">
+            <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
+        </div>
+
+        <!-- Счётчики -->
+        <div class="counters">
             <!-- $Daisy -->
             <div id="coin-counter" class="counter">
                 <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
                 <span class="daisy-coin" id="coin-count">10000</span> $Daisy
             </div>
-            <!-- Билеты -->
-            <div id="ticket-counter" class="counter">
-                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">200</span>
-            </div>
-        </div>
-        <div class="right-counters">
             <!-- Coin -->
             <div id="spin-coin-counter" class="counter">
                 <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
                 <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
             </div>
+            <!-- Tickets -->
+            <div id="ticket-counter" class="counter">
+                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+                <span id="ticket-count">200</span>
+            </div>
             <!-- Энергия -->
             <div id="energy-counter" class="counter">
                 <img src="assets/images/energy-icon.png" alt="Энергия" class="energy-icon">
-                <span id="energy-count">1000</span> <span data-localize="energy">Энергия</span>
+                <span id="energy-count">1000</span> Энергия
             </div>
             <!-- Бустер -->
-            <button id="booster" data-localize="booster">Бустер 6/6 (01:00)</button>
+            <button id="booster">Бустер 6/6 (01:00)</button>
         </div>
+
+        <!-- Ромашка -->
+        <div class="chamomile-container">
+            <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
+        </div>
+
+        <!-- Кнопка "Играть" -->
+        <button id="play-button" data-localize="play_button">Играть</button>
+
+        <!-- Таймер до следующего предсказания -->
+        <div id="next-prediction-timer">
+            <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer">06:00:00</span>
+        </div>
+
+        <footer>
+            <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
+            <button id="rating-btn" data-localize="rating">Рейтинг</button>
+            <button id="shop-btn" data-localize="shop">Магазин</button>
+            <button id="friends-btn" data-localize="friends">Друзья</button>
+            <button id="tasks-btn" data-localize="tasks">Задачи</button>
+        </footer>
     </div>
-
-    <!-- Ромашка -->
-    <div class="chamomile-container">
-        <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
-    </div>
-
-    <!-- Таймер до следующего уровня -->
-    <div id="next-prediction-timer">
-        <span data-localize="next_prediction_in">До следующего уровня:</span> <span id="prediction-timer">06:00:00</span>
-    </div>
-
-    <!-- Кнопка "Играть" -->
-    <button id="play-button" data-localize="play_button">Играть</button>
-
-    <footer>
-        <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
-        <button id="rating-btn" data-localize="rating">Рейтинг</button>
-        <button id="shop-btn" data-localize="shop">Магазин</button>
-        <button id="friends-btn" data-localize="friends">Друзья</button>
-        <button id="tasks-btn" data-localize="tasks">Задачи</button>
-    </footer>
 
     <!-- Модальные окна -->
     <!-- Предсказание -->
@@ -169,11 +178,8 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2 data-localize="congratulations">Поздравляем!</h2>
-            <p data-localize="skin_acquired">Вы приобрели скин: <span id="acquired-skin-name">Название скина</span>.</p>
-            <div class="action-buttons">
-                <button class="upgrade-btn" data-localize="upgrade">Улучшить</button>
-                <button class="equip-btn" data-localize="equip_skin">Установить скин</button>
-            </div>
+            <p data-localize="your_gift">Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
+            <button id="close-gift-btn" data-localize="close">Закрыть</button>
         </div>
     </div>
 

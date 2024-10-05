@@ -1,90 +1,53 @@
 // scripts/main.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize audio
-    if (AudioManager && typeof AudioManager.init === 'function') {
-        AudioManager.init();
-    } else {
-        console.error('AudioManager is not initialized or missing.');
-    }
+    // Инициализация аудио
+    AudioManager.init();
 
-    // Initialize localization
-    if (Localization && typeof Localization.init === 'function') {
-        Localization.init();
-    } else {
-        console.error('Localization is not initialized or missing.');
-    }
+    // Инициализация локализации
+    Localization.init();
 
-    // Initialize modals
-    if (Modal && typeof Modal.init === 'function') {
-        Modal.init();
-    } else {
-        console.error('Modal is not initialized or missing.');
-    }
+    // Инициализация модальных окон
+    Modal.init();
 
-    // Initialize shop
-    if (Shop && typeof Shop.init === 'function') {
-        Shop.init();
-    } else {
-        console.error('Shop is not initialized or missing.');
-    }
+    // Инициализация магазина
+    Shop.init();
 
-    // Initialize game
-    if (Game && typeof Game.init === 'function') {
-        Game.init();
-    } else {
-        console.error('Game is not initialized or missing.');
-    }
+    // Инициализация игры
+    Game.init();
 
-    // Initialize mini-game
-    if (MiniGame && typeof MiniGame.init === 'function') {
-        MiniGame.init();
-    } else {
-        console.error('MiniGame is not initialized or missing.');
-    }
+    // Инициализация мини-игры
+    MiniGame.init();
 
-    // Start loading animation and initialize main screen
+    // Запуск анимации загрузки и инициализация главного экрана
     initMain();
 });
 
 function initMain() {
-    // Loading animation
+    // Анимация загрузки
     setTimeout(() => {
         fadeOutLoadingScreen();
-    }, 3000); // 3 seconds loading
+    }, 3000); // 3 секунды загрузки
 
-    // Function to smoothly fade out the loading screen
+    // Функция плавного исчезновения экрана загрузки
     function fadeOutLoadingScreen() {
         const loadingScreen = document.getElementById('loading-screen');
-        if (loadingScreen) {
-            loadingScreen.classList.add('fade-out');
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-                const gameContainer = document.querySelector('.game-container');
-                if (gameContainer) {
-                    gameContainer.style.display = 'flex';
-                    animateDaisyLetters();
-                } else {
-                    console.error('Element with class "game-container" not found in DOM.');
-                }
-            }, 1000); // Duration of fade-out animation
-        } else {
-            console.error('Element with id="loading-screen" not found in DOM.');
-        }
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            document.querySelector('.game-container').style.display = 'flex';
+            animateDaisyLetters();
+        }, 1000); // Длительность анимации fade-out
     }
 
-    // Function to animate the appearance of the word "Daisy" letter by letter
+    // Функция анимации появления слова "Daisy" по буквам
     function animateDaisyLetters() {
         const daisyElement = document.querySelector('.loading-text');
-        if (daisyElement) {
-            const spans = daisyElement.querySelectorAll('span');
-            spans.forEach((span, index) => {
-                span.style.opacity = '0';
-                setTimeout(() => {
-                    span.style.opacity = '1';
-                }, index * 300); // 0.3s delay between letters
-            });
-        } else {
-            console.error('Element with class "loading-text" not found in DOM.');
-        }
+        const spans = daisyElement.querySelectorAll('span');
+        spans.forEach((span, index) => {
+            span.style.opacity = '0';
+            setTimeout(() => {
+                span.style.opacity = '1';
+            }, index * 300); // Задержка 0.3s между буквами
+        });
     }
 }
