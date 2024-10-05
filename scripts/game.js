@@ -6,6 +6,7 @@ const Game = (function() {
     let isFlowerClickable = true;
     let boosterCharges = 6;
     let lastClickTime = 0;
+    let rotationAngle = 0;
     let lastPredictionTime = parseInt(localStorage.getItem('lastPredictionTime')) || 0;
     let isFlowerClickableForPrediction = true;
     let level = parseInt(localStorage.getItem('playerLevel')) || 1;
@@ -62,36 +63,40 @@ const Game = (function() {
         // Запуск восполнения энергии
         setInterval(replenishEnergy, 1000); // Каждую секунду
 
-        // Обновление лейбла билетов при загрузке
-        Localization.updateTicketLabel();
+        // Обработчик кнопки "Играть"
+        const playButton = document.getElementById('play-button');
+        playButton.addEventListener('click', () => {
+            Modal.open('protect-flower-game');
+        });
+
+        // Инициализация магазина
+        Shop.updateBalance(coins, spinCoins);
     }
 
-	function handleChamomileClick(e) {
-		const chamomile = document.getElementById('chamomile');
-		const now = Date.now();
-			if (now - lastClickTime >= 500 && energy > 0 && isFlowerClickable) {
-			lastClickTime = now;
-			AudioManager.playClickSound();
-			spinCoins += 1;
-			document.getElementById('spin-coin-count').textContent = spinCoins;
-			localStorage.setItem('spinCoins', spinCoins);
-			energy -= 10;
-			document.getElementById('energy-count').textContent = energy;
+    function handleChamomileClick(e) {
+        const now = Date.now();
+        if (now - lastClickTime >= 500 && energy > 0 && isFlowerClickable) {
+            lastClickTime = now;
+            AudioManager.playClickSound();
+            spinCoins += 1;
+            document.getElementById('spin-coin-count').textContent = spinCoins;
+            localStorage.setItem('spinCoins', spinCoins);
+            energy -= 10;
+            document.getElementById('energy-count').textContent = energy;
 
-        // Обновление опыта и уровня
-			gainExperience(1);
+            // Обновление опыта и уровня
+            gainExperience(1);
 
-        // Вращение по часовой стрелке
-			rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
-			chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-			chamomile.style.transform = `rotate(${rotationAngle}deg)`;
+            // Вращение по часовой стрелке
+            rotationAngle += 360 * 1.5 + Math.random() * 360;
+            chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            chamomile.style.transform = `rotate(${rotationAngle}deg)`;
 
-			createSparks(e.clientX, e.clientY);
-			animateCoin(e.clientX, e.clientY);
-			updateEnergyBar();
+            createSparks(e.clientX, e.clientY);
+            animateCoin(e.clientX, e.clientY);
+            updateEnergyBar();
+        }
     }
-}
-
 
     function handleChamomileDblClick() {
         const now = Date.now();
@@ -120,8 +125,12 @@ const Game = (function() {
             localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
             updatePredictionHistory();
 
-            // Обновление лейбла билетов
-            Localization.updateTicketLabel();
+            // Выдача билетов за предсказание
+            const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
+            tickets += ticketAmount;
+            document.getElementById('ticket-count').textContent = tickets;
+            localStorage.setItem('tickets', tickets);
+            showTicketNotification(ticketAmount);
         }
     }
 
@@ -301,6 +310,12 @@ const Game = (function() {
             lastIncomeTime = now;
             localStorage.setItem('lastIncomeTime', lastIncomeTime);
         }
+    }
+
+    function showTicketNotification(amount) {
+        const ticketNotification = document.getElementById('ticket-notification');
+        ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
+        ticketNotification.style.display = 'block';
     }
 
     return {

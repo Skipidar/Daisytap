@@ -36,9 +36,8 @@ const Localization = (function() {
             'invite_friends': 'Приглашайте друзей! Вы и ваш друг получите бонус в виде монет. Для Telegram друзей с Telegram Premium - особые условия!',
             'friends_soon': 'Тестовый список друзей скоро будет доступен.',
             'tasks_soon': 'Задания скоро появятся...',
-            'your_gift': 'Поздравляем! Вы приобрели {item}.',
-            'close': 'Закрыть',
-            'tickets_label': 'Билетов'
+            'your_gift': 'Ваш подарок: <span id="gift-amount">{amount}</span> билетов.',
+            'close': 'Закрыть'
         },
         'en': {
             'play_button': 'Play',
@@ -73,9 +72,8 @@ const Localization = (function() {
             'invite_friends': 'Invite friends! You and your friend will receive a bonus in the form of coins. Special conditions for Telegram friends with Telegram Premium!',
             'friends_soon': 'Test friend list will be available soon.',
             'tasks_soon': 'Tasks will be available soon...',
-            'your_gift': 'Congratulations! You have purchased {item}.',
-            'close': 'Close',
-            'tickets_label': 'Tickets'
+            'your_gift': 'Your gift: <span id="gift-amount">{amount}</span> tickets.',
+            'close': 'Close'
         }
     };
 
@@ -84,14 +82,17 @@ const Localization = (function() {
         currentLanguage = currentLanguage === 'ru' ? 'en' : 'ru';
         localStorage.setItem('currentLanguage', currentLanguage);
         applyTranslations();
-        updateLanguageToggle();
-        updateTicketLabel();
+        updateLanguageIcon();
     }
 
-    // Обновление текста кнопки языка
-    function updateLanguageToggle() {
-        const languageToggle = document.getElementById('language-toggle');
-        languageToggle.textContent = currentLanguage.toUpperCase();
+    // Обновление иконки языка
+    function updateLanguageIcon() {
+        const languageIcon = document.querySelector('#language-toggle img');
+        if (currentLanguage === 'ru') {
+            languageIcon.src = 'assets/images/ru.svg';
+        } else {
+            languageIcon.src = 'assets/images/en.svg';
+        }
     }
 
     // Применение переводов к элементам страницы
@@ -105,39 +106,15 @@ const Localization = (function() {
         });
     }
 
-    // Функция для склонения слова "Билет"
-    function pluralizeTickets(count) {
-        if (currentLanguage === 'ru') {
-            if (count % 10 === 1 && count % 100 !== 11) {
-                return 'Билет';
-            } else if ([2, 3, 4].includes(count % 10) && ![12, 13, 14].includes(count % 100)) {
-                return 'Билета';
-            } else {
-                return 'Билетов';
-            }
-        } else {
-            return count === 1 ? 'Ticket' : 'Tickets';
-        }
-    }
-
-    function updateTicketLabel() {
-        const ticketCount = parseInt(document.getElementById('ticket-count').textContent, 10);
-        const ticketLabel = document.getElementById('ticket-label');
-        ticketLabel.textContent = pluralizeTickets(ticketCount);
-    }
-
     // Инициализация
     function init() {
         document.getElementById('language-toggle').addEventListener('click', switchLanguage);
         applyTranslations(); // Применение переводов при загрузке страницы
-        updateLanguageToggle();
-        updateTicketLabel();
+        updateLanguageIcon();
     }
 
     return {
-        init,
-        updateTicketLabel,
-        pluralizeTickets
+        init
     };
 })();
 
