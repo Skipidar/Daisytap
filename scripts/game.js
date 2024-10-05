@@ -22,7 +22,18 @@ const Game = (function() {
     let usedPredictions = JSON.parse(localStorage.getItem('usedPredictions')) || [];
     let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
 
+    // Объявляем chamomile в области видимости IIFE
+    let chamomile;
+
     function init() {
+        // Получаем элемент ромашки
+        chamomile = document.getElementById('chamomile');
+
+        if (!chamomile) {
+            console.error('Элемент с id="chamomile" не найден в DOM.');
+            return;
+        }
+
         // Обновление отображения монет и билетов
         document.getElementById('coin-count').textContent = coins;
         document.getElementById('spin-coin-count').textContent = spinCoins;
@@ -36,7 +47,6 @@ const Game = (function() {
         document.getElementById('income-per-hour').textContent = incomePerHour;
 
         // Обработчик клика по ромашке
-        const chamomile = document.getElementById('chamomile');
         chamomile.addEventListener('click', handleChamomileClick);
 
         // Добавление вибро-отклика
@@ -79,15 +89,25 @@ const Game = (function() {
             lastClickTime = now;
             AudioManager.playClickSound();
             spinCoins += 1;
-            document.getElementById('spin-coin-count').textContent = spinCoins;
+            const spinCoinCountElement = document.getElementById('spin-coin-count');
+            if (spinCoinCountElement) {
+                spinCoinCountElement.textContent = spinCoins;
+            } else {
+                console.error('Элемент с id="spin-coin-count" не найден в DOM.');
+            }
             localStorage.setItem('spinCoins', spinCoins);
             energy -= 10;
-            document.getElementById('energy-count').textContent = energy;
+            const energyCountElement = document.getElementById('energy-count');
+            if (energyCountElement) {
+                energyCountElement.textContent = energy;
+            } else {
+                console.error('Элемент с id="energy-count" не найден в DOM.');
+            }
 
             // Обновление опыта и уровня
             gainExperience(1);
 
-            // Вращение по часовой стрелке
+            // Вращение ромашки
             rotationAngle += 360 * 1.5 + Math.random() * 360;
             chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
             chamomile.style.transform = `rotate(${rotationAngle}deg)`;
@@ -107,10 +127,20 @@ const Game = (function() {
             Modal.open('prediction-modal');
 
             const prediction = getRandomPrediction();
-            document.getElementById('prediction-title').textContent = prediction;
+            const predictionTitleElement = document.getElementById('prediction-title');
+            if (predictionTitleElement) {
+                predictionTitleElement.textContent = prediction;
+            } else {
+                console.error('Элемент с id="prediction-title" не найден в DOM.');
+            }
 
             coins += Math.floor(Math.random() * (550 - 250 + 1)) + 250;
-            document.getElementById('coin-count').textContent = coins;
+            const coinCountElement = document.getElementById('coin-count');
+            if (coinCountElement) {
+                coinCountElement.textContent = coins;
+            } else {
+                console.error('Элемент с id="coin-count" не найден в DOM.');
+            }
             localStorage.setItem('coins', coins);
             startCountdown(6 * 60 * 60);
             createConfetti();
@@ -128,7 +158,12 @@ const Game = (function() {
             // Выдача билетов за предсказание
             const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
             tickets += ticketAmount;
-            document.getElementById('ticket-count').textContent = tickets;
+            const ticketCountElement = document.getElementById('ticket-count');
+            if (ticketCountElement) {
+                ticketCountElement.textContent = tickets;
+            } else {
+                console.error('Элемент с id="ticket-count" не найден в DOM.');
+            }
             localStorage.setItem('tickets', tickets);
             showTicketNotification(ticketAmount);
         }
@@ -155,6 +190,10 @@ const Game = (function() {
 
     function updatePredictionHistory() {
         const historyContainer = document.getElementById('predictions-history');
+        if (!historyContainer) {
+            console.error('Элемент с id="predictions-history" не найден в DOM.');
+            return;
+        }
         historyContainer.innerHTML = '<h3 data-localize="prediction_history">История предсказаний:</h3>';
         predictionHistory.forEach(item => {
             const historyItem = document.createElement('div');
@@ -209,10 +248,14 @@ const Game = (function() {
 
     function pulseCoinCount() {
         const coinCount = document.getElementById('spin-coin-count');
-        coinCount.classList.add('pulse');
-        setTimeout(() => {
-            coinCount.classList.remove('pulse');
-        }, 500);
+        if (coinCount) {
+            coinCount.classList.add('pulse');
+            setTimeout(() => {
+                coinCount.classList.remove('pulse');
+            }, 500);
+        } else {
+            console.error('Элемент с id="spin-coin-count" не найден в DOM.');
+        }
     }
 
     function createSparks(x, y) {
@@ -226,7 +269,6 @@ const Game = (function() {
     }
 
     function updateEnergyBar() {
-        const chamomile = document.getElementById('chamomile');
         if (energy > 0) {
             chamomile.style.filter = "none";
             isFlowerClickable = true;
@@ -239,7 +281,12 @@ const Game = (function() {
     function replenishEnergy() {
         if (energy < 1000) {
             energy += 1; // Восполнение по 1 единице каждую секунду
-            document.getElementById('energy-count').textContent = energy;
+            const energyCountElement = document.getElementById('energy-count');
+            if (energyCountElement) {
+                energyCountElement.textContent = energy;
+            } else {
+                console.error('Элемент с id="energy-count" не найден в DOM.');
+            }
             updateEnergyBar();
         }
     }
@@ -272,7 +319,11 @@ const Game = (function() {
         const now = Date.now();
         const remaining = Math.max(0, (lastPredictionTime + 6 * 60 * 60 * 1000 - now) / 1000);
         const predictionTimerElement = document.getElementById('prediction-timer');
-        predictionTimerElement.textContent = formatTime(Math.floor(remaining));
+        if (predictionTimerElement) {
+            predictionTimerElement.textContent = formatTime(Math.floor(remaining));
+        } else {
+            console.error('Элемент с id="prediction-timer" не найден в DOM.');
+        }
 
         isFlowerClickableForPrediction = remaining <= 0;
     }
@@ -290,13 +341,23 @@ const Game = (function() {
         level += 1;
         experience = 0;
         experienceToNextLevel = level * 100;
-        document.getElementById('level-number').textContent = level;
+        const levelNumberElement = document.getElementById('level-number');
+        if (levelNumberElement) {
+            levelNumberElement.textContent = level;
+        } else {
+            console.error('Элемент с id="level-number" не найден в DOM.');
+        }
         localStorage.setItem('playerLevel', level);
     }
 
     function updateLevelProgress() {
         const progressPercent = (experience / experienceToNextLevel) * 100;
-        document.getElementById('level-progress').style.width = `${progressPercent}%`;
+        const levelProgressElement = document.getElementById('level-progress');
+        if (levelProgressElement) {
+            levelProgressElement.style.width = `${progressPercent}%`;
+        } else {
+            console.error('Элемент с id="level-progress" не найден в DOM.');
+        }
     }
 
     function calculatePassiveIncome() {
@@ -305,7 +366,12 @@ const Game = (function() {
         if (elapsedHours >= 1) {
             const income = Math.floor(elapsedHours * incomePerHour);
             spinCoins += income;
-            document.getElementById('spin-coin-count').textContent = spinCoins;
+            const spinCoinCountElement = document.getElementById('spin-coin-count');
+            if (spinCoinCountElement) {
+                spinCoinCountElement.textContent = spinCoins;
+            } else {
+                console.error('Элемент с id="spin-coin-count" не найден в DOM.');
+            }
             localStorage.setItem('spinCoins', spinCoins);
             lastIncomeTime = now;
             localStorage.setItem('lastIncomeTime', lastIncomeTime);
@@ -314,11 +380,20 @@ const Game = (function() {
 
     function showTicketNotification(amount) {
         const ticketNotification = document.getElementById('ticket-notification');
-        ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
-        ticketNotification.style.display = 'block';
+        if (ticketNotification) {
+            ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
+            ticketNotification.style.display = 'block';
+            setTimeout(() => {
+                ticketNotification.style.display = 'none';
+            }, 3000); // Скрываем уведомление через 3 секунды
+        } else {
+            console.error('Элемент с id="ticket-notification" не найден в DOM.');
+        }
     }
 
     return {
         init
     };
 })();
+
+document.addEventListener('DOMContentLoaded', Game.init);
