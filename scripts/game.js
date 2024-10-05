@@ -1,60 +1,46 @@
 // scripts/game.js
 const Game = (function() {
-    let coins = parseInt(localStorage.getItem('coins')) || 10000; // Начальное количество $Daisy
-    let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000; // Начальное количество Coin
+    let coins = 200; // Начальное количество $Daisy
+    let spinCoins = 0;
     let energy = 1000;
     let isFlowerClickable = true;
     let boosterCharges = 6;
     let lastClickTime = 0;
-    let lastPredictionTime = parseInt(localStorage.getItem('lastPredictionTime')) || 0;
-    let isFlowerClickableForPrediction = true;
-    let level = parseInt(localStorage.getItem('playerLevel')) || 1;
-    let experience = parseInt(localStorage.getItem('playerExperience')) || 0;
-    let experienceToNextLevel = level * 100; // Пример расчёта опыта для следующего уровня
-    let incomePerHour = parseInt(localStorage.getItem('incomePerHour')) || 0;
-    let lastIncomeTime = parseInt(localStorage.getItem('lastIncomeTime')) || Date.now();
-
-    // Переменные билетов
-    let tickets = parseInt(localStorage.getItem('tickets')) || 200;
+    let rotationAngle = 0;
+    let lastPredictionTime = 0;
 
     // Для неповторяющихся предсказаний
-    let usedPredictions = JSON.parse(localStorage.getItem('usedPredictions')) || [];
-    let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
+    let usedPredictions = [];
+    let predictionHistory = [];
+
+    // Переменные билетов
+    let tickets = 200; // Начальное количество билетов для теста
+    let lastTicketClaim = 0;
 
     function init() {
-        // Обновление отображения монет и билетов
-        document.getElementById('coin-count').textContent = coins;
-        document.getElementById('spin-coin-count').textContent = spinCoins;
-        document.getElementById('ticket-count').textContent = tickets;
-
-        // Обновление уровня и прогресса
-        document.getElementById('level-number').textContent = level;
-        updateLevelProgress();
-
-        // Обновление прибыли в час
-        document.getElementById('income-per-hour').textContent = incomePerHour;
+        // Обновление начальных значений билетов
+        updateTicketCount();
 
         // Обработчик клика по ромашке
         const chamomile = document.getElementById('chamomile');
         chamomile.addEventListener('click', handleChamomileClick);
 
-        // Добавление вибро-отклика
-        chamomile.addEventListener('click', () => {
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
-            }
-        });
-
         // Обработчик двойного клика по ромашке (предсказание)
         chamomile.addEventListener('dblclick', handleChamomileDblClick);
 
-        // Инициализация таймера предсказания
-        updatePredictionTimer();
-        setInterval(updatePredictionTimer, 1000);
+        // Инициализация кнопки бустера
+        const boosterBtn = document.getElementById('booster');
+        boosterBtn.addEventListener('click', handleBoosterClick);
+        updateBoosterTimer();
+        setInterval(updateBoosterTimer, 1000); // Обновление таймера каждую секунду
 
-        // Запуск пассивного дохода
-        calculatePassiveIncome();
-        setInterval(calculatePassiveIncome, 60000); // Каждую минуту
+        // Инициализация получения новых бустеров каждый час
+        setInterval(() => {
+            if (boosterCharges < 6) {
+                boosterCharges++;
+                updateBoosterTimer();
+            }
+        }, 60 * 60 * 1000); // Каждый час
 
         // Обновление энергии
         updateEnergyBar();
@@ -62,8 +48,11 @@ const Game = (function() {
         // Запуск восполнения энергии
         setInterval(replenishEnergy, 1000); // Каждую секунду
 
-        // Обновление лейбла билетов при загрузке
-        Localization.updateTicketLabel();
+        // Обработчик кнопки "Играть"
+        const playButton = document.getElementById('play-button');
+        playButton.addEventListener('click', () => {
+            Modal.open('protect-flower-game');
+        });
     }
 
     function handleChamomileClick(e) {
@@ -73,19 +62,13 @@ const Game = (function() {
             AudioManager.playClickSound();
             spinCoins += 1;
             document.getElementById('spin-coin-count').textContent = spinCoins;
-            localStorage.setItem('spinCoins', spinCoins);
             energy -= 10;
             document.getElementById('energy-count').textContent = energy;
 
-            // Обновление опыта и уровня
-            gainExperience(1);
-
-            // Вращение ромашки
-            const chamomile = document.getElementById('chamomile');
-            chamomile.classList.add('rotate-animation');
-            chamomile.addEventListener('animationend', () => {
-                chamomile.classList.remove('rotate-animation');
-            }, { once: true });
+            // Вращение по часовой стрелке
+            rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
+            this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            this.style.transform = `rotate(${rotationAngle}deg)`;
 
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
@@ -95,9 +78,8 @@ const Game = (function() {
 
     function handleChamomileDblClick() {
         const now = Date.now();
-        if (isFlowerClickableForPrediction && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
+        if (isFlowerClickable && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
             lastPredictionTime = now;
-            localStorage.setItem('lastPredictionTime', lastPredictionTime);
             AudioManager.playPredictionSound();
             Modal.open('prediction-modal');
 
@@ -106,22 +88,19 @@ const Game = (function() {
 
             coins += Math.floor(Math.random() * (550 - 250 + 1)) + 250;
             document.getElementById('coin-count').textContent = coins;
-            localStorage.setItem('coins', coins);
-            startCountdown(6 * 60 * 60);
+            startCountdown(6 * 60 * 60); // 6 часов
             createConfetti();
-
-            // Добавляем опыт
-            gainExperience(50);
 
             // Добавляем предсказание в историю
             const date = new Date().toLocaleString();
             predictionHistory.unshift({ prediction, date });
-            if (predictionHistory.length > 10) predictionHistory.pop();
-            localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
             updatePredictionHistory();
 
-            // Обновление лейбла билетов
-            Localization.updateTicketLabel();
+            // Выдача билетиков за предсказание
+            const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
+            tickets += ticketAmount;
+            document.getElementById('ticket-count').textContent = tickets;
+            showTicketNotification(ticketAmount);
         }
     }
 
@@ -129,9 +108,25 @@ const Game = (function() {
         const predictions = [
             "Сегодня удача улыбнется вам во всех начинаниях. Не упустите свой шанс!",
             "Впереди вас ждет важная встреча, которая может изменить вашу жизнь. Будьте готовы!",
-            // Добавьте остальные предсказания...
+            "Улыбайтесь чаще, и мир улыбнется вам в ответ. Позитивный настрой - ключ к успеху!",
+            "Удача будет сопровождать вас весь день. Смело беритесь за новые проекты!",
+            "Сегодня вы найдете решение давней проблемы. Доверьтесь своей интуиции!",
+            "Неожиданная хорошая новость поднимет вам настроение и вдохновит на новые свершения.",
+            "Приятный сюрприз ожидает вас сегодня. Будьте внимательны к мелочам!",
+            "Вас ждет неожиданное, но очень приятное событие. Готовьтесь к приятным переменам!",
+            "Встреча с давним другом принесет не только радость, но и новые возможности.",
+            "Терпение и труд все перетрут. Сегодня ваше упорство будет вознаграждено!",
+            "Важный разговор, которого вы ждали, наконец состоится. Будьте честны и открыты.",
+            "Сегодня ваш день! Все будет складываться наилучшим образом.",
+            "Ваши усилия не пройдут даром. Скоро вы увидите плоды своего труда.",
+            "Любовь витает в воздухе. Будьте открыты для новых отношений или укрепления существующих.",
+            "Путешествие, о котором вы мечтали, скоро станет реальностью. Начинайте планировать!",
+            "Сегодня лучше не торопиться. Всему своё время, и ваше время придёт совсем скоро.",
+            "Завтрашний день принесет ещё больше возможностей. Готовьтесь к ним уже сегодня!",
+            "Сохраняйте спокойствие и уверенность, даже если всё идет не по плану. Это ключ к успеху.",
+            "Романтический вечер не за горами. Приготовьтесь к незабываемым моментам!",
+            "Приятный сюрприз ждет вас за ближайшим углом. Будьте внимательны и не пропустите его!"
         ];
-
         let availablePredictions = predictions.filter(p => !usedPredictions.includes(p));
         if (availablePredictions.length === 0) {
             usedPredictions = [];
@@ -140,13 +135,12 @@ const Game = (function() {
         const randomIndex = Math.floor(Math.random() * availablePredictions.length);
         const prediction = availablePredictions[randomIndex];
         usedPredictions.push(prediction);
-        localStorage.setItem('usedPredictions', JSON.stringify(usedPredictions));
         return prediction;
     }
 
     function updatePredictionHistory() {
         const historyContainer = document.getElementById('predictions-history');
-        historyContainer.innerHTML = '<h3 data-localize="prediction_history">История предсказаний:</h3>';
+        historyContainer.innerHTML = '<h3>История предсказаний:</h3>';
         predictionHistory.forEach(item => {
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';
@@ -174,7 +168,7 @@ const Game = (function() {
         coin.style.left = `${x}px`;
         coin.style.top = `${y}px`;
         coin.style.transition = 'all 1s linear';
-        coin.style.width = '36px';
+        coin.style.width = '36px'; // Увеличенный размер монетки
         coin.style.height = '36px';
         document.body.appendChild(coin);
 
@@ -188,6 +182,7 @@ const Game = (function() {
             coin.style.opacity = '0';
         }, 10);
 
+        // Добавление анимации пульсации к счетчику монет
         coin.addEventListener('transitionend', () => {
             if (coin.style.opacity === '0') {
                 coin.remove();
@@ -199,11 +194,11 @@ const Game = (function() {
     }
 
     function pulseCoinCount() {
-        const coinCount = document.getElementById('spin-coin-count');
+        const coinCount = document.getElementById('coin-count');
         coinCount.classList.add('pulse');
         setTimeout(() => {
             coinCount.classList.remove('pulse');
-        }, 500);
+        }, 500); // Длительность пульсации
     }
 
     function createSparks(x, y) {
@@ -253,54 +248,44 @@ const Game = (function() {
     }
 
     function formatTime(seconds) {
-        const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
-        const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
         const s = (seconds % 60).toString().padStart(2, '0');
-        return `${h}:${m}:${s}`;
+        return `${m}:${s}`;
     }
 
-    function updatePredictionTimer() {
-        const now = Date.now();
-        const remaining = Math.max(0, (lastPredictionTime + 6 * 60 * 60 * 1000 - now) / 1000);
-        const predictionTimerElement = document.getElementById('prediction-timer');
-        predictionTimerElement.textContent = formatTime(Math.floor(remaining));
-
-        isFlowerClickableForPrediction = remaining <= 0;
-    }
-
-    function gainExperience(amount) {
-        experience += amount;
-        if (experience >= experienceToNextLevel) {
-            levelUp();
+    function handleBoosterClick() {
+        if (boosterCharges > 0) {
+            energy = 1000;
+            document.getElementById('energy-count').textContent = energy;
+            boosterCharges--;
+            updateBoosterTimer();
+            updateEnergyBar();
+            // Бустер не издаёт звуки
         }
-        updateLevelProgress();
-        localStorage.setItem('playerExperience', experience);
     }
 
-    function levelUp() {
-        level += 1;
-        experience = 0;
-        experienceToNextLevel = level * 100;
-        document.getElementById('level-number').textContent = level;
-        localStorage.setItem('playerLevel', level);
+    function updateBoosterTimer() {
+        const boosterBtn = document.getElementById('booster');
+        // Здесь можно добавить реальную логику таймера
+        boosterBtn.textContent = `Бустер ${boosterCharges}/6 (${formatBoosterTime()})`;
     }
 
-    function updateLevelProgress() {
-        const progressPercent = (experience / experienceToNextLevel) * 100;
-        document.getElementById('level-progress').style.width = `${progressPercent}%`;
+    function formatBoosterTime() {
+        // Простая заглушка для времени
+        // Реализуйте реальный таймер, если требуется
+        return '01:00';
     }
 
-    function calculatePassiveIncome() {
-        const now = Date.now();
-        const elapsedHours = (now - lastIncomeTime) / (1000 * 60 * 60);
-        if (elapsedHours >= 1) {
-            const income = Math.floor(elapsedHours * incomePerHour);
-            spinCoins += income;
-            document.getElementById('spin-coin-count').textContent = spinCoins;
-            localStorage.setItem('spinCoins', spinCoins);
-            lastIncomeTime = now;
-            localStorage.setItem('lastIncomeTime', lastIncomeTime);
-        }
+    function updateTicketCount() {
+        const ticketCount = document.getElementById('ticket-count');
+        ticketCount.textContent = tickets;
+    }
+
+    function showTicketNotification(amount) {
+        const ticketNotification = document.getElementById('ticket-notification');
+        ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
+        ticketNotification.style.display = 'block';
+        // Не скрывать уведомление
     }
 
     return {
