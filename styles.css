@@ -1,4 +1,3 @@
-/* styles.css */
 /* Общие стили */
 body {
     margin: 0;
@@ -186,33 +185,7 @@ body {
     margin-left: 10px;
 }
 
-/* Тикеты под $Daisy */
-#tickets-counter {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.ticket-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 5px;
-}
-
-/* Прибыль в час и бустер энергии под Coin */
-#income-counter, #booster-counter {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-}
-
-.coin-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 5px;
-}
-
-.energy-icon {
+.coin-icon, .ticket-icon {
     width: 24px;
     height: 24px;
     margin-right: 5px;
