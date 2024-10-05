@@ -40,24 +40,30 @@
 
         <!-- Счётчики -->
         <div class="counters">
-            <!-- $Daisy -->
-            <div id="coin-counter" class="counter">
-                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
-                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
+            <!-- Монеты слева -->
+            <div class="left-counters">
+                <!-- $Daisy -->
+                <div id="coin-counter" class="counter">
+                    <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
+                    <span class="daisy-coin" id="coin-count">10000</span> $Daisy
+                </div>
+                <!-- Coin -->
+                <div id="spin-coin-counter" class="counter">
+                    <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+                    <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
+                </div>
             </div>
-            <!-- Coin -->
-            <div id="spin-coin-counter" class="counter">
-                <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-                <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
-            </div>
-            <!-- Tickets -->
-            <div id="ticket-counter" class="counter">
-                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">200</span> <span id="ticket-label">Билетов</span>
-            </div>
-            <!-- Прибыль в час -->
-            <div id="income-counter" class="counter">
-                <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
+            <!-- Билеты и прибыль справа -->
+            <div class="right-counters">
+                <!-- Tickets -->
+                <div id="ticket-counter" class="counter">
+                    <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+                    <span id="ticket-count">200</span> <span id="ticket-label">Билетов</span>
+                </div>
+                <!-- Прибыль в час -->
+                <div id="income-counter" class="counter">
+                    <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
+                </div>
             </div>
         </div>
 

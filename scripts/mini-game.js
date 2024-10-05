@@ -24,23 +24,21 @@ const MiniGame = (function () {
         startButton.addEventListener('click', startGame);
 
         // Обработчик кнопки "Назад"
-        document.addEventListener('backbutton', handleBackButton, false);
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.key === 'Backspace') {
+                if (isGameRunning) {
+                    endGame();
+                    document.querySelector('.game-container').style.display = 'flex';
+                    document.getElementById('protect-flower-game').style.display = 'none';
+                }
+            }
+        });
 
         // Добавляем обработчик для кнопки "Играть"
         document.getElementById('play-button').addEventListener('click', () => {
             document.querySelector('.game-container').style.display = 'none';
             document.getElementById('protect-flower-game').style.display = 'flex';
         });
-    }
-
-    function handleBackButton() {
-        if (isGameRunning) {
-            endGame();
-            document.querySelector('.game-container').style.display = 'flex';
-            document.getElementById('protect-flower-game').style.display = 'none';
-        } else {
-            navigator.app.exitApp();
-        }
     }
 
     function startGame() {
@@ -112,22 +110,7 @@ const MiniGame = (function () {
             heartInterval = setInterval(spawnHeart, 20000);
             coinInterval = setInterval(spawnCoin, currentLevel === 1 ? 25000 : 15000);
 
-            gameTimerInterval = setInterval(() => {
-                gameTime--;
-                document.getElementById('game-timer').textContent = formatTime(gameTime);
-
-                if (gameTime <= 0) {
-                    if (currentLevel === 1) {
-                        currentLevel = 2;
-                        gameTime = 60;
-                        clearInterval(beeInterval);
-                        beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
-                        showLevelCompleteModal();
-                    } else {
-                        endGame();
-                    }
-                }
-            }, 1000);
+            gameTimerInterval = setInterval(gameTimerTick, 1000);
 
             function gameLoop() {
                 if (!isCountdownDone) return;
@@ -136,11 +119,55 @@ const MiniGame = (function () {
                 updateBees(ctx, flower);
                 updateHearts();
                 updateCoins();
-                requestAnimationFrame(gameLoop);
+                if (isGameRunning) {
+                    requestAnimationFrame(gameLoop);
+                }
             }
 
             gameLoop();
         });
+    }
+
+    function gameTimerTick() {
+        gameTime--;
+        if (gameTime <= 0) {
+            clearInterval(gameTimerInterval);
+            if (currentLevel === 1) {
+                currentLevel = 2;
+                showNextLevelModal();
+            } else {
+                endGame();
+            }
+        }
+        document.getElementById('game-timer').textContent = formatTime(gameTime);
+    }
+
+    function showNextLevelModal() {
+        const nextLevelModal = document.createElement('div');
+        nextLevelModal.className = 'modal';
+        nextLevelModal.innerHTML = `
+            <div class="modal-content">
+                <h2>Готов к 2 уровню?</h2>
+                <button id="next-level-btn">Поехали</button>
+            </div>
+        `;
+        document.body.appendChild(nextLevelModal);
+
+        document.getElementById('next-level-btn').addEventListener('click', () => {
+            nextLevelModal.remove();
+            startLevel2();
+        });
+    }
+
+    function startLevel2() {
+        gameTime = 60;
+        isCountdownDone = false;
+        startCountdown(() => {
+            isCountdownDone = true;
+            beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+        });
+        AudioManager.pauseOneLevelMusic();
+        AudioManager.playElectricChaosMusic();
     }
 
     function startCountdown(callback) {
@@ -433,33 +460,6 @@ const MiniGame = (function () {
         return `${m}:${s}`;
     }
 
-    function showLevelCompleteModal() {
-        const resultModal = document.createElement('div');
-        resultModal.style.position = 'fixed';
-        resultModal.style.top = '50%';
-        resultModal.style.left = '50%';
-        resultModal.style.transform = 'translate(-50%, -50%)';
-        resultModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        resultModal.style.color = 'white';
-        resultModal.style.textAlign = 'center';
-        resultModal.style.padding = '20px';
-        resultModal.style.zIndex = '1000';
-        resultModal.innerHTML = `
-            <h2>Уровень завершен!</h2>
-            <p>Переход на следующий уровень.</p>
-            <button class="next-level-btn">Далее</button>
-        `;
-
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.appendChild(resultModal);
-
-        const nextLevelButton = resultModal.querySelector('.next-level-btn');
-        nextLevelButton.addEventListener('click', () => {
-            resultModal.remove();
-            startGame();
-        });
-    }
-
     function endGame() {
         clearInterval(beeInterval);
         clearInterval(coinInterval);
@@ -486,26 +486,17 @@ const MiniGame = (function () {
         document.getElementById('coin-count').textContent = coins;
 
         const resultModal = document.createElement('div');
-        resultModal.style.position = 'fixed';
-        resultModal.style.top = '50%';
-        resultModal.style.left = '50%';
-        resultModal.style.transform = 'translate(-50%, -50%)';
-        resultModal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        resultModal.style.color = 'white';
-        resultModal.style.textAlign = 'center';
-        resultModal.style.padding = '20px';
-        resultModal.style.zIndex = '1000';
+        resultModal.className = 'modal';
         resultModal.innerHTML = `
-            <h2>Игра окончена!</h2>
-            <p>Вы заработали ${gameCoins} Coin и ${daisyCoins} $Daisy.</p>
-            <button class="replay-btn" style="width: 120px; margin: 5px;">
-                <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} ${Localization.pluralizeTickets(tickets)})
-            </button>
-            <button class="exit-btn" style="width: 120px; margin: 5px;">Домой</button>
+            <div class="modal-content">
+                <h2>Игра окончена!</h2>
+                <p>Вы заработали ${gameCoins} Coin и ${daisyCoins} $Daisy.</p>
+                <p>У вас осталось ${tickets} ${Localization.pluralizeTickets(tickets)}.</p>
+                <button class="replay-btn">Повторить</button>
+                <button class="exit-btn">Домой</button>
+            </div>
         `;
-
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.appendChild(resultModal);
+        document.body.appendChild(resultModal);
 
         const replayButton = resultModal.querySelector('.replay-btn');
         const exitButton = resultModal.querySelector('.exit-btn');
@@ -519,7 +510,7 @@ const MiniGame = (function () {
         exitButton.addEventListener('click', () => {
             resultModal.remove();
             currentLevel = 1;
-            gameScreen.style.display = 'none';
+            document.getElementById('protect-flower-game').style.display = 'none';
             document.querySelector('.game-container').style.display = 'flex';
             totalCoinsEarned = 0;
             daisyCoins = 0;

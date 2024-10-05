@@ -26,12 +26,6 @@ const Modal = (function() {
         setupTasksModal();
         setupGiftModal();
 
-        // Обработчик кнопки "Играть"
-        document.getElementById('play-button').addEventListener('click', function() {
-            document.querySelector('.game-container').style.display = 'none';
-            document.getElementById('protect-flower-game').style.display = 'flex';
-        });
-
         // Обновление лейбла билетов при загрузке
         Localization.updateTicketLabel();
     }

@@ -136,7 +136,8 @@ const Localization = (function() {
 
     return {
         init,
-        updateTicketLabel
+        updateTicketLabel,
+        pluralizeTickets
     };
 })();
 

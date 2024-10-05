@@ -82,9 +82,10 @@ const Game = (function() {
 
             // Вращение ромашки
             const chamomile = document.getElementById('chamomile');
-            chamomile.classList.remove('rotate-animation');
-            void chamomile.offsetWidth; // Перезапуск анимации
             chamomile.classList.add('rotate-animation');
+            chamomile.addEventListener('animationend', () => {
+                chamomile.classList.remove('rotate-animation');
+            }, { once: true });
 
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
