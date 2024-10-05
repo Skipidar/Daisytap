@@ -1,58 +1,58 @@
 // scripts/main.js
 document.addEventListener('DOMContentLoaded', function() {
-    // Инициализация аудио
+    // Initialize audio
     if (AudioManager && typeof AudioManager.init === 'function') {
         AudioManager.init();
     } else {
-        console.error('AudioManager не инициализирован или отсутствует.');
+        console.error('AudioManager is not initialized or missing.');
     }
 
-    // Инициализация локализации
+    // Initialize localization
     if (Localization && typeof Localization.init === 'function') {
         Localization.init();
     } else {
-        console.error('Localization не инициализирован или отсутствует.');
+        console.error('Localization is not initialized or missing.');
     }
 
-    // Инициализация модальных окон
+    // Initialize modals
     if (Modal && typeof Modal.init === 'function') {
         Modal.init();
     } else {
-        console.error('Modal не инициализирован или отсутствует.');
+        console.error('Modal is not initialized or missing.');
     }
 
-    // Инициализация магазина
+    // Initialize shop
     if (Shop && typeof Shop.init === 'function') {
         Shop.init();
     } else {
-        console.error('Shop не инициализирован или отсутствует.');
+        console.error('Shop is not initialized or missing.');
     }
 
-    // Инициализация игры
+    // Initialize game
     if (Game && typeof Game.init === 'function') {
         Game.init();
     } else {
-        console.error('Game не инициализирован или отсутствует.');
+        console.error('Game is not initialized or missing.');
     }
 
-    // Инициализация мини-игры
+    // Initialize mini-game
     if (MiniGame && typeof MiniGame.init === 'function') {
         MiniGame.init();
     } else {
-        console.error('MiniGame не инициализирован или отсутствует.');
+        console.error('MiniGame is not initialized or missing.');
     }
 
-    // Запуск анимации загрузки и инициализация главного экрана
+    // Start loading animation and initialize main screen
     initMain();
 });
 
 function initMain() {
-    // Анимация загрузки
+    // Loading animation
     setTimeout(() => {
         fadeOutLoadingScreen();
-    }, 3000); // 3 секунды загрузки
+    }, 3000); // 3 seconds loading
 
-    // Функция плавного исчезновения экрана загрузки
+    // Function to smoothly fade out the loading screen
     function fadeOutLoadingScreen() {
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
@@ -64,15 +64,15 @@ function initMain() {
                     gameContainer.style.display = 'flex';
                     animateDaisyLetters();
                 } else {
-                    console.error('Элемент с классом "game-container" не найден в DOM.');
+                    console.error('Element with class "game-container" not found in DOM.');
                 }
-            }, 1000); // Длительность анимации fade-out
+            }, 1000); // Duration of fade-out animation
         } else {
-            console.error('Элемент с id="loading-screen" не найден в DOM.');
+            console.error('Element with id="loading-screen" not found in DOM.');
         }
     }
 
-    // Функция анимации появления слова "Daisy" по буквам
+    // Function to animate the appearance of the word "Daisy" letter by letter
     function animateDaisyLetters() {
         const daisyElement = document.querySelector('.loading-text');
         if (daisyElement) {
@@ -81,10 +81,10 @@ function initMain() {
                 span.style.opacity = '0';
                 setTimeout(() => {
                     span.style.opacity = '1';
-                }, index * 300); // Задержка 0.3s между буквами
+                }, index * 300); // 0.3s delay between letters
             });
         } else {
-            console.error('Элемент с классом "loading-text" не найден в DOM.');
+            console.error('Element with class "loading-text" not found in DOM.');
         }
     }
 }

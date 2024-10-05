@@ -2,11 +2,11 @@
 const Shop = (function() {
     let coins = parseInt(localStorage.getItem('coins')) || 10000;
     let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
-    let ownedSkins = JSON.parse(localStorage.getItem('ownedSkins')) || {'chamomile': {level: 1, equipped: true}}; // Ромашка установлена по умолчанию
+    let ownedSkins = JSON.parse(localStorage.getItem('ownedSkins')) || {'chamomile': {level: 1, equipped: true}}; // Chamomile is equipped by default
     let incomePerHour = parseInt(localStorage.getItem('incomePerHour')) || 0;
 
     const skinsData = {
-        // Скины доступные в магазине
+        // Skins available in the shop
         'chamomile': {name: 'Chamomile', price: 0, currency: '$Daisy', image: 'assets/images/chamomile.webp', income: 1},
         'bubble': {name: 'Bubble', price: 100, currency: '$Daisy', image: 'assets/images/bubble.webp', income: 2},
         'rose': {name: 'Rose', price: 200, currency: '$Daisy', image: 'assets/images/Rose.webp', income: 3},
@@ -24,30 +24,35 @@ const Shop = (function() {
     };
 
     function init() {
-        // Инициализация кнопки магазина
+        // Initialize shop button
         const shopButton = document.getElementById('shop-btn');
         if (shopButton) {
             shopButton.addEventListener('click', openShop);
         } else {
-            console.error('Элемент с id="shop-btn" не найден в DOM.');
+            console.error('Element with id="shop-btn" not found in DOM.');
         }
 
-        // Инициализация вкладок магазина
-        document.querySelectorAll('.shop-tab').forEach(tab => {
+        // Initialize shop tabs
+        const shopTabs = document.querySelectorAll('.shop-tab');
+        shopTabs.forEach(tab => {
             tab.addEventListener('click', function() {
-                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+                shopTabs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
                 const tabName = this.getAttribute('data-tab');
                 loadShopItems(tabName);
             });
         });
 
-        // Обновляем пассивный доход
+        // Update passive income
         calculateIncomePerHour();
-        document.getElementById('income-per-hour').textContent = incomePerHour;
+        const incomeElement = document.getElementById('income-per-hour');
+        if (incomeElement) {
+            incomeElement.textContent = incomePerHour;
+        }
+
         localStorage.setItem('incomePerHour', incomePerHour);
 
-        // Устанавливаем текущий скин
+        // Set equipped skin
         setEquippedSkin();
     }
 
@@ -59,7 +64,7 @@ const Shop = (function() {
     function loadShopItems(tabName) {
         const shopContent = document.getElementById('shop-content');
         if (!shopContent) {
-            console.error('Элемент с id="shop-content" не найден в DOM.');
+            console.error('Element with id="shop-content" not found in DOM.');
             return;
         }
         shopContent.innerHTML = '';
@@ -93,29 +98,34 @@ const Shop = (function() {
                 </div>
             `;
             itemDiv.addEventListener('click', (event) => {
-                // Предотвращаем всплытие клика на кнопки
+                // Prevent click from triggering when clicking on buttons
                 if (event.target.classList.contains('upgrade-btn') || event.target.classList.contains('equip-btn')) {
                     return;
                 }
                 purchaseOrUpgradeItem(item);
             });
-            // Добавление обработчиков для кнопок "Upgrade" и "Equip Skin"
-            itemDiv.querySelectorAll('.upgrade-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
+
+            // Add event listeners for upgrade and equip buttons
+            const upgradeBtn = itemDiv.querySelector('.upgrade-btn');
+            if (upgradeBtn) {
+                upgradeBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const skinId = button.getAttribute('data-skin-id');
+                    const skinId = upgradeBtn.getAttribute('data-skin-id');
                     const skin = skinsData[skinId];
                     upgradeSkin(skin);
                 });
-            });
-            itemDiv.querySelectorAll('.equip-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
+            }
+
+            const equipBtn = itemDiv.querySelector('.equip-btn');
+            if (equipBtn) {
+                equipBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const skinId = button.getAttribute('data-skin-id');
+                    const skinId = equipBtn.getAttribute('data-skin-id');
                     applySkin(skinId);
                     alert(Localization.getTranslation('skin_equipped', skinId));
                 });
-            });
+            }
+
             shopContent.appendChild(itemDiv);
         });
     }
@@ -123,9 +133,9 @@ const Shop = (function() {
     function getSkinStatus(skinId) {
         if (ownedSkins[skinId]) {
             if (ownedSkins[skinId].equipped) {
-                return Localization.getTranslation('skin_equipped_status'); // "Установлено" / "Equipped"
+                return Localization.getTranslation('skin_equipped_status'); // "Equipped" / "Установлено"
             } else {
-                return `${Localization.getTranslation('skin_level')}: ${ownedSkins[skinId].level}`; // "Уровень: X" / "Level: X"
+                return `${Localization.getTranslation('skin_level')}: ${ownedSkins[skinId].level}`; // "Level: X" / "Уровень: X"
             }
         } else {
             return '';
@@ -134,11 +144,10 @@ const Shop = (function() {
 
     function purchaseOrUpgradeItem(item) {
         if (ownedSkins[item.id]) {
-            // Если скин уже куплен, предлагаем улучшить или установить
-            // Опции уже реализованы через кнопки, поэтому ничего не делаем здесь
+            // If skin is already purchased, do nothing here since buttons handle actions
             return;
         } else {
-            // Иначе предлагаем купить
+            // Else, prompt to purchase
             purchaseItem(item);
         }
     }
@@ -147,11 +156,17 @@ const Shop = (function() {
         if ((item.currency === '$Daisy' && coins >= item.price) || (item.currency === 'Coin' && spinCoins >= item.price)) {
             if (item.currency === '$Daisy') {
                 coins -= item.price;
-                document.getElementById('coin-count').textContent = coins;
+                const coinCountElement = document.getElementById('coin-count');
+                if (coinCountElement) {
+                    coinCountElement.textContent = coins;
+                }
                 localStorage.setItem('coins', coins);
             } else {
                 spinCoins -= item.price;
-                document.getElementById('spin-coin-count').textContent = spinCoins;
+                const spinCoinCountElement = document.getElementById('spin-coin-count');
+                if (spinCoinCountElement) {
+                    spinCoinCountElement.textContent = spinCoins;
+                }
                 localStorage.setItem('spinCoins', spinCoins);
             }
             ownedSkins[item.id] = {level: 1, equipped: false};
@@ -174,11 +189,17 @@ const Shop = (function() {
         if ((item.currency === '$Daisy' && coins >= upgradeCost) || (item.currency === 'Coin' && spinCoins >= upgradeCost)) {
             if (item.currency === '$Daisy') {
                 coins -= upgradeCost;
-                document.getElementById('coin-count').textContent = coins;
+                const coinCountElement = document.getElementById('coin-count');
+                if (coinCountElement) {
+                    coinCountElement.textContent = coins;
+                }
                 localStorage.setItem('coins', coins);
             } else {
                 spinCoins -= upgradeCost;
-                document.getElementById('spin-coin-count').textContent = spinCoins;
+                const spinCoinCountElement = document.getElementById('spin-coin-count');
+                if (spinCoinCountElement) {
+                    spinCoinCountElement.textContent = spinCoins;
+                }
                 localStorage.setItem('spinCoins', spinCoins);
             }
             skin.level += 1;
@@ -186,14 +207,14 @@ const Shop = (function() {
             localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
             calculateIncomePerHour();
             loadShopItems(document.querySelector('.shop-tab.active').getAttribute('data-tab'));
-            alert(`${Localization.getTranslation('skin_upgraded')} ${item.name} до уровня ${skin.level}!`);
+            alert(`${Localization.getTranslation('skin_upgraded')} ${item.name} ${Localization.getTranslation('to_level')} ${skin.level}!`);
         } else {
             alert(Localization.getTranslation('insufficient_funds_for_upgrade'));
         }
     }
 
     function calculateUpgradeCost(item, currentLevel) {
-        // Формула увеличения стоимости с каждым уровнем
+        // Formula for increasing cost with each level
         return Math.floor(item.price * (currentLevel + 1) * 1.5);
     }
 
@@ -204,16 +225,19 @@ const Shop = (function() {
             const skinData = skinsData[skinId];
             incomePerHour += skinData.income * skin.level;
         }
-        document.getElementById('income-per-hour').textContent = incomePerHour;
+        const incomeElement = document.getElementById('income-per-hour');
+        if (incomeElement) {
+            incomeElement.textContent = incomePerHour;
+        }
         localStorage.setItem('incomePerHour', incomePerHour);
     }
 
     function applySkin(skinId) {
-        // Снимаем предыдущий скин
+        // Unequip all skins
         for (let id in ownedSkins) {
             ownedSkins[id].equipped = false;
         }
-        // Устанавливаем новый скин
+        // Equip the selected skin
         ownedSkins[skinId].equipped = true;
         localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
 
@@ -221,7 +245,7 @@ const Shop = (function() {
         if (chamomile) {
             chamomile.src = skinsData[skinId].image;
         } else {
-            console.error('Элемент с id="chamomile" не найден в DOM.');
+            console.error('Element with id="chamomile" not found in DOM.');
         }
     }
 
@@ -240,7 +264,7 @@ const Shop = (function() {
     function showSkinPurchaseModal(skinName) {
         const skinPurchaseModal = document.getElementById('skin-purchase-modal');
         if (!skinPurchaseModal) {
-            console.error('Элемент с id="skin-purchase-modal" не найден в DOM.');
+            console.error('Element with id="skin-purchase-modal" not found in DOM.');
             return;
         }
         skinPurchaseModal.style.display = 'flex';
@@ -250,7 +274,7 @@ const Shop = (function() {
             giftAmountElement.textContent = skinName;
         }
 
-        // Обновляем текст в модальном окне
+        // Update text in the modal
         const congratulationsElement = skinPurchaseModal.querySelector('h2');
         if (congratulationsElement) {
             congratulationsElement.textContent = Localization.getTranslation('congratulations_purchase', skinName);
@@ -262,12 +286,18 @@ const Shop = (function() {
         }
     }
 
-    // Функции для обновления баланса из других модулей
+    // Functions to update balance from other modules
     function updateBalance(newCoins, newSpinCoins) {
         coins = newCoins;
         spinCoins = newSpinCoins;
-        document.getElementById('coin-count').textContent = coins;
-        document.getElementById('spin-coin-count').textContent = spinCoins;
+        const coinCountElement = document.getElementById('coin-count');
+        if (coinCountElement) {
+            coinCountElement.textContent = coins;
+        }
+        const spinCoinCountElement = document.getElementById('spin-coin-count');
+        if (spinCoinCountElement) {
+            spinCoinCountElement.textContent = spinCoins;
+        }
     }
 
     return {

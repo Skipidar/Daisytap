@@ -1,8 +1,8 @@
 // scripts/localization.js
 const Localization = (function() {
-    let currentLanguage = localStorage.getItem('currentLanguage') || 'ru'; // Текущий язык по умолчанию
+    let currentLanguage = localStorage.getItem('currentLanguage') || 'ru'; // Default language
 
-    // Переводы для разных языков
+    // Translations for different languages
     const translations = {
         'ru': {
             'play_button': 'Играть',
@@ -37,27 +37,20 @@ const Localization = (function() {
             'invite_friends': 'Приглашайте друзей! Вы и ваш друг получите бонус в виде монет. Для Telegram друзей с Telegram Premium - особые условия!',
             'friends_soon': 'Тестовый список друзей скоро будет доступен.',
             'tasks_soon': 'Задания скоро появятся...',
-            'your_gift': 'Ваш подарок: <span id="gift-amount">{amount}</span> билетов.',
+            'your_gift': 'Поздравляем с приобретением <span id="gift-amount">{skinName}</span>!',
             'close': 'Закрыть',
             'upgrade': 'Улучшить',
             'equip_skin': 'Установить скин',
-            'congratulations_acquire': 'Поздравляем с приобретением {skin}!',
-            'profit_per_hour': 'Прибыль: {income}/час',
-            'replay': 'Повторить',
-            'home': 'Домой',
-            'not_enough_tickets': 'Недостаточно билетов!',
-            'not_enough_funds': 'Недостаточно средств!',
+            'skin_equipped': 'Скин установлен!',
+            'skin_equipped_status': 'Установлено',
+            'skin_level': 'Уровень',
+            'skin_upgraded': 'Скин улучшен до уровня',
+            'to_level': '',
+            'insufficient_funds': 'Недостаточно средств!',
+            'insufficient_funds_for_upgrade': 'Недостаточно средств для улучшения!',
             'max_level_reached': 'Максимальный уровень достигнут!',
-            'upgrade_success': 'Скин "{skin}" улучшен до уровня {level}!',
-            'upgrade_failed': 'Недостаточно средств для улучшения!',
-            'equip_success': 'Скин "{skin}" установлен.',
-            'share_development': 'Поделиться с друзьями: Функция в разработке.',
-            'publish_development': 'Опубликовать историю: Функция в разработке.',
-            'next': 'Далее',
-            'game_over': 'Игра окончена!',
-            'game_over_message': 'Вы заработали {coin} Coin и {daisy} $Daisy.',
-            'level_complete': 'Уровень завершен!',
-            'level_complete_message': 'Переход на следующий уровень.',
+            'congratulations_purchase': 'Поздравляем с приобретением',
+            'skin_equipped_alert': 'Скин установлен!'
         },
         'en': {
             'play_button': 'Play',
@@ -92,31 +85,24 @@ const Localization = (function() {
             'invite_friends': 'Invite friends! You and your friend will receive a bonus in the form of coins. Special conditions for Telegram friends with Telegram Premium!',
             'friends_soon': 'Test friend list will be available soon.',
             'tasks_soon': 'Tasks will be available soon...',
-            'your_gift': 'Your gift: <span id="gift-amount">{amount}</span> tickets.',
+            'your_gift': 'Congratulations on acquiring <span id="gift-amount">{skinName}</span>!',
             'close': 'Close',
             'upgrade': 'Upgrade',
             'equip_skin': 'Equip Skin',
-            'congratulations_acquire': 'Congratulations on acquiring {skin}!',
-            'profit_per_hour': 'Profit: {income}/hour',
-            'replay': 'Replay',
-            'home': 'Home',
-            'not_enough_tickets': 'Not enough tickets!',
-            'not_enough_funds': 'Not enough funds!',
+            'skin_equipped': 'Skin equipped!',
+            'skin_equipped_status': 'Equipped',
+            'skin_level': 'Level',
+            'skin_upgraded': 'Skin upgraded to level',
+            'to_level': '',
+            'insufficient_funds': 'Insufficient funds!',
+            'insufficient_funds_for_upgrade': 'Insufficient funds for upgrade!',
             'max_level_reached': 'Maximum level reached!',
-            'upgrade_success': 'Skin "{skin}" upgraded to level {level}!',
-            'upgrade_failed': 'Insufficient funds to upgrade!',
-            'equip_success': 'Skin "{skin}" equipped.',
-            'share_development': 'Share with friends: Feature under development.',
-            'publish_development': 'Publish story: Feature under development.',
-            'next': 'Next',
-            'game_over': 'Game Over!',
-            'game_over_message': 'You earned {coin} Coin and {daisy} $Daisy.',
-            'level_complete': 'Level Complete!',
-            'level_complete_message': 'Proceeding to the next level.',
+            'congratulations_purchase': 'Congratulations on acquiring',
+            'skin_equipped_alert': 'Skin equipped!'
         }
     };
 
-    // Функция для смены языка
+    // Function to switch language
     function switchLanguage() {
         currentLanguage = currentLanguage === 'ru' ? 'en' : 'ru';
         localStorage.setItem('currentLanguage', currentLanguage);
@@ -124,48 +110,55 @@ const Localization = (function() {
         updateLanguageIcon();
     }
 
-    // Обновление иконки языка
+    // Update language icon
     function updateLanguageIcon() {
         const languageIcon = document.querySelector('#language-toggle img');
-        if (currentLanguage === 'ru') {
-            languageIcon.src = 'assets/images/ru.svg';
-            languageIcon.alt = 'Русский';
+        if (languageIcon) {
+            if (currentLanguage === 'ru') {
+                languageIcon.src = 'assets/images/ru.svg';
+            } else {
+                languageIcon.src = 'assets/images/en.svg';
+            }
         } else {
-            languageIcon.src = 'assets/images/en.svg';
-            languageIcon.alt = 'English';
+            console.error('Language toggle image not found.');
         }
     }
 
-    // Применение переводов к элементам страницы
+    // Apply translations to page elements
     function applyTranslations() {
         const elements = document.querySelectorAll('[data-localize]');
         elements.forEach(element => {
             const key = element.getAttribute('data-localize');
-            let translation = translations[currentLanguage][key];
-            if (translation) {
-                // Обработка плейсхолдеров {skin}, {income}, {coin}, {daisy}, {amount}, {level}
-                const matches = element.innerHTML.match(/{\w+}/g);
-                if (matches) {
-                    matches.forEach(match => {
-                        const placeholder = match.slice(1, -1);
-                        const value = element.getAttribute(`data-${placeholder}`) || '';
-                        translation = translation.replace(match, value);
-                    });
-                }
-                element.innerHTML = translation;
+            if (translations[currentLanguage][key]) {
+                element.innerHTML = translations[currentLanguage][key];
             }
         });
     }
 
-    // Инициализация
+    // Get translation for a specific key
+    function getTranslation(key, params = {}) {
+        let translation = translations[currentLanguage][key] || key;
+        for (let param in params) {
+            translation = translation.replace(`{${param}}`, params[param]);
+        }
+        return translation;
+    }
+
+    // Initialize localization
     function init() {
-        document.getElementById('language-toggle').addEventListener('click', switchLanguage);
-        applyTranslations(); // Применение переводов при загрузке страницы
+        const languageToggle = document.getElementById('language-toggle');
+        if (languageToggle) {
+            languageToggle.addEventListener('click', switchLanguage);
+        } else {
+            console.error('Language toggle element not found.');
+        }
+        applyTranslations(); // Apply translations on page load
         updateLanguageIcon();
     }
 
     return {
-        init
+        init,
+        getTranslation
     };
 })();
 
