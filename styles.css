@@ -10,19 +10,8 @@ body {
 
 /* Кнопка смены языка */
 #language-toggle {
-    position: absolute;
-    top: 20px;
-    right: 70px; /* Сдвигаем правее, чтобы разместить кнопку звука */
-    background: none;
-    border: none;
-    color: #FFD700;
-    font-size: 18px;
-    cursor: pointer;
-    z-index: 150;
-}
-
-/* Кнопка отключения звука */
-#sound-toggle {
+    width: 40px;
+    height: 40px;
     position: absolute;
     top: 20px;
     right: 20px;
@@ -32,9 +21,27 @@ body {
     z-index: 150;
 }
 
+#language-toggle img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Кнопка отключения звука */
+#sound-toggle {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    bottom: 120px;
+    left: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 150;
+}
+
 #sound-toggle img {
-    width: 30px;
-    height: 30px;
+    width: 100%;
+    height: 100%;
 }
 
 /* Анимация загрузки */
@@ -139,21 +146,21 @@ body {
 #player-level {
     position: absolute;
     top: 20px;
-    left: 20px;
+    width: 90%;
+    text-align: center;
     color: #FFD700;
-    font-size: 16px;
 }
 
 #level-progress-bar {
-    width: 200px;
+    width: 100%;
     height: 10px;
-    background-color: #555;
+    background-color: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
     margin-top: 5px;
 }
 
 #level-progress {
-    width: 0%;
+    width: 0%; /* Начальное значение прогресса */
     height: 100%;
     background-color: #FFD700;
     border-radius: 5px;
@@ -162,27 +169,23 @@ body {
 /* Счётчики */
 .counters {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 90%;
     padding: 10px;
     font-size: 16px;
     font-weight: bold;
     position: absolute;
-    top: 60px;
-}
-
-.left-counters, .right-counters {
-    display: flex;
+    top: 80px;
 }
 
 .counter {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
-    padding: 5px 10px;
+    padding: 10px;
     display: flex;
     align-items: center;
-    margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 .coin-icon, .ticket-icon {
@@ -203,25 +206,11 @@ body {
     top: 50px;
 }
 
-.chamomile-container img {
-    width: 300px;
-    height: 300px;
+#chamomile {
+    width: 100%;
+    height: 100%;
+    transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
     cursor: pointer;
-    object-fit: contain;
-}
-
-/* Класс для вращения ромашки */
-.rotate-animation {
-    animation: rotate 1s linear;
-}
-
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 /* Кнопка "Играть" */
@@ -367,12 +356,12 @@ footer button {
 }
 
 .shop-item-image {
-    width: 100%;
-    height: auto;
+    width: auto;
+    height: 60px;
     object-fit: contain;
 }
 
-.skin-name, .skin-price, .skin-income, .skin-level {
+.skin-price {
     margin-top: 5px;
     font-weight: bold;
     font-size: 12px;
@@ -489,6 +478,12 @@ footer button {
     #play-button {
         position: absolute;
         bottom: 150px;
+    }
+
+    #sound-toggle {
+        position: absolute;
+        bottom: 120px;
+        left: 20px;
     }
 
     #start-mini-game {

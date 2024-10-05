@@ -12,7 +12,9 @@
 </head>
 <body>
     <!-- Кнопка смены локализации -->
-    <button id="language-toggle">RU</button>
+    <button id="language-toggle">
+        <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
+    </button>
 
     <!-- Кнопка отключения звука -->
     <button id="sound-toggle">
@@ -40,36 +42,24 @@
 
         <!-- Счётчики -->
         <div class="counters">
-            <!-- Монеты слева -->
-            <div class="left-counters">
-                <!-- $Daisy -->
-                <div id="coin-counter" class="counter">
-                    <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
-                    <span class="daisy-coin" id="coin-count">10000</span> $Daisy
-                </div>
-                <!-- Coin -->
-                <div id="spin-coin-counter" class="counter">
-                    <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-                    <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
-                </div>
+            <!-- $Daisy -->
+            <div id="coin-counter" class="counter">
+                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
+                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
             </div>
-                <!-- **Добавляем энергию** -->
-                <div id="energy-counter" class="counter">
-                    <img src="assets/images/energy-icon.png" alt="Энергия" class="energy-icon">
-                    <span id="energy-count">1000</span> Энергия
-                </div>
+            <!-- Coin -->
+            <div id="spin-coin-counter" class="counter">
+                <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+                <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
             </div>
-            <!-- Билеты и прибыль справа -->
-            <div class="right-counters">
-                <!-- Tickets -->
-                <div id="ticket-counter" class="counter">
-                    <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                    <span id="ticket-count">200</span> <span id="ticket-label">Билетов</span>
-                </div>
-                <!-- Прибыль в час -->
-                <div id="income-counter" class="counter">
-                    <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
-                </div>
+            <!-- Tickets -->
+            <div id="ticket-counter" class="counter">
+                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+                <span id="ticket-count">200</span>
+            </div>
+            <!-- Прибыль в час -->
+            <div id="income-counter" class="counter">
+                <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
             </div>
         </div>
 
@@ -89,6 +79,7 @@
         <footer>
             <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
             <button id="rating-btn" data-localize="rating">Рейтинг</button>
+            <!-- Убрана иконка магазина, но кнопка оставлена -->
             <button id="shop-btn" data-localize="shop">Магазин</button>
             <button id="friends-btn" data-localize="friends">Друзья</button>
             <button id="tasks-btn" data-localize="tasks">Задачи</button>
@@ -107,7 +98,7 @@
                 <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
             </div>
             <div id="ticket-notification" class="ticket-notification">
-                <!-- Сообщение о подарке билетов удалено -->
+                <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
             </div>
             <div id="predictions-history">
                 <h3 data-localize="prediction_history">История предсказаний:</h3>
@@ -180,8 +171,7 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2 data-localize="congratulations">Поздравляем!</h2>
-            <!-- Изменено сообщение -->
-            <p id="skin-purchase-message"></p>
+            <p data-localize="your_gift">Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
             <button id="close-gift-btn" data-localize="close">Закрыть</button>
         </div>
     </div>
