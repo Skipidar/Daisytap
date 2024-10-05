@@ -66,30 +66,31 @@ const Game = (function() {
         Localization.updateTicketLabel();
     }
 
-    function handleChamomileClick(e) {
-        const now = Date.now();
-        if (now - lastClickTime >= 500 && energy > 0 && isFlowerClickable) {
-            lastClickTime = now;
-            AudioManager.playClickSound();
-            spinCoins += 1;
-            document.getElementById('spin-coin-count').textContent = spinCoins;
-            localStorage.setItem('spinCoins', spinCoins);
-            energy -= 10;
-            document.getElementById('energy-count').textContent = energy;
+	function handleChamomileClick(e) {
+		const chamomile = document.getElementById('chamomile');
+		const now = Date.now();
+			if (now - lastClickTime >= 500 && energy > 0 && isFlowerClickable) {
+			lastClickTime = now;
+			AudioManager.playClickSound();
+			spinCoins += 1;
+			document.getElementById('spin-coin-count').textContent = spinCoins;
+			localStorage.setItem('spinCoins', spinCoins);
+			energy -= 10;
+			document.getElementById('energy-count').textContent = energy;
 
-            // Обновление опыта и уровня
-            gainExperience(1);
+        // Обновление опыта и уровня
+			gainExperience(1);
 
-            // Вращение по часовой стрелке
-            rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
-            this.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-            this.style.transform = `rotate(${rotationAngle}deg)`;
+        // Вращение по часовой стрелке
+			rotationAngle += 360 * 1.5 + Math.random() * 360; // Увеличено вращение на 1.5 раза
+			chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+			chamomile.style.transform = `rotate(${rotationAngle}deg)`;
 
-            createSparks(e.clientX, e.clientY);
-            animateCoin(e.clientX, e.clientY);
-            updateEnergyBar();
-        }
+			createSparks(e.clientX, e.clientY);
+			animateCoin(e.clientX, e.clientY);
+			updateEnergyBar();
     }
+}
 
 
     function handleChamomileDblClick() {
