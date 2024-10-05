@@ -7,7 +7,9 @@
     <!-- Подключение нового шрифта -->
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
+    <!-- Подключение библиотеки конфетти -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- Фавикон -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -15,7 +17,7 @@
     <div class="top-bar">
         <!-- Уровень игрока и прогресс -->
         <div id="player-level">
-            <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
+            <span data-localize="player_level">Уровень:</span> <span id="level-number">1</span>
             <div id="level-progress-bar">
                 <div id="level-progress"></div>
             </div>
@@ -76,15 +78,15 @@
         <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
     </div>
 
-    <!-- Таймер до следующего предсказания -->
-    <div id="next-prediction-timer">
-        <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer">06:00:00</span>
+    <!-- Таймер до следующего уровня -->
+    <div id="next-level-timer">
+        <span data-localize="next_level_in">До следующего уровня:</span> <span id="level-timer">00:00:00</span>
     </div>
 
     <!-- Кнопка "Играть" -->
     <button id="play-button" data-localize="play_button">Играть</button>
 
-    <!-- Футер с остальными кнопками -->
+    <!-- Футер с нижними кнопками -->
     <footer>
         <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
         <button id="rating-btn" data-localize="rating">Рейтинг</button>
