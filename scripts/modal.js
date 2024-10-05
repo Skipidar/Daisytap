@@ -25,12 +25,6 @@ const Modal = (function() {
         setupFriendsModal();
         setupTasksModal();
         setupGiftModal();
-
-        // Обработчик кнопки "Играть"
-        document.getElementById('play-button').addEventListener('click', function() {
-            document.querySelector('.game-container').style.display = 'none';
-            document.getElementById('protect-flower-game').style.display = 'flex';
-        });
     }
 
     function open(modalId) {
@@ -49,11 +43,11 @@ const Modal = (function() {
         const ticketNotification = document.getElementById('ticket-notification');
 
         shareBtn.addEventListener('click', () => {
-            alert('Поделиться с друзьями: Функция в разработке.');
+            alert(Localization.currentLanguage === 'ru' ? 'Поделиться с друзьями: Функция в разработке.' : 'Share with friends: Feature under development.');
         });
 
         publishBtn.addEventListener('click', () => {
-            alert('Опубликовать историю: Функция в разработке.');
+            alert(Localization.currentLanguage === 'ru' ? 'Опубликовать историю: Функция в разработке.' : 'Publish story: Feature under development.');
         });
     }
 
@@ -104,7 +98,7 @@ const Modal = (function() {
     function updatePredictionHistory() {
         const predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
         const historyContainer = document.getElementById('predictions-history');
-        historyContainer.innerHTML = '<h3 data-localize="prediction_history">История предсказаний:</h3>';
+        historyContainer.innerHTML = `<h3 data-localize="prediction_history">${Localization.currentLanguage === 'ru' ? 'История предсказаний:' : 'Prediction history:'}</h3>`;
         predictionHistory.forEach(item => {
             const historyItem = document.createElement('div');
             historyItem.className = 'history-item';

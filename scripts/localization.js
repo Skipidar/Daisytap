@@ -1,3 +1,4 @@
+// scripts/localization.js
 const Localization = (function() {
     let currentLanguage = localStorage.getItem('currentLanguage') || 'ru'; // Текущий язык по умолчанию
 
@@ -37,7 +38,26 @@ const Localization = (function() {
             'friends_soon': 'Тестовый список друзей скоро будет доступен.',
             'tasks_soon': 'Задания скоро появятся...',
             'your_gift': 'Ваш подарок: <span id="gift-amount">{amount}</span> билетов.',
-            'close': 'Закрыть'
+            'close': 'Закрыть',
+            'upgrade': 'Улучшить',
+            'equip_skin': 'Установить скин',
+            'congratulations_acquire': 'Поздравляем с приобретением {skin}!',
+            'profit_per_hour': 'Прибыль: {income}/час',
+            'replay': 'Повторить',
+            'home': 'Домой',
+            'not_enough_tickets': 'Недостаточно билетов!',
+            'not_enough_funds': 'Недостаточно средств!',
+            'max_level_reached': 'Максимальный уровень достигнут!',
+            'upgrade_success': 'Скин "{skin}" улучшен до уровня {level}!',
+            'upgrade_failed': 'Недостаточно средств для улучшения!',
+            'equip_success': 'Скин "{skin}" установлен.',
+            'share_development': 'Поделиться с друзьями: Функция в разработке.',
+            'publish_development': 'Опубликовать историю: Функция в разработке.',
+            'next': 'Далее',
+            'game_over': 'Игра окончена!',
+            'game_over_message': 'Вы заработали {coin} Coin и {daisy} $Daisy.',
+            'level_complete': 'Уровень завершен!',
+            'level_complete_message': 'Переход на следующий уровень.',
         },
         'en': {
             'play_button': 'Play',
@@ -73,7 +93,26 @@ const Localization = (function() {
             'friends_soon': 'Test friend list will be available soon.',
             'tasks_soon': 'Tasks will be available soon...',
             'your_gift': 'Your gift: <span id="gift-amount">{amount}</span> tickets.',
-            'close': 'Close'
+            'close': 'Close',
+            'upgrade': 'Upgrade',
+            'equip_skin': 'Equip Skin',
+            'congratulations_acquire': 'Congratulations on acquiring {skin}!',
+            'profit_per_hour': 'Profit: {income}/hour',
+            'replay': 'Replay',
+            'home': 'Home',
+            'not_enough_tickets': 'Not enough tickets!',
+            'not_enough_funds': 'Not enough funds!',
+            'max_level_reached': 'Maximum level reached!',
+            'upgrade_success': 'Skin "{skin}" upgraded to level {level}!',
+            'upgrade_failed': 'Insufficient funds to upgrade!',
+            'equip_success': 'Skin "{skin}" equipped.',
+            'share_development': 'Share with friends: Feature under development.',
+            'publish_development': 'Publish story: Feature under development.',
+            'next': 'Next',
+            'game_over': 'Game Over!',
+            'game_over_message': 'You earned {coin} Coin and {daisy} $Daisy.',
+            'level_complete': 'Level Complete!',
+            'level_complete_message': 'Proceeding to the next level.',
         }
     };
 
@@ -90,8 +129,10 @@ const Localization = (function() {
         const languageIcon = document.querySelector('#language-toggle img');
         if (currentLanguage === 'ru') {
             languageIcon.src = 'assets/images/ru.svg';
+            languageIcon.alt = 'Русский';
         } else {
             languageIcon.src = 'assets/images/en.svg';
+            languageIcon.alt = 'English';
         }
     }
 
@@ -100,8 +141,18 @@ const Localization = (function() {
         const elements = document.querySelectorAll('[data-localize]');
         elements.forEach(element => {
             const key = element.getAttribute('data-localize');
-            if (translations[currentLanguage][key]) {
-                element.innerHTML = translations[currentLanguage][key];
+            let translation = translations[currentLanguage][key];
+            if (translation) {
+                // Обработка плейсхолдеров {skin}, {income}, {coin}, {daisy}, {amount}, {level}
+                const matches = element.innerHTML.match(/{\w+}/g);
+                if (matches) {
+                    matches.forEach(match => {
+                        const placeholder = match.slice(1, -1);
+                        const value = element.getAttribute(`data-${placeholder}`) || '';
+                        translation = translation.replace(match, value);
+                    });
+                }
+                element.innerHTML = translation;
             }
         });
     }

@@ -368,9 +368,35 @@ const Game = (function() {
         }
     }
 
+    // Геттеры и сеттеры для spinCoins и coins
+    function getSpinCoins() {
+        return spinCoins;
+    }
+
+    function setSpinCoins(value) {
+        spinCoins = value;
+        localStorage.setItem('spinCoins', spinCoins);
+    }
+
+    function getCoins() {
+        return coins;
+    }
+
+    function setCoins(value) {
+        coins = value;
+        localStorage.setItem('coins', coins);
+    }
+
     return {
-        init
+        init,
+        getSpinCoins,
+        setSpinCoins,
+        getCoins,
+        setCoins
     };
 })();
+
+// Сделать модуль Game доступным глобально
+window.Game = Game;
 
 document.addEventListener('DOMContentLoaded', Game.init);

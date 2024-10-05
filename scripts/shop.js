@@ -25,7 +25,12 @@ const Shop = (function() {
 
     function init() {
         // Инициализация кнопки магазина
-        document.getElementById('shop-btn').addEventListener('click', openShop);
+        const shopButton = document.getElementById('shop-btn');
+        if (shopButton) {
+            shopButton.addEventListener('click', openShop);
+        } else {
+            console.error('Элемент с id="shop-btn" не найден в DOM.');
+        }
 
         // Инициализация вкладок магазина
         document.querySelectorAll('.shop-tab').forEach(tab => {
@@ -53,6 +58,10 @@ const Shop = (function() {
 
     function loadShopItems(tabName) {
         const shopContent = document.getElementById('shop-content');
+        if (!shopContent) {
+            console.error('Элемент с id="shop-content" не найден в DOM.');
+            return;
+        }
         shopContent.innerHTML = '';
 
         let items = [];
@@ -72,11 +81,41 @@ const Shop = (function() {
             itemDiv.className = 'skin-item';
             itemDiv.innerHTML = `
                 <img src="${item.image}" alt="${item.name}" class="shop-item-image">
-                <div>${item.name}</div>
+                <div class="skin-name">${item.name}</div>
                 <div class="skin-price">${item.price} ${item.currency}</div>
+                <div class="skin-income">${item.income}/час</div>
                 <div class="skin-level">${getSkinStatus(item.id)}</div>
+                <div class="action-buttons">
+                    ${ownedSkins[item.id] ? `
+                        <button class="upgrade-btn" data-skin-id="${item.id}" data-localize="upgrade">Upgrade</button>
+                        <button class="equip-btn" data-skin-id="${item.id}" data-localize="equip_skin">Equip Skin</button>
+                    ` : ''}
+                </div>
             `;
-            itemDiv.addEventListener('click', () => purchaseOrUpgradeItem(item));
+            itemDiv.addEventListener('click', (event) => {
+                // Предотвращаем всплытие клика на кнопки
+                if (event.target.classList.contains('upgrade-btn') || event.target.classList.contains('equip-btn')) {
+                    return;
+                }
+                purchaseOrUpgradeItem(item);
+            });
+            // Добавление обработчиков для кнопок "Upgrade" и "Equip Skin"
+            itemDiv.querySelectorAll('.upgrade-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const skinId = button.getAttribute('data-skin-id');
+                    const skin = skinsData[skinId];
+                    upgradeSkin(skin);
+                });
+            });
+            itemDiv.querySelectorAll('.equip-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const skinId = button.getAttribute('data-skin-id');
+                    applySkin(skinId);
+                    alert(Localization.getTranslation('skin_equipped', skinId));
+                });
+            });
             shopContent.appendChild(itemDiv);
         });
     }
@@ -84,9 +123,9 @@ const Shop = (function() {
     function getSkinStatus(skinId) {
         if (ownedSkins[skinId]) {
             if (ownedSkins[skinId].equipped) {
-                return 'Установлено';
+                return Localization.getTranslation('skin_equipped_status'); // "Установлено" / "Equipped"
             } else {
-                return `Уровень ${ownedSkins[skinId].level}`;
+                return `${Localization.getTranslation('skin_level')}: ${ownedSkins[skinId].level}`; // "Уровень: X" / "Level: X"
             }
         } else {
             return '';
@@ -96,21 +135,11 @@ const Shop = (function() {
     function purchaseOrUpgradeItem(item) {
         if (ownedSkins[item.id]) {
             // Если скин уже куплен, предлагаем улучшить или установить
-            showSkinOptions(item);
+            // Опции уже реализованы через кнопки, поэтому ничего не делаем здесь
+            return;
         } else {
             // Иначе предлагаем купить
             purchaseItem(item);
-        }
-    }
-
-    function showSkinOptions(item) {
-        const options = confirm(`Скин "${item.name}" уже куплен. Хотите улучшить уровень или установить его?\nOK - Улучшить\nОтмена - Установить`);
-        if (options) {
-            upgradeSkin(item);
-        } else {
-            applySkin(item.id);
-            alert(`Скин "${item.name}" установлен.`);
-            loadShopItems(document.querySelector('.shop-tab.active').getAttribute('data-tab'));
         }
     }
 
@@ -128,18 +157,17 @@ const Shop = (function() {
             ownedSkins[item.id] = {level: 1, equipped: false};
             localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
             calculateIncomePerHour();
-            applySkin(item.id);
             loadShopItems(document.querySelector('.shop-tab.active').getAttribute('data-tab'));
             showSkinPurchaseModal(item.name);
         } else {
-            alert('Недостаточно средств!');
+            alert(Localization.getTranslation('insufficient_funds'));
         }
     }
 
     function upgradeSkin(item) {
         const skin = ownedSkins[item.id];
         if (skin.level >= 20) {
-            alert('Максимальный уровень достигнут!');
+            alert(Localization.getTranslation('max_level_reached'));
             return;
         }
         const upgradeCost = calculateUpgradeCost(item, skin.level);
@@ -158,9 +186,9 @@ const Shop = (function() {
             localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
             calculateIncomePerHour();
             loadShopItems(document.querySelector('.shop-tab.active').getAttribute('data-tab'));
-            alert(`Скин "${item.name}" улучшен до уровня ${skin.level}!`);
+            alert(`${Localization.getTranslation('skin_upgraded')} ${item.name} до уровня ${skin.level}!`);
         } else {
-            alert('Недостаточно средств для улучшения!');
+            alert(Localization.getTranslation('insufficient_funds_for_upgrade'));
         }
     }
 
@@ -190,14 +218,20 @@ const Shop = (function() {
         localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
 
         const chamomile = document.getElementById('chamomile');
-        chamomile.src = skinsData[skinId].image;
+        if (chamomile) {
+            chamomile.src = skinsData[skinId].image;
+        } else {
+            console.error('Элемент с id="chamomile" не найден в DOM.');
+        }
     }
 
     function setEquippedSkin() {
         for (let skinId in ownedSkins) {
             if (ownedSkins[skinId].equipped) {
                 const chamomile = document.getElementById('chamomile');
-                chamomile.src = skinsData[skinId].image;
+                if (chamomile) {
+                    chamomile.src = skinsData[skinId].image;
+                }
                 break;
             }
         }
@@ -205,16 +239,27 @@ const Shop = (function() {
 
     function showSkinPurchaseModal(skinName) {
         const skinPurchaseModal = document.getElementById('skin-purchase-modal');
+        if (!skinPurchaseModal) {
+            console.error('Элемент с id="skin-purchase-modal" не найден в DOM.');
+            return;
+        }
         skinPurchaseModal.style.display = 'flex';
 
-        const giftAmount = Math.floor(Math.random() * 5) + 1; // Выдача 1-5 билетов
-        document.getElementById('gift-amount').textContent = giftAmount;
+        const giftAmountElement = document.getElementById('gift-amount');
+        if (giftAmountElement) {
+            giftAmountElement.textContent = skinName;
+        }
 
-        // Обновление баланса билетов
-        let tickets = parseInt(document.getElementById('ticket-count').textContent, 10);
-        tickets += giftAmount;
-        document.getElementById('ticket-count').textContent = tickets;
-        localStorage.setItem('tickets', tickets);
+        // Обновляем текст в модальном окне
+        const congratulationsElement = skinPurchaseModal.querySelector('h2');
+        if (congratulationsElement) {
+            congratulationsElement.textContent = Localization.getTranslation('congratulations_purchase', skinName);
+        }
+
+        const yourGiftElement = skinPurchaseModal.querySelector('p');
+        if (yourGiftElement) {
+            yourGiftElement.innerHTML = Localization.getTranslation('your_gift', { skinName });
+        }
     }
 
     // Функции для обновления баланса из других модулей
@@ -230,3 +275,5 @@ const Shop = (function() {
         updateBalance
     };
 })();
+
+document.addEventListener('DOMContentLoaded', Shop.init);
