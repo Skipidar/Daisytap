@@ -8,176 +8,54 @@ body {
     overflow: hidden;
 }
 
-/* Кнопка смены языка */
-#language-toggle {
+/* Верхняя панель */
+.top-bar {
+    width: 100%;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: absolute;
-    top: 20px;
-    right: 70px; /* Сдвигаем правее, чтобы разместить кнопку звука */
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 150;
-}
-
-.language-icon {
-    width: 30px;
-    height: 30px;
-}
-
-/* Кнопка отключения звука */
-#sound-toggle {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 150;
-}
-
-#sound-toggle img {
-    width: 30px;
-    height: 30px;
-}
-
-/* Анимация загрузки */
-#loading-screen {
-    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('assets/images/Loadingscreen.webp') no-repeat center center;
-    background-size: cover;
+    z-index: 100;
+}
+
+.player-level {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 200;
 }
 
-.loading-text {
-    font-size: 48px;
-    color: #FFD700;
-    margin-bottom: 20px;
-    position: absolute;
-    top: 20%;
-    display: flex;
-}
-
-.loading-text span {
-    display: inline-block;
-    opacity: 0;
-    animation: fadeInLetters 0.5s forwards;
-}
-
-.loading-text span:nth-child(1) { animation-delay: 0s; }
-.loading-text span:nth-child(2) { animation-delay: 0.3s; }
-.loading-text span:nth-child(3) { animation-delay: 0.6s; }
-.loading-text span:nth-child(4) { animation-delay: 0.9s; }
-.loading-text span:nth-child(5) { animation-delay: 1.2s; }
-
-@keyframes fadeInLetters {
-    to { opacity: 1; }
-}
-
-.loading-overlay {
-    width: 80%;
-    height: 10px;
-    background-color: #333;
-    border-radius: 5px;
-    position: absolute;
-    top: 60%;
-    overflow: hidden;
-}
-
-.loading-bar {
-    width: 0%;
-    height: 100%;
-    background-color: #FFD700;
-    border-radius: 5px;
-    animation: load 4s forwards;
-    position: relative;
-}
-
-@keyframes load {
-    from { width: 0%; }
-    to { width: 100%; }
-}
-
-/* Анимация бликов на загрузочной полоске */
-.loading-bar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -50%;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-    animation: glare 4s infinite;
-}
-
-@keyframes glare {
-    from { left: -50%; }
-    to { left: 100%; }
-}
-
-.fade-out {
-    opacity: 0;
-    transition: opacity 1s ease-out;
-}
-
-/* Игра */
-.game-container {
-    width: 100%;
-    height: 100vh;
-    background: radial-gradient(circle at center, #000000, #4B0082); /* Градиент от черного к фиолетовому */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    padding-top: 80px; /* Отступ для верхних элементов */
-}
-
-/* Уровень игрока и прогресс */
-#player-level {
-    width: 90%;
-    max-width: 300px;
-    color: #FFD700;
-    font-size: 16px;
-    margin-bottom: 10px;
+#level-number {
+    font-weight: bold;
 }
 
 #level-progress-bar {
-    width: 100%;
-    height: 10px;
+    width: 150px;
+    height: 8px;
     background-color: #555;
-    border-radius: 5px;
-    margin-top: 5px;
+    border-radius: 4px;
+    margin-top: 4px;
 }
 
 #level-progress {
     width: 0%;
     height: 100%;
     background-color: #FFD700;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
-/* Прибыль в час */
-#income-counter {
-    width: 90%;
-    max-width: 300px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    padding: 5px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
+/* Кнопки верхней панели */
+.top-buttons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
 }
 
-#income-counter span {
-    margin-right: 5px;
+.language-icon, #sound-icon {
+    width: 30px;
+    height: 30px;
 }
 
 /* Счётчики */
@@ -185,36 +63,33 @@ body {
     width: 90%;
     max-width: 300px;
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
 }
 
-.counter {
+.left-counters, .right-counters {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.left-counters .counter, .right-counters .counter {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
     padding: 5px 10px;
     display: flex;
     align-items: center;
-    margin: 5px 0;
-    width: 48%;
+    margin-bottom: 10px;
+    width: 140px;
 }
 
-#booster {
-    width: 100%;
-    background-color: #FF4500;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 5px 0;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-#booster:hover {
-    background-color: #e03e00;
+.right-counters .counter {
+    align-items: flex-end;
 }
 
 .coin-icon, .ticket-icon, .energy-icon {
@@ -223,12 +98,29 @@ body {
     margin-right: 5px;
 }
 
+#booster {
+    width: 140px;
+    background-color: #FF4500;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 5px 0;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    align-self: flex-end;
+}
+
+#booster:hover {
+    background-color: #e03e00;
+}
+
 /* Ромашка */
 .chamomile-container {
     position: relative;
     width: 200px;
     height: 200px;
-    margin: 20px 0;
+    margin: 120px auto 20px; /* Отступ сверху для верхней панели */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -241,18 +133,21 @@ body {
     object-fit: contain;
 }
 
-/* Класс для вращения ромашки */
-.rotate-animation {
-    animation: rotate 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+/* Центр: Таймер и кнопка "Играть" */
+.center-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-@keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+#next-prediction-timer {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+#prediction-timer {
+    font-weight: bold;
 }
 
 /* Кнопка "Играть" */
@@ -266,7 +161,6 @@ body {
     font-size: 16px;
     animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
-    margin-bottom: 20px;
 }
 
 #play-button:hover {
@@ -277,14 +171,6 @@ body {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
-}
-
-/* Таймер до следующего предсказания */
-#next-prediction-timer {
-    font-size: 14px;
-    color: #FFD700;
-    text-align: center;
-    margin-bottom: 20px;
 }
 
 /* Футер */
@@ -511,156 +397,127 @@ footer button:hover {
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
-/* Адаптация под формат 9:16 */
+/* Адаптация под мобильные устройства */
 @media (max-width: 768px) {
-    .game-container {
-        width: 100%;
-        height: 100vh;
-        padding-top: 60px; /* Отступ для кнопок */
+    /* Верхняя панель */
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    #player-level {
-        width: 90%;
-        max-width: 300px;
-        font-size: 14px;
+    .top-buttons {
+        align-self: flex-end;
+        margin-top: 10px;
     }
 
-    #level-progress-bar {
-        height: 8px;
-    }
-
-    #income-counter {
-        font-size: 14px;
-        padding: 5px;
-    }
-
+    /* Счётчики */
     .counters {
+        flex-direction: column;
+        align-items: center;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .left-counters, .right-counters {
         flex-direction: column;
         align-items: center;
     }
 
-    .counter {
-        width: 90%;
-        max-width: 300px;
-        margin: 5px 0;
+    .left-counters .counter, .right-counters .counter {
+        width: 80%;
+        max-width: 250px;
+        justify-content: center;
     }
 
     #booster {
-        width: 90%;
-        max-width: 300px;
-        margin-top: 10px;
+        width: 80%;
+        max-width: 250px;
     }
 
+    /* Ромашка */
     .chamomile-container {
-        width: 200px;
-        height: 200px;
-        margin: 20px 0;
+        width: 150px;
+        height: 150px;
+        margin: 40px auto 20px;
     }
 
-    #play-button {
-        width: 90%;
-        max-width: 300px;
-        padding: 10px 0;
-        font-size: 16px;
+    /* Центр: Таймер и кнопка "Играть" */
+    .center-content {
+        margin-bottom: 20px;
     }
 
     #next-prediction-timer {
         font-size: 14px;
-        margin-bottom: 20px;
     }
 
+    /* Футер */
     footer {
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     footer button {
         width: 45%;
-        margin: 5px 0;
-        font-size: 14px;
+        margin: 5px;
     }
 }
 
+/* Адаптация под десктопы и планшеты */
 @media (min-width: 769px) {
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #000;
-    }
-
-    .game-container {
-        width: 360px; /* Соотношение 9:16 */
-        height: 640px;
-        border: 2px solid #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        position: relative;
-        padding-top: 80px; /* Отступ для верхних элементов */
-    }
-
-    #player-level {
-        width: 90%;
-        max-width: 300px;
-    }
-
-    #level-progress-bar {
-        width: 100%;
-        height: 10px;
-    }
-
-    #income-counter {
-        width: 90%;
-        max-width: 300px;
-        margin-bottom: 10px;
-    }
-
-    .counters {
+    /* Верхняя панель */
+    .top-bar {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
-        width: 90%;
-        max-width: 300px;
     }
 
-    .counter {
-        width: 48%;
-        margin: 5px 0;
+    /* Счётчики */
+    .counters {
+        flex-direction: row;
+        align-items: flex-start;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .left-counters, .right-counters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .right-counters {
+        align-items: flex-end;
+    }
+
+    .left-counters .counter, .right-counters .counter {
+        width: 140px;
     }
 
     #booster {
-        width: 100%;
+        width: 140px;
     }
 
+    /* Ромашка */
     .chamomile-container {
-        width: 300px;
-        height: 300px;
-        margin: 20px 0;
+        width: 200px;
+        height: 200px;
+        margin: 80px auto 20px;
     }
 
-    #play-button {
-        width: 90%;
-        max-width: 300px;
-        padding: 15px 0;
-        font-size: 16px;
-    }
-
-    #next-prediction-timer {
-        font-size: 14px;
+    /* Центр: Таймер и кнопка "Играть" */
+    .center-content {
         margin-bottom: 20px;
     }
 
-    footer button {
-        font-size: 14px;
+    #next-prediction-timer {
+        font-size: 16px;
     }
-}
 
-/* Дополнительные стили для анимации вращения ромашки */
-@keyframes rotateAnimation {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
+    /* Футер */
+    footer button {
+        width: auto;
+        margin: 0;
     }
 }
 
@@ -697,4 +554,14 @@ footer button:hover {
     text-align: center;
     color: #000;
     z-index: 200;
+}
+
+/* Анимация вращения ромашки */
+@keyframes rotateAnimation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
