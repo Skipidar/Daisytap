@@ -23,8 +23,14 @@ const MiniGame = (function () {
         const startButton = document.getElementById('start-mini-game');
         startButton.addEventListener('click', startGame);
 
-        // Добавлен обработчик кнопки "Назад"
+        // Обработчик кнопки "Назад"
         document.addEventListener('backbutton', handleBackButton, false);
+
+        // Добавляем обработчик для кнопки "Играть"
+        document.getElementById('play-button').addEventListener('click', () => {
+            document.querySelector('.game-container').style.display = 'none';
+            document.getElementById('protect-flower-game').style.display = 'flex';
+        });
     }
 
     function handleBackButton() {
@@ -411,16 +417,12 @@ const MiniGame = (function () {
         document.getElementById('game-daisy-count').textContent = daisyCoins;
 
         // Обновляем счетчики на главном экране
-        document.getElementById('spin-coin-count').textContent = spinCoins + gameCoins; // Coin
-        document.getElementById('coin-count').textContent = coins + daisyCoins; // $Daisy
-
-        // Сохраняем в localStorage
-        localStorage.setItem('spinCoins', spinCoins + gameCoins);
-        localStorage.setItem('coins', coins + daisyCoins);
+        // Не обновляем здесь, обновление происходит при завершении игры
     }
 
     function updateTicketCount() {
         document.getElementById('ticket-count').textContent = tickets;
+        Localization.updateTicketLabel();
     }
 
     function formatTime(seconds) {
@@ -474,11 +476,14 @@ const MiniGame = (function () {
         AudioManager.playBackgroundMusic();
 
         // Обновляем счетчики на главном экране после окончания игры
+        let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
+        let coins = parseInt(localStorage.getItem('coins')) || 10000;
         spinCoins += gameCoins;
         coins += daisyCoins;
         localStorage.setItem('spinCoins', spinCoins);
         localStorage.setItem('coins', coins);
-        updateGameCoinCount();
+        document.getElementById('spin-coin-count').textContent = spinCoins;
+        document.getElementById('coin-count').textContent = coins;
 
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
@@ -494,7 +499,7 @@ const MiniGame = (function () {
             <h2>Игра окончена!</h2>
             <p>Вы заработали ${gameCoins} Coin и ${daisyCoins} $Daisy.</p>
             <button class="replay-btn" style="width: 120px; margin: 5px;">
-                <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} Tickets)
+                <img src="assets/images/Ticket.webp" alt="Ticket" class="ticket-icon"> Повторим? (${tickets} ${Localization.pluralizeTickets(tickets)})
             </button>
             <button class="exit-btn" style="width: 120px; margin: 5px;">Домой</button>
         `;
@@ -518,6 +523,7 @@ const MiniGame = (function () {
             document.querySelector('.game-container').style.display = 'flex';
             totalCoinsEarned = 0;
             daisyCoins = 0;
+            gameCoins = 0;
             updateGameCoinCount();
         });
     }
@@ -526,3 +532,5 @@ const MiniGame = (function () {
         init,
     };
 })();
+
+document.addEventListener('DOMContentLoaded', MiniGame.init);

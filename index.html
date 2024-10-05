@@ -12,9 +12,7 @@
 </head>
 <body>
     <!-- Кнопка смены локализации -->
-    <button id="language-toggle">
-        <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
-    </button>
+    <button id="language-toggle">RU</button>
 
     <!-- Кнопка отключения звука -->
     <button id="sound-toggle">
@@ -55,7 +53,7 @@
             <!-- Tickets -->
             <div id="ticket-counter" class="counter">
                 <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">200</span>
+                <span id="ticket-count">200</span> <span id="ticket-label">Билетов</span>
             </div>
             <!-- Прибыль в час -->
             <div id="income-counter" class="counter">
@@ -79,7 +77,6 @@
         <footer>
             <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
             <button id="rating-btn" data-localize="rating">Рейтинг</button>
-            <!-- Убрана иконка магазина, но кнопка оставлена -->
             <button id="shop-btn" data-localize="shop">Магазин</button>
             <button id="friends-btn" data-localize="friends">Друзья</button>
             <button id="tasks-btn" data-localize="tasks">Задачи</button>
@@ -98,7 +95,7 @@
                 <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
             </div>
             <div id="ticket-notification" class="ticket-notification">
-                <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
+                <!-- Сообщение о подарке билетов удалено -->
             </div>
             <div id="predictions-history">
                 <h3 data-localize="prediction_history">История предсказаний:</h3>
@@ -171,7 +168,8 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2 data-localize="congratulations">Поздравляем!</h2>
-            <p data-localize="your_gift">Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
+            <!-- Изменено сообщение -->
+            <p id="skin-purchase-message"></p>
             <button id="close-gift-btn" data-localize="close">Закрыть</button>
         </div>
     </div>

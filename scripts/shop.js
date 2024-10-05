@@ -70,10 +70,13 @@ const Shop = (function() {
         items.forEach(item => {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'skin-item';
+            const skinLevel = ownedSkins[item.id] ? ownedSkins[item.id].level : 1;
+            const income = skinsData[item.id].income * skinLevel;
             itemDiv.innerHTML = `
                 <img src="${item.image}" alt="${item.name}" class="shop-item-image">
-                <div>${item.name}</div>
+                <div class="skin-name">${item.name}</div>
                 <div class="skin-price">${item.price} ${item.currency}</div>
+                <div class="skin-income">Прибыль в час: ${income} Coin</div>
                 <div class="skin-level">${getSkinStatus(item.id)}</div>
             `;
             itemDiv.addEventListener('click', () => purchaseOrUpgradeItem(item));
@@ -207,14 +210,8 @@ const Shop = (function() {
         const skinPurchaseModal = document.getElementById('skin-purchase-modal');
         skinPurchaseModal.style.display = 'flex';
 
-        const giftAmount = Math.floor(Math.random() * 5) + 1; // Выдача 1-5 билетов
-        document.getElementById('gift-amount').textContent = giftAmount;
-
-        // Обновление баланса билетов
-        let tickets = parseInt(document.getElementById('ticket-count').textContent, 10);
-        tickets += giftAmount;
-        document.getElementById('ticket-count').textContent = tickets;
-        localStorage.setItem('tickets', tickets);
+        // **Изменено сообщение**
+        document.getElementById('skin-purchase-message').textContent = `Поздравляем! Вы приобрели ${skinName}.`;
     }
 
     // Функции для обновления баланса из других модулей

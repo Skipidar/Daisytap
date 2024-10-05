@@ -31,6 +31,9 @@ const Modal = (function() {
             document.querySelector('.game-container').style.display = 'none';
             document.getElementById('protect-flower-game').style.display = 'flex';
         });
+
+        // Обновление лейбла билетов при загрузке
+        Localization.updateTicketLabel();
     }
 
     function open(modalId) {
@@ -46,7 +49,6 @@ const Modal = (function() {
         const predictionModal = document.getElementById('prediction-modal');
         const shareBtn = predictionModal.querySelector('.share-btn');
         const publishBtn = predictionModal.querySelector('.publish-btn');
-        const ticketNotification = document.getElementById('ticket-notification');
 
         shareBtn.addEventListener('click', () => {
             alert('Поделиться с друзьями: Функция в разработке.');

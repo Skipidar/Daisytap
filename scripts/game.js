@@ -6,7 +6,6 @@ const Game = (function() {
     let isFlowerClickable = true;
     let boosterCharges = 6;
     let lastClickTime = 0;
-    let rotationAngle = 0;
     let lastPredictionTime = parseInt(localStorage.getItem('lastPredictionTime')) || 0;
     let isFlowerClickableForPrediction = true;
     let level = parseInt(localStorage.getItem('playerLevel')) || 1;
@@ -63,14 +62,8 @@ const Game = (function() {
         // Запуск восполнения энергии
         setInterval(replenishEnergy, 1000); // Каждую секунду
 
-        // Обработчик кнопки "Играть"
-        const playButton = document.getElementById('play-button');
-        playButton.addEventListener('click', () => {
-            Modal.open('protect-flower-game');
-        });
-
-        // Инициализация магазина
-        Shop.updateBalance(coins, spinCoins);
+        // Обновление лейбла билетов при загрузке
+        Localization.updateTicketLabel();
     }
 
     function handleChamomileClick(e) {
@@ -87,10 +80,11 @@ const Game = (function() {
             // Обновление опыта и уровня
             gainExperience(1);
 
-            // Вращение по часовой стрелке
-            rotationAngle += 360 * 1.5 + Math.random() * 360;
-            chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-            chamomile.style.transform = `rotate(${rotationAngle}deg)`;
+            // Вращение ромашки
+            const chamomile = document.getElementById('chamomile');
+            chamomile.classList.remove('rotate-animation');
+            void chamomile.offsetWidth; // Перезапуск анимации
+            chamomile.classList.add('rotate-animation');
 
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
@@ -125,12 +119,8 @@ const Game = (function() {
             localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
             updatePredictionHistory();
 
-            // Выдача билетов за предсказание
-            const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
-            tickets += ticketAmount;
-            document.getElementById('ticket-count').textContent = tickets;
-            localStorage.setItem('tickets', tickets);
-            showTicketNotification(ticketAmount);
+            // Обновление лейбла билетов
+            Localization.updateTicketLabel();
         }
     }
 
@@ -310,12 +300,6 @@ const Game = (function() {
             lastIncomeTime = now;
             localStorage.setItem('lastIncomeTime', lastIncomeTime);
         }
-    }
-
-    function showTicketNotification(amount) {
-        const ticketNotification = document.getElementById('ticket-notification');
-        ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
-        ticketNotification.style.display = 'block';
     }
 
     return {
