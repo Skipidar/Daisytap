@@ -32,12 +32,17 @@
     </div>
 
     <div class="game-container" style="display: none;">
-        <!-- Уровень игрока -->
+        <!-- Уровень игрока и прогресс -->
         <div id="player-level">
             <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
             <div id="level-progress-bar">
                 <div id="level-progress"></div>
             </div>
+        </div>
+
+        <!-- Прибыль в час -->
+        <div id="income-counter" class="counter">
+            <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
         </div>
 
         <!-- Счётчики -->
@@ -57,18 +62,13 @@
                 <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
                 <span id="ticket-count">200</span>
             </div>
-                <div id="energy-counter" class="counter">Энергия: <span class="energy" id="energy-count">1000</span></div>
-                <button id="booster">Бустер 6/6 (01:00)</button>
+            <!-- Энергия -->
+            <div id="energy-counter" class="counter">
+                <img src="assets/images/energy-icon.png" alt="Энергия" class="energy-icon">
+                <span id="energy-count">1000</span> Энергия
             </div>
-        </div>
-
-			
-			
-			
-            <!-- Прибыль в час -->
-            <div id="income-counter" class="counter">
-                <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
-            </div>
+            <!-- Бустер -->
+            <button id="booster">Бустер 6/6 (01:00)</button>
         </div>
 
         <!-- Ромашка -->
@@ -81,7 +81,7 @@
 
         <!-- Таймер до следующего предсказания -->
         <div id="next-prediction-timer">
-            <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer"></span>
+            <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer">06:00:00</span>
         </div>
 
         <footer>
@@ -104,7 +104,7 @@
                 <button class="share-btn" data-localize="share_with_friends">Поделиться с друзьями</button>
                 <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
             </div>
-            <div id="ticket-notification" class="ticket-notification">
+            <div id="ticket-notification" class="ticket-notification" style="display: none;">
                 <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
             </div>
             <div id="predictions-history">
