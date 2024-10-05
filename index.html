@@ -7,93 +7,84 @@
     <!-- Подключение нового шрифта -->
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
-    <!-- Подключение библиотеки конфетти -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <!-- Фавикон -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Верхняя панель: Уровень игрока и кнопки звук/язык -->
-    <div class="top-bar">
-        <!-- Уровень игрока и прогресс -->
+    <!-- Кнопка смены локализации -->
+    <button id="language-toggle">
+        <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
+    </button>
+
+    <!-- Кнопка отключения звука -->
+    <button id="sound-toggle">
+        <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
+    </button>
+
+    <!-- Анимация загрузки -->
+    <div id="loading-screen">
+        <div class="loading-text">
+            <span>D</span><span>a</span><span>i</span><span>s</span><span>y</span>
+        </div>
+        <div class="loading-overlay">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
+
+    <div class="game-container" style="display: none;">
+        <!-- Уровень игрока -->
         <div id="player-level">
-            <span data-localize="player_level">Уровень:</span> <span id="level-number">1</span>
+            <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
             <div id="level-progress-bar">
                 <div id="level-progress"></div>
             </div>
         </div>
 
-        <!-- Кнопки звук и локализация -->
-        <div class="top-buttons">
-            <!-- Кнопка смены локализации -->
-            <button id="language-toggle">
-                <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
-            </button>
-
-            <!-- Кнопка отключения звука -->
-            <button id="sound-toggle">
-                <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
-            </button>
-        </div>
-    </div>
-
-    <!-- Счётчики $Daisy, билеты, Coin, энергия и бустер -->
-    <div class="counters">
-        <!-- Левые счётчики: $Daisy и билеты -->
-        <div class="left-counters">
+        <!-- Счётчики -->
+        <div class="counters">
             <!-- $Daisy -->
             <div id="coin-counter" class="counter">
                 <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
                 <span class="daisy-coin" id="coin-count">10000</span> $Daisy
             </div>
-
-            <!-- Билеты -->
-            <div id="ticket-counter" class="counter">
-                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">200</span> Билетов
-            </div>
-        </div>
-
-        <!-- Правые счётчики: Coin, энергия и бустер -->
-        <div class="right-counters">
             <!-- Coin -->
             <div id="spin-coin-counter" class="counter">
                 <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
                 <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
             </div>
-
-            <!-- Энергия -->
-            <div id="energy-counter" class="counter">
-                <img src="assets/images/energy-icon.png" alt="Энергия" class="energy-icon">
-                <span id="energy-count">1000</span> Энергия
+            <!-- Tickets -->
+            <div id="ticket-counter" class="counter">
+                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+                <span id="ticket-count">200</span>
             </div>
-
-            <!-- Бустер -->
-            <button id="booster">Бустер 6/6 (01:00)</button>
+            <!-- Прибыль в час -->
+            <div id="income-counter" class="counter">
+                <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
+            </div>
         </div>
+
+        <!-- Ромашка -->
+        <div class="chamomile-container">
+            <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
+        </div>
+
+        <!-- Кнопка "Играть" -->
+        <button id="play-button" data-localize="play_button">Играть</button>
+
+        <!-- Таймер до следующего предсказания -->
+        <div id="next-prediction-timer">
+            <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer"></span>
+        </div>
+
+        <footer>
+            <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
+            <button id="rating-btn" data-localize="rating">Рейтинг</button>
+            <!-- Убрана иконка магазина, но кнопка оставлена -->
+            <button id="shop-btn" data-localize="shop">Магазин</button>
+            <button id="friends-btn" data-localize="friends">Друзья</button>
+            <button id="tasks-btn" data-localize="tasks">Задачи</button>
+        </footer>
     </div>
-
-    <!-- Ромашка -->
-    <div class="chamomile-container">
-        <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
-    </div>
-
-    <!-- Таймер до следующего уровня -->
-    <div id="next-level-timer">
-        <span data-localize="next_level_in">До следующего уровня:</span> <span id="level-timer">00:00:00</span>
-    </div>
-
-    <!-- Кнопка "Играть" -->
-    <button id="play-button" data-localize="play_button">Играть</button>
-
-    <!-- Футер с нижними кнопками -->
-    <footer>
-        <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
-        <button id="rating-btn" data-localize="rating">Рейтинг</button>
-        <button id="shop-btn" data-localize="shop">Магазин</button>
-        <button id="friends-btn" data-localize="friends">Друзья</button>
-        <button id="tasks-btn" data-localize="tasks">Задачи</button>
-    </footer>
 
     <!-- Модальные окна -->
     <!-- Предсказание -->
@@ -106,7 +97,7 @@
                 <button class="share-btn" data-localize="share_with_friends">Поделиться с друзьями</button>
                 <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
             </div>
-            <div id="ticket-notification" class="ticket-notification" style="display: none;">
+            <div id="ticket-notification" class="ticket-notification">
                 <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
             </div>
             <div id="predictions-history">

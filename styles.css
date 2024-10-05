@@ -8,130 +8,209 @@ body {
     overflow: hidden;
 }
 
-/* Верхняя панель: Уровень игрока и кнопки звук/язык */
-.top-bar {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
+/* Кнопка смены языка */
+#language-toggle {
+    width: 40px;
+    height: 40px;
     position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 150;
+}
+
+#language-toggle img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Кнопка отключения звука */
+#sound-toggle {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    bottom: 120px;
+    left: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 150;
+}
+
+#sound-toggle img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Анимация загрузки */
+#loading-screen {
+    position: fixed;
     top: 0;
     left: 0;
-    z-index: 100;
-}
-
-/* Уровень игрока и прогресс */
-#player-level {
+    width: 100%;
+    height: 100%;
+    background: url('assets/images/Loadingscreen.webp') no-repeat center center;
+    background-size: cover;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
 }
 
-#player-level span {
-    font-size: 14px;
+.loading-text {
+    font-size: 48px;
+    color: #FFD700;
+    margin-bottom: 20px;
+    position: absolute;
+    top: 20%;
+    display: flex;
 }
 
-#level-number {
-    font-weight: bold;
+.loading-text span {
+    display: inline-block;
+    opacity: 0;
+    animation: fadeInLetters 0.5s forwards;
+}
+
+.loading-text span:nth-child(1) { animation-delay: 0s; }
+.loading-text span:nth-child(2) { animation-delay: 0.3s; }
+.loading-text span:nth-child(3) { animation-delay: 0.6s; }
+.loading-text span:nth-child(4) { animation-delay: 0.9s; }
+.loading-text span:nth-child(5) { animation-delay: 1.2s; }
+
+@keyframes fadeInLetters {
+    to { opacity: 1; }
+}
+
+.loading-overlay {
+    width: 80%;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    position: absolute;
+    top: 60%;
+    overflow: hidden;
+}
+
+.loading-bar {
+    width: 0%;
+    height: 100%;
+    background: #FFD700;
+    border-radius: 5px;
+    animation: load 4s forwards;
+    position: relative;
+}
+
+@keyframes load {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+/* Анимация бликов на загрузочной полоске */
+.loading-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    animation: glare 4s infinite;
+}
+
+@keyframes glare {
+    from { left: -50%; }
+    to { left: 100%; }
+}
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+}
+
+/* Игра */
+.game-container {
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(circle at center, #000000, #4B0082); /* Градиент от черного к фиолетовому */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Уровень игрока */
+#player-level {
+    position: absolute;
+    top: 20px;
+    width: 90%;
+    text-align: center;
+    color: #FFD700;
 }
 
 #level-progress-bar {
-    width: 100px;
-    height: 8px;
-    background-color: #555;
-    border-radius: 4px;
-    margin-top: 3px;
+    width: 100%;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    margin-top: 5px;
 }
 
 #level-progress {
-    width: 0%;
+    width: 0%; /* Начальное значение прогресса */
     height: 100%;
     background-color: #FFD700;
-    border-radius: 4px;
-}
-
-/* Кнопки звук и локализация */
-.top-buttons {
-    display: flex;
-    gap: 10px;
-}
-
-.language-icon, #sound-icon {
-    width: 24px;
-    height: 24px;
+    border-radius: 5px;
 }
 
 /* Счётчики */
 .counters {
-    width: 90%;
-    max-width: 300px;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 60px; /* Отступ от верхней панели */
-    margin-bottom: 10px;
-}
-
-.left-counters, .right-counters {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: flex-start;
+    width: 90%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    position: absolute;
+    top: 80px;
 }
 
 .counter {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
-    padding: 5px 10px;
+    padding: 10px;
     display: flex;
     align-items: center;
-    font-size: 14px;
+    margin-bottom: 10px;
 }
 
-.coin-icon, .ticket-icon, .energy-icon {
+.coin-icon, .ticket-icon {
     width: 24px;
     height: 24px;
     margin-right: 5px;
 }
 
-#booster {
-    width: 100%;
-    background-color: #FF4500;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 5px 0;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s;
-}
-
-#booster:hover {
-    background-color: #e03e00;
-}
-
 /* Ромашка */
 .chamomile-container {
-    width: 200px;
-    height: 200px;
-    margin: 20px 0;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: auto;
     display: flex;
     justify-content: center;
     align-items: center;
+    top: 50px;
 }
 
-.chamomile-container img {
+#chamomile {
     width: 100%;
     height: 100%;
+    transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
     cursor: pointer;
-    object-fit: contain;
-}
-
-/* Таймер до следующего уровня */
-#next-level-timer {
-    font-size: 14px;
-    color: #FFD700;
-    text-align: center;
-    margin-bottom: 20px;
 }
 
 /* Кнопка "Играть" */
@@ -145,7 +224,8 @@ body {
     font-size: 16px;
     animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
-    margin-bottom: 20px;
+    position: absolute;
+    bottom: 150px;
 }
 
 #play-button:hover {
@@ -158,12 +238,21 @@ body {
     100% { transform: scale(1); }
 }
 
-/* Футер с нижними кнопками */
+/* Таймер до следующего предсказания */
+#next-prediction-timer {
+    position: absolute;
+    bottom: 100px;
+    font-size: 14px;
+    color: #FFD700;
+    text-align: center;
+}
+
+/* Футер */
 footer {
     display: flex;
     justify-content: space-around;
-    width: 100%;
-    padding: 10px 0;
+    width: 90%;
+    padding: 10px;
     background-color: rgba(138, 43, 226, 0.8);
     border-radius: 0 0 25px 25px;
     position: absolute;
@@ -182,10 +271,6 @@ footer button {
     align-items: center;
 }
 
-footer button:hover {
-    color: #ffffff;
-}
-
 /* Модальные окна */
 .modal {
     display: none;
@@ -197,7 +282,7 @@ footer button:hover {
     background: rgba(0, 0, 0, 0.8);
     justify-content: center;
     align-items: center;
-    z-index: 200;
+    z-index: 100;
 }
 
 .modal-content {
@@ -205,7 +290,8 @@ footer button:hover {
     padding: 20px;
     border-radius: 15px;
     width: 90%;
-    max-width: 500px;
+    height: 90%;
+    max-width: 600px;
     overflow-y: auto;
     position: relative;
     animation: modalAppear 0.3s ease-out;
@@ -219,10 +305,10 @@ footer button:hover {
 
 .close-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 36px;
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
@@ -270,12 +356,12 @@ footer button:hover {
 }
 
 .shop-item-image {
-    width: 100%;
-    height: auto;
+    width: auto;
+    height: 60px;
     object-fit: contain;
 }
 
-.skin-name, .skin-price, .skin-income, .skin-level {
+.skin-price {
     margin-top: 5px;
     font-weight: bold;
     font-size: 12px;
@@ -382,154 +468,43 @@ footer button:hover {
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
-/* Спарклы */
-.spark {
-    position: absolute;
-    background-color: #FFD700;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: sparkle 1s forwards;
-    pointer-events: none;
-    font-size: 12px;
-    color: #000;
-}
-
-@keyframes sparkle {
-    0% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(2); }
-}
-
-/* Уведомление о билетах */
-.ticket-notification {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 215, 0, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    color: #000;
-    z-index: 250;
-}
-
-/* Адаптация под формат мобильных устройств (вертикально) */
+/* Адаптация под формат 9:16 */
 @media (max-width: 768px) {
-    /* Уровень игрока и прогресс */
-    #player-level {
-        align-items: flex-start;
-    }
-
-    #player-level span, #level-number {
-        font-size: 14px;
-    }
-
-    #level-progress-bar {
-        width: 100px;
-        height: 8px;
-    }
-
-    /* Счётчики */
-    .counters {
-        width: 90%;
-        max-width: 300px;
-        display: flex;
-        justify-content: space-between;
-        margin-top: 80px; /* Отступ от верхней панели */
-        margin-bottom: 10px;
-    }
-
-    .left-counters, .right-counters {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .counter {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 5px 10px;
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-    }
-
-    #booster {
+    .game-container, #protect-flower-game {
         width: 100%;
-        background-color: #FF4500;
-        color: white;
-        border: none;
-        border-radius: 10px;
-        padding: 5px 0;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.3s;
+        height: 100vh;
     }
 
-    #booster:hover {
-        background-color: #e03e00;
-    }
-
-    /* Ромашка */
-    .chamomile-container {
-        width: 200px;
-        height: 200px;
-        margin: 20px 0;
-    }
-
-    .chamomile-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-
-    /* Таймер до следующего уровня */
-    #next-level-timer {
-        font-size: 14px;
-        color: #FFD700;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    /* Кнопка "Играть" */
     #play-button {
-        width: 90%;
-        max-width: 300px;
-        padding: 15px 0;
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-
-    /* Футер с нижними кнопками */
-    footer {
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-        padding: 10px 0;
-        background-color: rgba(138, 43, 226, 0.8);
-        border-radius: 0 0 25px 25px;
         position: absolute;
-        bottom: 0;
+        bottom: 150px;
     }
 
-    footer button {
-        background: none;
-        border: none;
-        font-size: 14px;
-        font-weight: bold;
-        color: #FFD700;
-        cursor: pointer;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    #sound-toggle {
+        position: absolute;
+        bottom: 120px;
+        left: 20px;
+    }
+
+    #start-mini-game {
+        bottom: 50px;
+    }
+}
+
+@media (min-width: 769px) {
+    body {
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
+        background-color: #000;
     }
 
-    footer button:hover {
-        color: #ffffff;
+    .game-container, #protect-flower-game {
+        width: 360px; /* Соотношение 9:16 */
+        height: 640px;
+        border: 2px solid #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
     }
 }
