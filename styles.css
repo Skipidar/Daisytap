@@ -6,38 +6,48 @@ body {
     font-family: 'Dela Gothic One', sans-serif; /* Новый шрифт */
     color: #FFD700;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 /* Кнопка смены языка */
 #language-toggle {
     position: absolute;
-    top: 20px;
-    right: 70px; /* Сдвигаем правее, чтобы разместить кнопку звука */
+    top: 200px;
+    left: 33%; /* Перемещено слева от бустера */
+    transform: translateX(-50%);
     background: none;
     border: none;
     cursor: pointer;
     z-index: 150;
-}
-
-.language-icon {
-    width: 30px;
-    height: 30px;
+    font-size: 24px; /* Уменьшен размер шрифта */
+    color: #FFD700;
 }
 
 /* Кнопка отключения звука */
 #sound-toggle {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 200px;
+    left: calc(50% + -130px); /* Расположено справа от кнопки языка */
     background: none;
     border: none;
     cursor: pointer;
     z-index: 150;
+    font-size: 18px; /* Уменьшен размер шрифта */
+    color: #FFD700;
+    width: 50px; /* Ограничиваем ширину кнопки */
+    height: 50px; /* Ограничиваем высоту кнопки */
+}
+/* Изображение внутри кнопки громкости */
+#sound-toggle img {
+    width: 100%; /* Изображение занимает всю ширину кнопки */
+    height: 100%; /* Изображение занимает всю высоту кнопки */
+    object-fit: contain; /* Сохраняем пропорции изображения */
 }
 
-#sound-toggle img {
-    width: 30px;
-    height: 30px;
+/* Скрытие кнопок внутри модальных окон */
+.modal #language-toggle,
+.modal #sound-toggle {
+    display: none !important;
 }
 
 /* Анимация загрузки */
@@ -57,12 +67,11 @@ body {
 }
 
 .loading-text {
-    font-size: 48px;
+    font-size: 36px; /* Уменьшен размер шрифта */
     color: #FFD700;
     margin-bottom: 20px;
-    position: absolute;
-    top: 20%;
     display: flex;
+    gap: 5px; /* Добавлено пространство между буквами */
 }
 
 .loading-text span {
@@ -86,9 +95,8 @@ body {
     height: 10px;
     background-color: #333;
     border-radius: 5px;
-    position: absolute;
-    top: 60%;
     overflow: hidden;
+    margin-top: 20px; /* Добавлено пространство сверху */
 }
 
 .loading-bar {
@@ -137,23 +145,33 @@ body {
     align-items: center;
     position: relative;
     padding-top: 80px; /* Отступ для верхних элементов */
+    box-sizing: border-box;
 }
 
 /* Уровень игрока и прогресс */
-#player-level {
+#player-level-container {
     width: 90%;
     max-width: 300px;
     color: #FFD700;
-    font-size: 16px;
-    margin-bottom: 10px;
+    font-size: 14px; /* Уменьшен размер шрифта */
+    position: relative; /* Добавлено */
+    z-index: 1; /* Добавлено */
+    margin-top: -80px; /* Изменено */
+    margin-bottom: 10px; /* Изменено */
+}
+
+#player-level-text {
+    color: #FFD700;
+    font-size: 14px; /* Уменьшен размер шрифта */
+    margin-bottom: 10px; /* Добавлено */
 }
 
 #level-progress-bar {
     width: 100%;
-    height: 10px;
+    height: 8px; /* Уменьшен размер шрифта */
     background-color: #555;
     border-radius: 5px;
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 #level-progress {
@@ -169,48 +187,66 @@ body {
     max-width: 300px;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
-    padding: 5px 10px;
+    padding: 8px 16px; /* Уменьшен padding */
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 10px;
-}
-
-#income-counter span {
-    margin-right: 5px;
+    font-size: 14px; /* Уменьшен размер шрифта */
 }
 
 /* Счётчики */
 .counters {
     width: 90%;
     max-width: 300px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
+    display: grid; /* Используем grid */
+    grid-template-columns: 1fr 1fr; /* Две колонки */
+    grid-template-rows: auto auto; /* Две строки */
+    gap: 10px; /* Отступы между элементами */
     margin-bottom: 20px;
+    margin-right: auto; /* Добавляем это свойство */
+    margin-left: 5px; /* Добавляем отступ слева */
 }
 
 .counter {
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 15px;
-    padding: 5px 10px;
+    padding: 8px 16px; /* Уменьшен padding */
     display: flex;
     align-items: center;
-    margin: 5px 0;
-    width: 48%;
+    justify-content: center;
+    font-size: 14px; /* Уменьшен размер шрифта */
 }
 
-#booster {
-    width: 100%;
+/* Позиционирование счетчиков */
+#spin-coin-counter { 
+    grid-area: 1 / 2 / 2 / 2; /* Первая строка, первый столбец */
+}
+
+#coin-counter { 
+    grid-area: 1 / 1 / 2 / 2; /* Первая строка, второй столбец */
+}
+
+#ticket-counter { 
+    grid-area: 2 / 1 / 3 / 2; /* Вторая строка, первый столбец */
+}
+
+#energy-counter { 
+    grid-area: 2 / 2 / 3 / 3; /* Вторая строка, второй столбец */
+}
+
+/* Бустер */
+#booster { 
+    grid-area: 3 / 1 / 4 / 3; /* Третья строка, занимает оба столбца */
     background-color: #FF4500;
     color: white;
     border: none;
     border-radius: 10px;
-    padding: 5px 0;
+    padding: 10px 0; /* Уменьшен padding */
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s;
+    justify-self: right; /* Центрирование бустера */
 }
 
 #booster:hover {
@@ -220,7 +256,13 @@ body {
 .coin-icon, .ticket-icon, .energy-icon {
     width: 24px;
     height: 24px;
-    margin-right: 5px;
+    margin-right: 8px; /* Уменьшен отступ */
+}
+
+/* Энергия заменена на текст */
+#energy-counter .energy-icon::before {
+    content: '⚡'; /* Смайл для энергии */
+    margin-right: 8px;
 }
 
 /* Ромашка */
@@ -257,16 +299,18 @@ body {
 
 /* Кнопка "Играть" */
 #play-button {
+    width: 90%;
+    max-width: 300px;
+    padding: 10px 20px;
+    font-size: 14px;
+    margin-top: 50px; /* Уменьшаем отступ сверху */
     background-color: #32CD32;
     color: white;
-    padding: 15px 30px;
-    border-radius: 10px;
     border: none;
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
-    animation: pulsePlayButton 2s infinite;
     transition: background-color 0.3s;
-    margin-bottom: 20px;
+    animation: pulsePlayButton 2s infinite;
 }
 
 #play-button:hover {
@@ -279,12 +323,14 @@ body {
     100% { transform: scale(1); }
 }
 
-/* Таймер до следующего предсказания */
 #next-prediction-timer {
     font-size: 14px;
     color: #FFD700;
     text-align: center;
-    margin-bottom: 20px;
+    margin-top: 0px; /* Убираем отступ сверху, чтобы таймер находился ближе к кнопке */
+    margin-bottom: 10px; /* Уменьшаем отступ снизу, чтобы таймер был как можно ближе */
+    position: relative;
+    top: 50px; /* Поднимаем таймер чуть выше, чтобы он расположился ближе к кнопке */
 }
 
 /* Футер */
@@ -309,36 +355,41 @@ footer button {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
-}
-
-footer button:hover {
-    color: #ffffff;
+    gap: 5px; /* Добавлено пространство между иконками и текстом */
 }
 
 /* Модальные окна */
+/* Общие стили для модальных окон */
 .modal {
     display: none;
-    position: fixed;
+    position: absolute; /* Модальные окна позиционируются внутри контейнера игры */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8); /* Затемнение фона */
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 300; /* Устанавливаем окно поверх всех элементов игры */
+}
+
+/* Ограничение модальных окон в рамках игрового контейнера */
+.modal-dialog {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
 }
 
 .modal-content {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 15px;
     width: 90%;
-    max-width: 600px;
-    overflow-y: auto;
-    position: relative;
+    max-width: 300px; /* Соответствует мобильному разрешению */
+    height: auto; /* Автоматическая высота */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон */
+    overflow-y: auto; /* Для прокрутки контента, если он превышает высоту */
+    padding: 20px;
     animation: modalAppear 0.3s ease-out;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
 }
 
 @keyframes modalAppear {
@@ -348,10 +399,10 @@ footer button:hover {
 
 .close-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
     cursor: pointer;
-    font-size: 36px;
+    font-size: 24px; /* Уменьшен размер шрифта */
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
@@ -365,7 +416,7 @@ footer button:hover {
 }
 
 .shop-tab {
-    padding: 10px 20px;
+    padding: 8px 16px; /* Уменьшен padding */
     background-color: rgba(255, 215, 0, 0.3);
     border: none;
     border-radius: 10px;
@@ -381,7 +432,7 @@ footer button:hover {
 
 .shop-content {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Уменьшен минимальный размер колонок */
     gap: 20px;
 }
 
@@ -420,7 +471,8 @@ footer button:hover {
     background: url('assets/images/gamepole.webp') no-repeat center center;
     background-size: cover;
     z-index: 300;
-    display: flex;
+    display: none; /* Скрыта по умолчанию */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -444,12 +496,13 @@ footer button:hover {
     position: absolute;
     top: 10px;
     right: 10px;
+    display: flex;
+    gap: 5px; /* Добавлено пространство между сердечками */
 }
 
 .life-icon {
-    width: 40px;
-    height: 40px;
-    margin-left: 5px;
+    width: 30px; /* Уменьшен размер */
+    height: 30px; /* Уменьшен размер */
 }
 
 #game-coins {
@@ -458,25 +511,25 @@ footer button:hover {
     left: 10px;
     display: flex;
     align-items: center;
-    font-size: 18px;
+    font-size: 16px; /* Уменьшен размер шрифта */
     color: #FFFFFF;
+    gap: 5px; /* Добавлено пространство между элементами */
 }
 
 #game-coins .coin-icon {
     width: 24px;
     height: 24px;
-    margin-right: 5px;
 }
 
 #start-mini-game {
     position: absolute;
     bottom: 50px;
-    padding: 10px 20px;
+    padding: 8px 16px; /* Уменьшен padding */
     background-color: #FFD700;
     border: none;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px; /* Уменьшен размер шрифта */
     color: #000;
     transition: background-color 0.3s;
 }
@@ -517,12 +570,14 @@ footer button:hover {
         width: 100%;
         height: 100vh;
         padding-top: 60px; /* Отступ для кнопок */
+        box-sizing: border-box;
     }
 
-    #player-level {
+    /* Уровень игрока и прогресс */
+    #player-level-container {
         width: 90%;
         max-width: 300px;
-        font-size: 14px;
+        font-size: 12px; /* Дополнительно уменьшен размер шрифта */
     }
 
     #level-progress-bar {
@@ -530,45 +585,55 @@ footer button:hover {
     }
 
     #income-counter {
-        font-size: 14px;
-        padding: 5px;
+        font-size: 12px;
+        padding: 8px 16px;
     }
 
+    /* Счётчики */
     .counters {
-        flex-direction: column;
-        align-items: center;
+        display: grid; /* Обеспечивает корректное расположение */
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 10px;
+        width: 90%;
+        max-width: 300px;
+        margin-bottom: 20px;
     }
 
     .counter {
-        width: 90%;
-        max-width: 300px;
-        margin: 5px 0;
+        padding: 8px 16px;
+        font-size: 12px; /* Дополнительно уменьшен размер шрифта */
     }
 
+    /* Бустер */
     #booster {
-        width: 90%;
-        max-width: 300px;
-        margin-top: 10px;
+        padding: 10px 0;
+        font-size: 14px;
     }
 
+    /* Ромашка */
     .chamomile-container {
         width: 200px;
         height: 200px;
         margin: 20px 0;
     }
 
+    /* Кнопка "Играть" */
     #play-button {
         width: 90%;
         max-width: 300px;
-        padding: 10px 0;
-        font-size: 16px;
-    }
-
-    #next-prediction-timer {
+        padding: 8px 16px;
         font-size: 14px;
         margin-bottom: 20px;
     }
 
+    /* Таймер до следующего предсказания */
+    #next-prediction-timer {
+        font-size: 12px; /* Уменьшен размер шрифта */
+        margin-bottom: 20px;
+    }
+
+    /* Футер */
     footer {
         flex-wrap: wrap;
     }
@@ -576,7 +641,7 @@ footer button:hover {
     footer button {
         width: 45%;
         margin: 5px 0;
-        font-size: 14px;
+        font-size: 12px; /* Уменьшен размер шрифта */
     }
 }
 
@@ -596,61 +661,75 @@ footer button:hover {
         overflow: hidden;
         position: relative;
         padding-top: 80px; /* Отступ для верхних элементов */
+        box-sizing: border-box;
     }
 
-    #player-level {
+    /* Уровень игрока и прогресс */
+    #player-level-container {
         width: 90%;
         max-width: 300px;
+        font-size: 14px; /* Увеличен размер шрифта */
     }
 
     #level-progress-bar {
         width: 100%;
-        height: 10px;
+        height: 8px;
     }
 
     #income-counter {
         width: 90%;
         max-width: 300px;
         margin-bottom: 10px;
+        font-size: 14px;
     }
 
+    /* Счётчики */
     .counters {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
+        display: grid; /* Обеспечивает корректное расположение */
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: 10px;
         width: 90%;
         max-width: 300px;
+        margin-bottom: 20px;
     }
 
     .counter {
-        width: 48%;
-        margin: 5px 0;
+        padding: 8px 16px;
+        font-size: 14px;
     }
 
+    /* Бустер */
     #booster {
-        width: 100%;
+        padding: 10px 0;
+        font-size: 14px;
     }
 
+    /* Ромашка */
     .chamomile-container {
-        width: 300px;
-        height: 300px;
-        margin: 20px 0;
+        width: 250px;
+        height: 250px;
+        margin: -40px 0;
     }
 
+    /* Кнопка "Играть" */
     #play-button {
         width: 90%;
         max-width: 300px;
-        padding: 15px 0;
-        font-size: 16px;
-    }
-
-    #next-prediction-timer {
+        padding: 10px 20px;
         font-size: 14px;
         margin-bottom: 20px;
     }
 
+    /* Таймер до следующего предсказания */
+    #next-prediction-timer {
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+
+    /* Футер */
     footer button {
-        font-size: 14px;
+        font-size: 12px;
     }
 }
 

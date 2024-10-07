@@ -1,10 +1,9 @@
-// scripts/modal.js
 const Modal = (function() {
     function init() {
         // Закрытие модальных окон при нажатии на крестик
         document.querySelectorAll('.close-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                this.closest('.modal').style.display = 'none';
+                closeModal(this.closest('.modal'));
             });
         });
 
@@ -12,7 +11,7 @@ const Modal = (function() {
         window.addEventListener('click', function(event) {
             document.querySelectorAll('.modal').forEach(modal => {
                 if (event.target === modal) {
-                    modal.style.display = 'none';
+                    closeModal(modal);
                 }
             });
         });
@@ -37,8 +36,29 @@ const Modal = (function() {
         const modal = document.getElementById(modalId);
         modal.style.display = 'flex';
 
+        // Уменьшаем z-index кнопок смены языка и звука
+        adjustLanguageAndSoundButtonsZIndex(true);
+
         if (modalId === 'prediction-modal') {
             updatePredictionHistory();
+        }
+    }
+
+    function closeModal(modal) {
+        modal.style.display = 'none';
+        // Возвращаем исходный z-index кнопок смены языка и звука
+        adjustLanguageAndSoundButtonsZIndex(false);
+    }
+
+    function adjustLanguageAndSoundButtonsZIndex(lower) {
+        const languageToggle = document.getElementById('language-toggle');
+        const soundToggle = document.getElementById('sound-toggle');
+        const zIndex = lower ? '50' : '150';
+        if (languageToggle) {
+            languageToggle.style.zIndex = zIndex;
+        }
+        if (soundToggle) {
+            soundToggle.style.zIndex = zIndex;
         }
     }
 
@@ -96,7 +116,7 @@ const Modal = (function() {
         const closeGiftBtn = document.getElementById('close-gift-btn');
         if (closeGiftBtn) {
             closeGiftBtn.addEventListener('click', () => {
-                document.getElementById('skin-purchase-modal').style.display = 'none';
+                closeModal(document.getElementById('skin-purchase-modal'));
             });
         }
     }

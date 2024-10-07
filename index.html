@@ -31,10 +31,13 @@
         </div>
     </div>
 
+    <!-- Контейнер игры -->
     <div class="game-container" style="display: none;">
         <!-- Уровень игрока и прогресс -->
-        <div id="player-level">
-            <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
+        <div id="player-level-container">
+            <div id="player-level-text">
+                <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
+            </div>
             <div id="level-progress-bar">
                 <div id="level-progress"></div>
             </div>
@@ -47,20 +50,20 @@
 
         <!-- Счётчики -->
         <div class="counters">
-            <!-- $Daisy -->
-            <div id="coin-counter" class="counter">
-                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
-                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
-            </div>
             <!-- Coin -->
             <div id="spin-coin-counter" class="counter">
                 <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
                 <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
             </div>
+            <!-- $Daisy -->
+            <div id="coin-counter" class="counter">
+                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
+                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
+            </div>
             <!-- Tickets -->
             <div id="ticket-counter" class="counter">
                 <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">200</span>
+                <span id="ticket-count">200</span> Билеты
             </div>
             <!-- Энергия -->
             <div id="energy-counter" class="counter">
@@ -71,18 +74,21 @@
             <button id="booster">Бустер 6/6 (01:00)</button>
         </div>
 
+        <!-- Прибыль в час (если нужна повторная) -->
+        <!-- Если уже есть #income-counter, возможно, этот элемент не нужен -->
+
         <!-- Ромашка -->
         <div class="chamomile-container">
             <img src="assets/images/chamomile.webp" id="chamomile" alt="Ромашка">
         </div>
 
-        <!-- Кнопка "Играть" -->
-        <button id="play-button" data-localize="play_button">Играть</button>
-
         <!-- Таймер до следующего предсказания -->
         <div id="next-prediction-timer">
             <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer">06:00:00</span>
         </div>
+
+        <!-- Кнопка "Играть" -->
+        <button id="play-button" data-localize="play_button">Играть</button>
 
         <footer>
             <button id="airdrop-btn" data-localize="airdrop">Airdrop</button>
@@ -91,120 +97,120 @@
             <button id="friends-btn" data-localize="friends">Друзья</button>
             <button id="tasks-btn" data-localize="tasks">Задачи</button>
         </footer>
-    </div>
 
-    <!-- Модальные окна -->
-    <!-- Предсказание -->
-    <div id="prediction-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 data-localize="your_prediction">Ваше предсказание на сегодня:</h2>
-            <p id="prediction-title"></p>
-            <div class="prediction-buttons">
-                <button class="share-btn" data-localize="share_with_friends">Поделиться с друзьями</button>
-                <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
-            </div>
-            <div id="ticket-notification" class="ticket-notification" style="display: none;">
-                <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
-            </div>
-            <div id="predictions-history">
-                <h3 data-localize="prediction_history">История предсказаний:</h3>
-                <!-- Здесь будут отображаться предыдущие предсказания -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Airdrop -->
-    <div id="airdrop-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Airdrop</h2>
-            <p data-localize="airdrop_info">Что такое airdrop: Это бесплатная раздача токенов или монет пользователям криптовалютного проекта.</p>
-            <p data-localize="airdrop_update">В данный момент игра находится на этапе добычи монет. Следите за обновлениями!</p>
-        </div>
-    </div>
-
-    <!-- Рейтинг -->
-    <div id="rating-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 data-localize="player_rating">Рейтинг игроков</h2>
-            <div id="rating-list">
-                <!-- Тестовый текст -->
-                <p data-localize="rating_soon">Тестовый рейтинг скоро будет доступен.</p>
+        <!-- Модальные окна -->
+        <!-- Предсказание -->
+        <div id="prediction-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 data-localize="your_prediction">Ваше предсказание на сегодня:</h2>
+                <p id="prediction-title"></p>
+                <div class="prediction-buttons">
+                    <button class="share-btn" data-localize="share_with_friends">Поделиться с друзьями</button>
+                    <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
+                </div>
+                <div id="ticket-notification" class="ticket-notification" style="display: none;">
+                    <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
+                </div>
+                <div id="predictions-history">
+                    <h3 data-localize="prediction_history">История предсказаний:</h3>
+                    <!-- Здесь будут отображаться предыдущие предсказания -->
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Магазин -->
-    <div id="shop-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 data-localize="shop">Магазин</h2>
-            <div class="shop-tabs">
-                <button class="shop-tab active" data-tab="daisy" data-localize="shop_daisy">За $Daisy</button>
-                <button class="shop-tab" data-tab="coin" data-localize="shop_coin">За Coin</button>
-                <button class="shop-tab" data-tab="premium" data-localize="shop_premium">Премиум</button>
-            </div>
-            <div class="shop-content" id="shop-content"></div>
-        </div>
-    </div>
-
-    <!-- Друзья -->
-    <div id="friends-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 data-localize="friends">Друзья</h2>
-            <p data-localize="invite_friends">Приглашайте друзей! Вы и ваш друг получите бонус в виде монет. Для Telegram друзей с Telegram Premium - особые условия!</p>
-            <div id="friends-list">
-                <!-- Тестовый текст -->
-                <p data-localize="friends_soon">Тестовый список друзей скоро будет доступен.</p>
+        <!-- Airdrop -->
+        <div id="airdrop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2>Airdrop</h2>
+                <p data-localize="airdrop_info">Что такое airdrop: Это бесплатная раздача токенов или монет пользователям криптовалютного проекта.</p>
+                <p data-localize="airdrop_update">В данный момент игра находится на этапе добычи монет. Следите за обновлениями!</p>
             </div>
         </div>
-    </div>
 
-    <!-- Задачи -->
-    <div id="tasks-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 data-localize="tasks">Задачи</h2>
-            <p data-localize="complete_tasks">Выполняйте задания и зарабатывайте больше $Daisy Coin</p>
-            <p style="color: gray;" data-localize="tasks_soon">Задания скоро появятся...</p>
+        <!-- Рейтинг -->
+        <div id="rating-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 data-localize="player_rating">Рейтинг игроков</h2>
+                <div id="rating-list">
+                    <!-- Тестовый текст -->
+                    <p data-localize="rating_soon">Тестовый рейтинг скоро будет доступен.</p>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Модальное окно покупки скина -->
-    <div id="skin-purchase-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 data-localize="congratulations">Поздравляем!</h2>
-            <p data-localize="your_gift">Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
-            <button id="close-gift-btn" data-localize="close">Закрыть</button>
+        <!-- Магазин -->
+        <div id="shop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 data-localize="shop">Магазин</h2>
+                <div class="shop-tabs">
+                    <button class="shop-tab active" data-tab="daisy" data-localize="shop_daisy">За $Daisy</button>
+                    <button class="shop-tab" data-tab="coin" data-localize="shop_coin">За Coin</button>
+                    <button class="shop-tab" data-tab="premium" data-localize="shop_premium">Премиум</button>
+                </div>
+                <div class="shop-content" id="shop-content"></div>
+            </div>
         </div>
-    </div>
 
-    <!-- Мини-игра "Защити цветок" -->
-    <div id="protect-flower-game" class="game-screen" style="display: none;">
-        <canvas id="game-canvas"></canvas>
-        <div id="game-timer">01:00</div>
-        <div id="game-lives">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
-            <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+        <!-- Друзья -->
+        <div id="friends-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 data-localize="friends">Друзья</h2>
+                <p data-localize="invite_friends">Приглашайте друзей! Вы и ваш друг получите бонус в виде монет. Для Telegram друзей с Telegram Premium - особые условия!</p>
+                <div id="friends-list">
+                    <!-- Тестовый текст -->
+                    <p data-localize="friends_soon">Тестовый список друзей скоро будет доступен.</p>
+                </div>
+            </div>
         </div>
-        <div id="game-coins">
-            <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-            <span id="game-coin-count">0</span>
-            <!-- Добавлен счётчик $Daisy -->
-            <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
-            <span id="game-daisy-count">0</span>
-        </div>
-        <!-- Кнопка "Старт" внутри мини-игры -->
-        <button id="start-mini-game" data-localize="start">Старт</button>
-    </div>
 
-    <!-- Анимация конфетти -->
-    <canvas id="confetti-canvas"></canvas>
+        <!-- Задачи -->
+        <div id="tasks-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 data-localize="tasks">Задачи</h2>
+                <p data-localize="complete_tasks">Выполняйте задания и зарабатывайте больше $Daisy Coin</p>
+                <p style="color: gray;" data-localize="tasks_soon">Задания скоро появятся...</p>
+            </div>
+        </div>
+
+        <!-- Модальное окно покупки скина -->
+        <div id="skin-purchase-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 data-localize="congratulations">Поздравляем!</h2>
+                <p data-localize="your_gift">Ваш подарок: <span id="gift-amount">0</span> билетов.</p>
+                <button id="close-gift-btn" data-localize="close">Закрыть</button>
+            </div>
+        </div>
+
+        <!-- Мини-игра "Защити цветок" -->
+        <div id="protect-flower-game" class="game-screen" style="display: none;">
+            <canvas id="game-canvas"></canvas>
+            <div id="game-timer">01:00</div>
+            <div id="game-lives">
+                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+                <img src="assets/images/heart.png" alt="Жизнь" class="life-icon">
+            </div>
+            <div id="game-coins">
+                <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+                <span id="game-coin-count">0</span>
+                <!-- Добавлен счётчик $Daisy -->
+                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
+                <span id="game-daisy-count">0</span>
+            </div>
+            <!-- Кнопка "Старт" внутри мини-игры -->
+            <button id="start-mini-game" data-localize="start">Старт</button>
+        </div>
+
+        <!-- Анимация конфетти -->
+        <canvas id="confetti-canvas"></canvas>
+    </div>
 
     <!-- Подключаем скрипты -->
     <script src="scripts/audio.js"></script>
