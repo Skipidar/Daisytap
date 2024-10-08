@@ -359,10 +359,9 @@ footer button {
 }
 
 /* Модальные окна */
-/* Общие стили для модальных окон */
 .modal {
     display: none;
-    position: absolute; /* Модальные окна позиционируются внутри контейнера игры */
+    position: absolute; /* Позиционируется относительно контейнера игры */
     top: 0;
     left: 0;
     width: 100%;
@@ -371,26 +370,36 @@ footer button {
     justify-content: center;
     align-items: center;
     z-index: 300; /* Устанавливаем окно поверх всех элементов игры */
+    overflow: hidden; /* Избегаем прокрутки всего окна */
 }
 
-/* Ограничение модальных окон в рамках игрового контейнера */
 .modal-dialog {
+    position: relative;
     width: 100%;
-    height: 100%;
-    max-width: 100%;
+    max-width: 90%;
+    height: auto;
+    max-height: 90%; /* Ограничение максимальной высоты окна */
+    overflow: hidden; /* Скрываем нежелательную прокрутку */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
-    width: 90%;
+    position: relative; /* Родитель для кнопки закрытия */
+    width: 100%;
     max-width: 300px; /* Соответствует мобильному разрешению */
     height: auto; /* Автоматическая высота */
+    max-height: 80%; /* Ограничение высоты контента */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     background-color: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон */
     overflow-y: auto; /* Для прокрутки контента, если он превышает высоту */
     padding: 20px;
     animation: modalAppear 0.3s ease-out;
+    -webkit-overflow-scrolling: touch; /* Плавный скроллинг на мобильных устройствах */
 }
+
 
 @keyframes modalAppear {
     from { opacity: 0; transform: translateY(-50px); }
@@ -398,13 +407,14 @@ footer button {
 }
 
 .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    position: fixed; /* Изменено на fixed для стабильного позиционирования */
+    top: 20px;
+    right: 20px;
     cursor: pointer;
-    font-size: 24px; /* Уменьшен размер шрифта */
+    font-size: 24px; /* Размер шрифта */
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    z-index: 350; /* Поверх контента модального окна */
 }
 
 /* Магазин */
