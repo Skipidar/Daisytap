@@ -11,16 +11,6 @@
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Кнопка смены локализации -->
-    <button id="language-toggle">
-        <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
-    </button>
-
-    <!-- Кнопка отключения звука -->
-    <button id="sound-toggle">
-        <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
-    </button>
-
     <!-- Анимация загрузки -->
     <div id="loading-screen">
         <div class="loading-text">
@@ -33,6 +23,19 @@
 
     <!-- Контейнер игры -->
     <div class="game-container" style="display: none;">
+        <!-- Верхний блок с кнопками -->
+        <div class="top-buttons">
+            <!-- Кнопка смены локализации -->
+            <button id="language-toggle">
+                <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
+            </button>
+
+            <!-- Кнопка отключения звука -->
+            <button id="sound-toggle">
+                <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
+            </button>
+        </div>
+
         <!-- Уровень игрока и прогресс -->
         <div id="player-level-container">
             <div id="player-level-text">
@@ -73,9 +76,6 @@
             <!-- Бустер -->
             <button id="booster">Бустер 6/6 (01:00)</button>
         </div>
-
-        <!-- Прибыль в час (если нужна повторная) -->
-        <!-- Если уже есть #income-counter, возможно, этот элемент не нужен -->
 
         <!-- Ромашка -->
         <div class="chamomile-container">
