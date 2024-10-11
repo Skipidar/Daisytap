@@ -18,7 +18,24 @@ const MiniGame = (function () {
     let totalCoinsEarned = 0;
     let tickets = parseInt(localStorage.getItem('tickets')) || 200;
     let isCountdownDone = false;
+    let spinCoins = 0; // Глобальная переменная для счётчика монет
 
+    function updateGameCoinCount(count) {
+        const gameCoinCountElement = document.getElementById('game-coin-count');
+        if (gameCoinCountElement) {
+            gameCoinCountElement.textContent = count;
+        } else {
+            console.error("Элемент game-coin-count не найден.");
+        }
+    }
+    
+    // Функция для начала игры
+    function startGame() {
+        spinCoins += 10; // Увеличиваем количество монет на 10
+        updateGameCoinCount(spinCoins); // Обновляем отображение количества монет
+    }
+    
+    document.getElementById('start-mini-game').addEventListener('click', startGame);
     function init() {
         const startButton = document.getElementById('start-mini-game');
         startButton.addEventListener('click', startGame);

@@ -101,12 +101,28 @@ body {
 .game-container {
     width: 100%;
     height: 100vh;
-    background: radial-gradient(circle at center, #000000, #4B0082); /* Градиент от черного к фиолетовому */
-    display: flex;
+    background: radial-gradient(circle at center, hsl(0, 0%, 0%), #4B0082); /* Градиент от черного к фиолетовому */
+    position: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
     overflow: hidden;
+}
+
+@media (min-width: 769px) {
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #000000; /* Красный для проверки фона */
+    }
+
+    .game-container {
+        width: 40vh; /* Соотношение 9:16 */
+        height: 71vh;
+        border: 2px solid #fff;
+        border-radius: 10px;
+    }
 }
 
 /* Верхний блок с кнопками */
@@ -195,10 +211,10 @@ body {
 .counters {
     width: 90%;
     max-width: 400px;
-    display: grid; /* Используем grid */
-    grid-template-columns: 1fr 1fr; /* Две колонки */
-    grid-template-rows: auto auto; /* Две строки */
-    gap: 1vh; /* Отступы между элементами */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 1vh;
     margin-bottom: 2vh;
 }
 
@@ -214,7 +230,7 @@ body {
 
 /* Бустер */
 #booster {
-    grid-column: 1 / -1; /* Занимает всю ширину */
+    grid-column: 1 / -1;
     background-color: #FF4500;
     color: white;
     border: none;
@@ -433,27 +449,18 @@ footer button {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('assets/images/gamepole.webp');
-    background-size: cover; 
+    background: url('assets/images/gamepole.webp') no-repeat center center;
+    background-size: cover;
     z-index: 300;
-    display: flex; 
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-#protect-flower-game {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
 #game-canvas {
     width: 100%;
     height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 #game-timer {
@@ -499,7 +506,6 @@ footer button {
     position: absolute;
     bottom: 5vh;
     padding: 1vh 2vw;
-    display: block;
     background-color: #FFD700;
     border: none;
     border-radius: 10px;
@@ -518,24 +524,6 @@ footer button {
     /* Все размеры уже заданы в относительных единицах, дополнительные изменения не требуются */
 }
 
-@media (min-width: 769px) {
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #000;
-    }
-
-    .game-container {
-        width: 40vh; /* Соотношение 9:16 */
-        height: 71vh;
-        border: 2px solid #fff;
-        border-radius: 10px;
-        overflow: hidden;
-        position: relative;
-    }
-}
-
 /* Дополнительные стили для анимации вращения ромашки */
 @keyframes rotateAnimation {
     from {
@@ -544,27 +532,6 @@ footer button {
     to {
         transform: rotate(360deg);
     }
-}
-
-/* Стилизация для спарклов */
-.spark {
-    position: absolute;
-    background-color: #FFD700;
-    border-radius: 50%;
-    width: 2vh;
-    height: 2vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: sparkle 1s forwards;
-    pointer-events: none;
-    font-size: 2vh;
-    color: #000;
-}
-
-@keyframes sparkle {
-    0% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(2); }
 }
 
 /* Стилизация для подсчета билетов */
@@ -579,4 +546,18 @@ footer button {
     text-align: center;
     color: #000;
     z-index: 200;
+}
+/* Анимация тряски экрана */
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
