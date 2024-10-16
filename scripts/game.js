@@ -1,34 +1,27 @@
-// scripts/game.js
 const Game = (function() {
     let coins = parseInt(localStorage.getItem('coins')) || 10000; // Начальное количество $Daisy
     let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000; // Начальное количество Coin
-    let energy = 1000;
     let isFlowerClickable = true;
-    let boosterCharges = 6;
     let lastClickTime = 0;
-    let rotationAngle = 0;
+    let rotationAngle = 0; // Для вращения ромашки
     let lastPredictionTime = parseInt(localStorage.getItem('lastPredictionTime')) || 0;
     let isFlowerClickableForPrediction = true;
     let level = parseInt(localStorage.getItem('playerLevel')) || 1;
     let experience = parseInt(localStorage.getItem('playerExperience')) || 0;
-    let experienceToNextLevel = level * 100; // Пример расчёта опыта для следующего уровня
+    let experienceToNextLevel = level * 100;
     let incomePerHour = parseInt(localStorage.getItem('incomePerHour')) || 0;
     let lastIncomeTime = parseInt(localStorage.getItem('lastIncomeTime')) || Date.now();
-
-    // Переменные билетов
     let tickets = parseInt(localStorage.getItem('tickets')) || 200;
 
-    // Для неповторяющихся предсказаний
+    // Энергия сохраняется в localStorage
+    let energy = parseInt(localStorage.getItem('energy')) || 1000; // Инициализируем энергию
+
     let usedPredictions = JSON.parse(localStorage.getItem('usedPredictions')) || [];
     let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
-
-    // Объявляем chamomile в области видимости IIFE
     let chamomile;
 
     function init() {
-        // Получаем элемент ромашки
         chamomile = document.getElementById('chamomile');
-
         if (!chamomile) {
             console.error('Элемент с id="chamomile" не найден в DOM.');
             return;
@@ -38,6 +31,7 @@ const Game = (function() {
         updateElementText('coin-count', coins);
         updateElementText('spin-coin-count', spinCoins);
         updateElementText('ticket-count', tickets);
+        updateElementText('energy-count', energy); // Обновляем отображение энергии
 
         // Обновление уровня и прогресса
         updateElementText('level-number', level);
@@ -52,7 +46,7 @@ const Game = (function() {
         // Добавление вибро-отклика
         chamomile.addEventListener('click', () => {
             if (navigator.vibrate) {
-                navigator.vibrate(50);
+                navigator.vibrate(10);
             }
         });
 
@@ -70,9 +64,6 @@ const Game = (function() {
         // Обновление энергии
         updateEnergyBar();
 
-        // Запуск восполнения энергии
-        setInterval(replenishEnergy, 1000); // Каждую секунду
-
         // Обработчик кнопки "Играть"
         const playButton = document.getElementById('play-button');
         if (playButton) {
@@ -89,26 +80,29 @@ const Game = (function() {
 
     function handleChamomileClick(e) {
         const now = Date.now();
-        if (now - lastClickTime >= 500 && energy > 0 && isFlowerClickable) {
+        if (now - lastClickTime >= 500 && window.energy > 0 && isFlowerClickable) {  // Используем глобальную переменную energy
             lastClickTime = now;
             AudioManager.playClickSound();
             spinCoins += 1;
             updateElementText('spin-coin-count', spinCoins);
             localStorage.setItem('spinCoins', spinCoins);
-            energy -= 10;
-            updateElementText('energy-count', energy);
-
-            // Обновление опыта и уровня
+    
+            // Уменьшаем глобальную переменную energy и сохраняем её
+            window.energy -= 10;
+            if (window.energy < 0) window.energy = 0; // Не даём энергии опуститься ниже 0
+            updateElementText('energy-count', window.energy);
+            localStorage.setItem('energy', window.energy); // Сохраняем энергию в localStorage
+    
+            // Обновляем опыт и уровень
             gainExperience(1);
-
-            // Вращение ромашки
-            rotationAngle += 360 * 1.5 + Math.random() * 360;
+    
+            // Вращаем ромашку
+            rotationAngle += 360 * 4.5 + Math.random() * 360;
             chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
             chamomile.style.transform = `rotate(${rotationAngle}deg)`;
-
+    
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
-            updateEnergyBar();
         }
     }
 
@@ -122,6 +116,7 @@ const Game = (function() {
 
             const prediction = getRandomPrediction();
             updateElementText('prediction-title', prediction);
+            savePrediction(prediction);
 
             const earnedCoins = Math.floor(Math.random() * (550 - 250 + 1)) + 250;
             coins += earnedCoins;
@@ -130,22 +125,29 @@ const Game = (function() {
             startCountdown(6 * 60 * 60);
             createConfetti();
 
-            // Добавляем опыт
             gainExperience(50);
 
-            // Добавляем предсказание в историю
             const date = new Date().toLocaleString();
             predictionHistory.unshift({ prediction, date });
             if (predictionHistory.length > 10) predictionHistory.pop();
             localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
             updatePredictionHistory();
 
-            // Выдача билетов за предсказание
-            const ticketAmount = Math.floor(Math.random() * 5) + 1; // 1-5
+            const ticketAmount = Math.floor(Math.random() * 5) + 1;
             tickets += ticketAmount;
             updateElementText('ticket-count', tickets);
             localStorage.setItem('tickets', tickets);
             showTicketNotification(ticketAmount);
+        }
+    }
+
+    function updateEnergyBar() {
+        if (energy > 0) {
+            chamomile.style.filter = "none";
+            isFlowerClickable = true;
+        } else {
+            chamomile.style.filter = "grayscale(100%)";
+            isFlowerClickable = false;
         }
     }
 
@@ -249,24 +251,6 @@ const Game = (function() {
         spark.textContent = '+1';
         document.body.appendChild(spark);
         setTimeout(() => spark.remove(), 1000);
-    }
-
-    function updateEnergyBar() {
-        if (energy > 0) {
-            chamomile.style.filter = "none";
-            isFlowerClickable = true;
-        } else {
-            chamomile.style.filter = "grayscale(100%)";
-            isFlowerClickable = false;
-        }
-    }
-
-    function replenishEnergy() {
-        if (energy < 1000) {
-            energy += 1; // Восполнение по 1 единице каждую секунду
-            updateElementText('energy-count', energy);
-            updateEnergyBar();
-        }
     }
 
     function startCountdown(seconds) {

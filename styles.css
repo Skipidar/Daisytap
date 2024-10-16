@@ -236,6 +236,8 @@ body {
     border: none;
     border-radius: 10px;
     padding: 1vh 0;
+    display: block;  /* Кнопка должна быть видимой */
+    pointer-events: auto;  /* Убедись, что события кликов включены */
     cursor: pointer;
     font-size: 2vh;
     transition: background-color 0.3s;
@@ -310,12 +312,61 @@ body {
     100% { transform: scale(1); }
 }
 
+/* Кнопка "До следующего предсказания" */
 #next-prediction-timer {
     font-size: 2vh;
     color: #FFD700;
     text-align: center;
     margin-top: 1vh;
     margin-bottom: 2vh;
+    padding: 0.5vh;
+    background-color: rgba(255, 255, 255, 0.2); /* Полупрозрачная подложка */
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* Модальное окно истории предсказаний */
+#predictions-history {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 2vh;
+    border-radius: 10px;
+}
+
+.history-item p {
+    color: #ffffff; /* Текст предсказания белый */
+}
+
+.history-date {
+    color: #FFD700; /* Дата предсказания жёлтая */
+}
+
+/* Кнопки в истории предсказаний */
+.share-btn {
+    background-color: #32CD32; /* Зелёный цвет для кнопки "Поделиться с друзьями" */
+    color: white;
+    padding: 1vh 2vw;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.share-btn:hover {
+    background-color: #28a428;
+}
+
+.publish-btn {
+    background-color: #1E90FF; /* Синий цвет для кнопки "Опубликовать историю" */
+    color: white;
+    padding: 1vh 2vw;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.publish-btn:hover {
+    background-color: #1A7CFF;
 }
 
 /* Футер */

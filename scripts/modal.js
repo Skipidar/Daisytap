@@ -26,21 +26,27 @@ const Modal = (function() {
         setupGiftModal();
 
         // Обработчик кнопки "Играть"
-        document.getElementById('play-button').addEventListener('click', function() {
-            document.querySelector('.game-container').style.display = 'none';
-            document.getElementById('protect-flower-game').style.display = 'flex';
-        });
+        const playButton = document.getElementById('play-button');
+        if (playButton) {
+            playButton.addEventListener('click', function() {
+                document.querySelector('.game-container').style.display = 'none';
+                document.getElementById('protect-flower-game').style.display = 'flex';
+            });
+        }
     }
 
     function open(modalId) {
         const modal = document.getElementById(modalId);
-        modal.style.display = 'flex';
+        if (modal) {
+            modal.style.display = 'flex';
+        }
 
         // Уменьшаем z-index кнопок смены языка и звука
         adjustLanguageAndSoundButtonsZIndex(true);
 
+        // Если открывается модальное окно предсказаний, обновляем историю
         if (modalId === 'prediction-modal') {
-            updatePredictionHistory();
+            updatePredictionHistory();  // Вызов функции обновления истории предсказаний
         }
     }
 
@@ -64,52 +70,67 @@ const Modal = (function() {
 
     function setupPredictionModal() {
         const predictionModal = document.getElementById('prediction-modal');
-        const shareBtn = predictionModal.querySelector('.share-btn');
-        const publishBtn = predictionModal.querySelector('.publish-btn');
-        const ticketNotification = document.getElementById('ticket-notification');
+        if (predictionModal) {
+            const shareBtn = predictionModal.querySelector('.share-btn');
+            const publishBtn = predictionModal.querySelector('.publish-btn');
+            
+            if (shareBtn) {
+                shareBtn.addEventListener('click', () => {
+                    alert('Поделиться с друзьями: Функция в разработке.');
+                });
+            }
 
-        shareBtn.addEventListener('click', () => {
-            alert('Поделиться с друзьями: Функция в разработке.');
-        });
-
-        publishBtn.addEventListener('click', () => {
-            alert('Опубликовать историю: Функция в разработке.');
-        });
+            if (publishBtn) {
+                publishBtn.addEventListener('click', () => {
+                    alert('Опубликовать историю: Функция в разработке.');
+                });
+            }
+        }
     }
 
     function setupAirdropModal() {
         const airdropBtn = document.getElementById('airdrop-btn');
-        airdropBtn.addEventListener('click', () => {
-            open('airdrop-modal');
-        });
+        if (airdropBtn) {
+            airdropBtn.addEventListener('click', () => {
+                open('airdrop-modal');
+            });
+        }
     }
 
     function setupRatingModal() {
         const ratingBtn = document.getElementById('rating-btn');
-        ratingBtn.addEventListener('click', () => {
-            open('rating-modal');
-        });
+        if (ratingBtn) {
+            ratingBtn.addEventListener('click', () => {
+                open('rating-modal');
+            });
+        }
     }
 
     function setupShopModal() {
         const shopBtn = document.getElementById('shop-btn');
-        shopBtn.addEventListener('click', () => {
-            open('shop-modal');
-        });
+        if (shopBtn) {
+            shopBtn.addEventListener('click', () => {
+                open('shop-modal');
+            });
+        }
     }
 
     function setupFriendsModal() {
         const friendsBtn = document.getElementById('friends-btn');
-        friendsBtn.addEventListener('click', () => {
-            open('friends-modal');
-        });
+        if (friendsBtn) {
+            friendsBtn.addEventListener('click', () => {
+                open('friends-modal');
+            });
+        }
     }
 
     function setupTasksModal() {
         const tasksBtn = document.getElementById('tasks-btn');
-        tasksBtn.addEventListener('click', () => {
-            open('tasks-modal');
-        });
+        if (tasksBtn) {
+            tasksBtn.addEventListener('click', () => {
+                open('tasks-modal');
+            });
+        }
     }
 
     function setupGiftModal() {
@@ -124,21 +145,32 @@ const Modal = (function() {
     function updatePredictionHistory() {
         const predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
         const historyContainer = document.getElementById('predictions-history');
-        historyContainer.innerHTML = '<h3 data-localize="prediction_history">История предсказаний:</h3>';
-        predictionHistory.forEach(item => {
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            historyItem.innerHTML = `
-                <p>${item.prediction}</p>
-                <p class="history-date">${item.date}</p>
-            `;
-            historyContainer.appendChild(historyItem);
-        });
+        if (historyContainer) {
+            historyContainer.innerHTML = '<h3>История предсказаний:</h3>';
+            predictionHistory.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <p>${item.prediction}</p>
+                    <p class="history-date">${item.date}</p>
+                `;
+                historyContainer.appendChild(historyItem);
+            });
+        }
     }
 
+    function savePrediction(prediction) {
+        let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
+        let date = new Date().toLocaleDateString();  // Получаем текущую дату
+        predictionHistory.push({ prediction: prediction, date: date });  // Добавляем предсказание и дату в историю
+        localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));  // Сохраняем историю в localStorage
+    }
+    
     return {
         init,
-        open
+        open,
+        updatePredictionHistory,  // Экспортируем функцию обновления истории
+        savePrediction  // Экспортируем функцию сохранения предсказания
     };
 })();
 

@@ -11,7 +11,7 @@
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
- <!--   Анимация загрузки -->
+    <!-- Анимация загрузки -->
     <div id="loading-screen">
         <div class="loading-text">
             <span>D</span><span>a</span><span>i</span><span>s</span><span>y</span>
@@ -53,15 +53,15 @@
 
         <!-- Счётчики -->
         <div class="counters">
+        <!-- $Daisy -->
+            <div id="coin-counter" class="counter">
+                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
+                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
+            </div>
             <!-- Coin -->
             <div id="spin-coin-counter" class="counter">
                 <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
                 <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
-            </div>
-            <!-- $Daisy -->
-            <div id="coin-counter" class="counter">
-                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
-                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
             </div>
             <!-- Tickets -->
             <div id="ticket-counter" class="counter">
@@ -74,7 +74,7 @@
                 <span id="energy-count">1000</span> Энергия
             </div>
             <!-- Бустер -->
-            <button id="booster">Бустер 6/6 (01:00)</button>
+            <button id="booster">Бустер 6/6 (01:00)</button> <span id="booster-timer"></span>
         </div>
 
         <!-- Ромашка -->
@@ -83,7 +83,7 @@
         </div>
 
         <!-- Таймер до следующего предсказания -->
-        <div id="next-prediction-timer">
+        <div id="next-prediction-timer" style="cursor: pointer; background-color: rgba(255, 255, 255, 0.2); padding: 5px; border-radius: 10px;">
             <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer">06:00:00</span>
         </div>
 
@@ -103,8 +103,8 @@
                 <h2 data-localize="your_prediction">Ваше предсказание на сегодня:</h2>
                 <p id="prediction-title"></p>
                 <div class="prediction-buttons">
-                    <button class="share-btn" data-localize="share_with_friends">Поделиться с друзьями</button>
-                    <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
+                    <button class="share-btn" style="background-color: green; color: white;" data-localize="share_with_friends">Поделиться с друзьями</button>
+                    <button class="publish-btn" style="background-color: blue; color: white;" data-localize="publish_story">Опубликовать историю</button>
                 </div>
                 <div id="ticket-notification" class="ticket-notification" style="display: none;">
                     <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
@@ -210,20 +210,25 @@
             <button id="start-mini-game" data-localize="start">Старт</button>
         </div>
         
-            <!-- Подключаем скрипты -->
-            <script>
-                // Упрощенный скрипт для запуска мини-игры и отображения контейнера
-                document.getElementById('play-button').addEventListener('click', function() {
-                    document.querySelector('.game-container').style.display = 'block'; // Показываем контейнер с игрой
-                });
-        
-                document.getElementById('start-mini-game').addEventListener('click', function() {
-                    const canvas = document.getElementById('game-canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = 500;
-                    canvas.height = 500;
-                });
-            </script>
+        <!-- Подключаем скрипты -->
+        <script>
+            // Упрощенный скрипт для открытия истории предсказаний
+            document.getElementById('next-prediction-timer').addEventListener('click', function() {
+                document.getElementById('prediction-modal').style.display = 'flex';
+            });
+
+            // Упрощенный скрипт для запуска мини-игры
+            document.getElementById('play-button').addEventListener('click', function() {
+                document.querySelector('.game-container').style.display = 'block'; // Показываем контейнер с игрой
+            });
+
+            document.getElementById('start-mini-game').addEventListener('click', function() {
+                const canvas = document.getElementById('game-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 500;
+                canvas.height = 500;
+            });
+        </script>
 
     <!-- Подключаем скрипты -->
     <script src="scripts/audio.js"></script>
