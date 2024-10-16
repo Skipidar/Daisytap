@@ -101,7 +101,7 @@ body {
 .game-container {
     width: 100%;
     height: 100vh;
-    background: radial-gradient(circle at center, hsl(0, 0%, 0%), #4B0082); /* Градиент от черного к фиолетовому */
+    background: radial-gradient(circle at center, hsl(270, 53%, 7%), #6f18a4); /* Градиент от черного к фиолетовому */
     position: flex;
     flex-direction: column;
     align-items: center;
@@ -169,6 +169,7 @@ body {
     width: 90%;
     max-width: 400px;
     color: #FFD700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,1);
     font-size: 2vh;
     margin-top: 1vh;
 }
@@ -227,12 +228,17 @@ body {
     justify-content: center;
     font-size: 2vh;
 }
+.counter span {
+    margin-right: 0.3vw; /* Добавляет пробел между цифрами и буквами */
+}
 
 /* Бустер */
 #booster {
     grid-column: 1 / -1;
-    background-color: #FF4500;
-    color: white;
+    background-color: rgba(138, 43, 226, 0.8);
+    box-shadow: 0px 2px 2px rgba(255, 255, 0, 0.3);
+    color: #FFD700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,1);
     border: none;
     border-radius: 10px;
     padding: 1vh 0;
@@ -245,12 +251,12 @@ body {
 }
 
 #booster:hover {
-    background-color: #e03e00;
+    background-color: #28a428;
 }
 
 .coin-icon, .ticket-icon, .energy-icon {
-    width: 3vh;
-    height: 3vh;
+    width: 4vh;
+    height: 4vh;
     margin-right: 1vw;
 }
 
@@ -289,12 +295,13 @@ body {
 /* Кнопка "Играть" */
 #play-button {
     width: 90%;
-    max-width: 400px;
+    max-width: 100px;
     padding: 1.5vh 2vw;
     font-size: 2.5vh;
     margin-top: 2vh;
-    background-color: #32CD32;
-    color: white;
+    background-color: #28a428;
+    color: rgb(255, 230, 5);
+    text-shadow: 2px 2px 4px rgba(0,0,0,2);
     border: none;
     border-radius: 10px;
     cursor: pointer;
@@ -314,20 +321,21 @@ body {
 
 /* Кнопка "До следующего предсказания" */
 #next-prediction-timer {
-    font-size: 2vh;
+    font-size: 1.7vh;
     color: #FFD700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     text-align: center;
     margin-top: 1vh;
     margin-bottom: 2vh;
     padding: 0.5vh;
-    background-color: rgba(255, 255, 255, 0.2); /* Полупрозрачная подложка */
+    background-color: rgba(222, 24, 24, 0.022); /* Полупрозрачная подложка */
     border-radius: 10px;
     cursor: pointer;
 }
 
 /* Модальное окно истории предсказаний */
 #predictions-history {
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.317);
     padding: 2vh;
     border-radius: 10px;
 }
@@ -344,8 +352,9 @@ body {
 .share-btn {
     background-color: #32CD32; /* Зелёный цвет для кнопки "Поделиться с друзьями" */
     color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,1);
     padding: 1vh 2vw;
-    border: none;
+    border: 1px solid rgba(86, 78, 0, 0.165);;
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
@@ -356,17 +365,18 @@ body {
 }
 
 .publish-btn {
-    background-color: #1E90FF; /* Синий цвет для кнопки "Опубликовать историю" */
+    background-color: rgba(138, 43, 226, 0.8); /* Синий цвет для кнопки "Опубликовать историю" */
     color: white;
+    text-shadow: 2px 2px 4px rgba(0,0,0,1);
     padding: 1vh 2vw;
-    border: none;
+    border: 1px solid rgba(86, 78, 0, 0.165);;
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .publish-btn:hover {
-    background-color: #1A7CFF;
+    background-color: rgba(106, 33, 175, 0.8);
 }
 
 /* Футер */
