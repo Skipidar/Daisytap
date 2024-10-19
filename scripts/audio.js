@@ -141,7 +141,7 @@ const AudioManager = (function() {
     }
 
     function playBackgroundMusic() {
-        if (soundEnabled) {
+        if (soundEnabled && backgroundMusic.paused) {
             backgroundMusic.play();
         }
     }

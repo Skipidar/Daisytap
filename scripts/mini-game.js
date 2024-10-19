@@ -1,6 +1,5 @@
-// scripts/mini-game.js
 const MiniGame = (function () {
-    let gameTime = 60; // 1 минута для уровня
+    let gameTime = 10; // 10 секунд для тестирования
     let bees = [];
     let hearts = [];
     let coins = [];
@@ -12,6 +11,8 @@ const MiniGame = (function () {
     let gameCoins = 0; // Это Coin
     let daisyCoins = 0; // Это $Daisy
     let currentLevel = 1;
+    let isGamePaused = false; // Новый флаг для паузы
+    let flower; // Переменная для цветка
     let isGameRunning = false;
     let ctx;
     let canvas;
@@ -28,14 +29,13 @@ const MiniGame = (function () {
             console.error("Элемент game-coin-count не найден.");
         }
     }
-    
-    // Функция для начала игры
-    function startGame() {
-        spinCoins += 10; // Увеличиваем количество монет на 10
-        updateGameCoinCount(spinCoins); // Обновляем отображение количества монет
+
+    function clearGameObjects() {
+        bees = [];
+        hearts = [];
+        coins = [];
     }
-    
-    document.getElementById('start-mini-game').addEventListener('click', startGame);
+
     function init() {
         const startButton = document.getElementById('start-mini-game');
         startButton.addEventListener('click', startGame);
@@ -49,32 +49,100 @@ const MiniGame = (function () {
             endGame();
             document.querySelector('.game-container').style.display = 'flex';
             document.getElementById('protect-flower-game').style.display = 'none';
+    
+            // Показать кнопку "Старт" при возврате в игру
+            const startButton = document.getElementById('start-mini-game');
+            startButton.style.display = 'block';
         } else {
             navigator.app.exitApp();
         }
     }
+    const startButton = document.getElementById('start-mini-game');
 
+    // Обновление текста кнопки с отображением количества билетов
+    function updateStartButton() {
+        startButton.innerHTML = `
+            <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon"> 
+            Старт (Билеты: ${tickets})
+        `;
+    }
+    
+    // Вызов функции для обновления кнопки
+    updateStartButton();
     function startGame() {
-        if (isGameRunning) return;
-        if (tickets <= 0) {
-            alert("Недостаточно билетов!");
-            return;
+        if (isGameRunning) return; // Предотвращаем повторный запуск игры, если она уже запущена
+    
+        if (currentLevel === 1) {
+            // Билет списывается только на первом уровне
+            if (tickets <= 0) {
+                alert("Недостаточно билетов!");
+                return;
+            }
+            
+            tickets -= 1;
+            updateTicketCount(); // Обновляем отображение количества билетов
+            localStorage.setItem('tickets', tickets); // Сохраняем новое количество билетов
         }
-
-        tickets -= 1;
-        updateTicketCount();
-        localStorage.setItem('tickets', tickets);
-
+    
         isGameRunning = true;
         isCountdownDone = false;
-
+    
+        // Сбрасываем уровень игры до первого
+        currentLevel = 1;
+    
+        // Показываем холст и скрываем кнопку старта
         const gameScreen = document.getElementById('protect-flower-game');
+        const startButton = document.getElementById('start-mini-game');
+        startButton.style.display = 'none'; // Скрываем кнопку "Старт"
+        gameScreen.style.display = 'flex'; // Показываем экран игры
+    
         canvas = document.getElementById('game-canvas');
         ctx = canvas.getContext('2d');
         canvas.width = gameScreen.clientWidth;
         canvas.height = gameScreen.clientHeight;
+    
+        // Сбрасываем все игровые переменные
+        resetGameVariables();
+    
+        // Сброс таймеров и объектов
+        clearGameObjects(); // Очищаем пчёл, сердца и монеты
+    
+        startCountdown(() => {
+            isCountdownDone = true;
+            startGameLoop(); // Начинаем основной игровой цикл
+        });
+    }
 
-        const flower = {
+    function startGameLoop() {
+        function gameLoop() {
+            if (!isCountdownDone || isGamePaused) return; // Прерываем цикл, если игра на паузе
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
+    
+            // Обновляем объекты игры (цветок, пчелы, сердца, монеты)
+            flower.draw();
+            updateBees(ctx, flower);
+            updateHearts();
+            updateCoins();
+    
+            // Запускаем следующий кадр
+            requestAnimationFrame(gameLoop);
+        }
+    
+        gameLoop(); // Запуск основного игрового цикла
+    }
+    
+
+    function resetGameVariables() {
+        lives = 3; // Сбрасываем жизни
+        bees = [];
+        hearts = [];
+        coins = [];
+        gameTime = 10; // Время для 1-го уровня
+        gameCoins = 0;
+        daisyCoins = 0;
+        updateGameCoinCount(); // Обновляем отображение количества монет
+    
+        flower = { // Присваиваем объект flower глобальной переменной
             x: canvas.width / 2,
             y: canvas.height / 2,
             width: 100,
@@ -94,43 +162,45 @@ const MiniGame = (function () {
         flower.image.onload = () => {
             flower.draw();
         };
-
+    
+        isGamePaused = false; // Сбрасываем флаг паузы
+    
         lives = 3;
         updateLives();
-
+    
         bees = [];
         hearts = [];
         coins = [];
-        gameTime = 60;
+        gameTime = 10; // Время для 1-го уровня (для теста)
         gameCoins = 0;
         daisyCoins = 0;
         updateGameCoinCount();
-
+    
         if (currentLevel === 1) {
             AudioManager.playOneLevelMusic();
         } else {
             AudioManager.playElectricChaosMusic();
         }
-
+    
         document.getElementById('start-mini-game').style.display = 'none';
         canvas.addEventListener('click', handleCanvasClick);
-
+    
         startCountdown(() => {
             isCountdownDone = true;
             const spawnInterval = currentLevel === 1 ? 1500 : 1000;
             beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
-
+    
             heartInterval = setInterval(spawnHeart, 20000);
             coinInterval = setInterval(spawnCoin, currentLevel === 1 ? 25000 : 15000);
-
+    
             gameTimerInterval = setInterval(() => {
                 gameTime--;
                 document.getElementById('game-timer').textContent = formatTime(gameTime);
-
+    
                 if (gameTime <= 0) {
                     if (currentLevel === 1) {
                         currentLevel = 2;
-                        gameTime = 60;
+                        gameTime = 10; // Время для 2-го уровня (для теста)
                         clearInterval(beeInterval);
                         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
                         showLevelCompleteModal();
@@ -318,6 +388,10 @@ const MiniGame = (function () {
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
                 }
+
+                // Добавляем анимацию взрыва и монетки
+                createExplosionAnimation(bee.x, bee.y);
+                flyCoinToCounter(bee.x, bee.y);
             }
         });
 
@@ -358,6 +432,43 @@ const MiniGame = (function () {
         });
     }
 
+    function createExplosionAnimation(x, y) {
+        const explosion = document.createElement('div');
+        explosion.classList.add('explosion');
+        explosion.style.left = `${x}px`;
+        explosion.style.top = `${y}px`;
+        document.body.appendChild(explosion);
+
+        setTimeout(() => {
+            explosion.remove();
+        }, 500); // Время анимации взрыва
+    }
+
+    function flyCoinToCounter(x, y) {
+        const coin = document.createElement('img');
+        coin.src = 'assets/images/goldcoin.webp';
+        coin.style.position = 'absolute';
+        coin.style.left = `${x}px`;
+        coin.style.top = `${y}px`;
+        document.body.appendChild(coin);
+
+        const target = document.getElementById('game-coin-count').getBoundingClientRect();
+        const targetX = target.left + window.pageXOffset;
+        const targetY = target.top + window.pageYOffset;
+
+        // Анимация полёта монетки
+        coin.animate([
+            { transform: `translate(${targetX - x}px, ${targetY - y}px)` }
+        ], {
+            duration: 1000,
+            easing: 'ease-in-out'
+        });
+
+        setTimeout(() => {
+            coin.remove();
+        }, 1000); // Время полёта монеты
+    }
+
     function updateBees(ctx, flower) {
         for (let i = bees.length - 1; i >= 0; i--) {
             const bee = bees[i];
@@ -385,7 +496,7 @@ const MiniGame = (function () {
                 bee.x < -bee.width ||
                 bee.x > canvas.width + bee.width ||
                 bee.y < -bee.height ||
-                bee.y > canvas.height + bee.height
+                bee.y > canvas.height
             ) {
                 bees.splice(i, 1);
             }
@@ -428,23 +539,23 @@ const MiniGame = (function () {
         // Обновляем счетчики в мини-игре
         document.getElementById('game-coin-count').textContent = gameCoins;
         document.getElementById('game-daisy-count').textContent = daisyCoins;
-        
+
         // Обновляем счетчики на главном экране
         let totalSpinCoins = parseInt(localStorage.getItem('spinCoins')) || 0;
         let totalDaisyCoins = parseInt(localStorage.getItem('coins')) || 0;
-    
+
         document.getElementById('spin-coin-count').textContent = totalSpinCoins + gameCoins; // Coin
         document.getElementById('coin-count').textContent = totalDaisyCoins + daisyCoins; // $Daisy
-        
+
         // Сохраняем обновленные значения в localStorage
         localStorage.setItem('spinCoins', totalSpinCoins + gameCoins);
         localStorage.setItem('coins', totalDaisyCoins + daisyCoins);
     }
 
-    function updateTicketCount() {
-        document.getElementById('ticket-count').textContent = tickets;
+function updateTicketCount() {
+    document.getElementById('ticket-count').textContent = tickets;
     }
-    
+
     function formatTime(seconds) {
         const m = Math.floor(seconds / 60)
             .toString()
@@ -452,7 +563,7 @@ const MiniGame = (function () {
         const s = (seconds % 60).toString().padStart(2, '0');
         return `${m}:${s}`;
     }
-    
+
     function showLevelCompleteModal() {
         // Останавливаем игровой процесс
         isGamePaused = true;
@@ -460,6 +571,8 @@ const MiniGame = (function () {
         clearInterval(coinInterval);
         clearInterval(heartInterval);
         clearInterval(gameTimerInterval);
+    
+        clearGameObjects(); // Скрываем все объекты
     
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
@@ -473,9 +586,13 @@ const MiniGame = (function () {
         resultModal.style.zIndex = '1000';
         resultModal.innerHTML = `
             <h2>Уровень завершен!</h2>
-            <p>Вы можете забрать монеты или продолжить на следующий уровень.</p>
-            <button class="continue-btn" style="margin-right: 10px;">Продолжить на 2-й уровень</button>
-            <button class="end-game-btn">Забрать монеты и закончить</button>
+            <p>Вы собрали:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
+                <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
+            </ul>
+            <button class="continue-btn" style="margin-right: 10px; background-color: yellow;">Перейти на 2-й уровень</button>
+            <button class="end-game-btn" style="background-color: red;">Забрать монеты и закончить</button>
         `;
     
         const gameScreen = document.getElementById('protect-flower-game');
@@ -484,45 +601,51 @@ const MiniGame = (function () {
         const continueButton = resultModal.querySelector('.continue-btn');
         const endGameButton = resultModal.querySelector('.end-game-btn');
     
-        // Переход на второй уровень
-        continueButton.addEventListener('click', () => {
-            resultModal.remove();
-            currentLevel = 2;
-            gameTime = 60; // Время для 2-го уровня
-            AudioManager.playElectricChaosMusic(); // Музыка для 2-го уровня
-            startCountdown(() => {
-                isCountdownDone = true;
-                beeInterval = setInterval(() => spawnBee(currentLevel), 1000); // Спавн пчел на 2 уровне
-                heartInterval = setInterval(spawnHeart, 20000); // Спавн сердец каждые 20 секунд
-                coinInterval = setInterval(spawnCoin, 15000); // Спавн монет $Daisy каждые 15 секунд
-                gameTimerInterval = setInterval(() => {
-                    gameTime--;
-                    document.getElementById('game-timer').textContent = formatTime(gameTime);
+        // Проверяем, если кнопка существует перед добавлением обработчика событий
+        if (continueButton) {
+            continueButton.addEventListener('click', () => {
+                resultModal.remove();
+                currentLevel = 2;
+                gameTime = 10; // Время для 2-го уровня
+                AudioManager.playElectricChaosMusic(); // Музыка для 2-го уровня
+                startCountdown(() => {
+                    isCountdownDone = true;
+                    beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+                    heartInterval = setInterval(spawnHeart, 20000);
+                    coinInterval = setInterval(spawnCoin, 15000);
+                    gameTimerInterval = setInterval(() => {
+                        gameTime--;
+                        document.getElementById('game-timer').textContent = formatTime(gameTime);
     
-                    if (gameTime <= 0) {
-                        endLevel(2); // Завершение второго уровня
-                    }
-                }, 1000);
+                        if (gameTime <= 0) {
+                            endLevel(2); // Завершение второго уровня
+                        }
+                    }, 1000);
+                });
             });
-        });
+        }
     
-        // Завершение игры
-        endGameButton.addEventListener('click', () => {
-            resultModal.remove();
-            endGame(); // Завершаем игру и показываем результаты
-        });
+        if (endGameButton) {
+            endGameButton.addEventListener('click', () => {
+                resultModal.remove();
+                endGame();
+            });
+        }
     }
     
+
     function endLevel(level) {
         // Останавливаем игровой цикл
         isGamePaused = true; // Ставим игру на паузу
-        
+
         // Очищаем интервалы
         clearInterval(beeInterval);
         clearInterval(coinInterval);
         clearInterval(heartInterval);
         clearInterval(gameTimerInterval);
-        
+
+        clearGameObjects(); // Скрываем все объекты
+
         // Создаём модальное окно для завершения уровня
         const resultModal = document.createElement('div');
         resultModal.style.position = 'fixed';
@@ -534,41 +657,63 @@ const MiniGame = (function () {
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
         resultModal.style.zIndex = '1000';
-        
+
         if (level === 1 && lives > 0) {
             // Если прошли первый уровень, показываем модальное окно с предложением перейти на следующий уровень
             resultModal.innerHTML = `
-                <h2>Уровень 1 завершен!</h2>
-                <p>Хотите продолжить на втором уровне?</p>
-                <button class="next-level-btn">Перейти на 2 уровень</button>
-                <button class="home-btn">Забрать монеты и закончить</button>
-            `;
+            <h2>Уровень 1 завершен!</h2>
+            <p>Вы собрали:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
+                <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
+            </ul>
+            <button class="next-level-btn" style="background-color: yellow;">Перейти на 2 уровень</button>
+            <button class="home-btn" style="background-color: red;">Забрать монеты и закончить</button>
+        `;
         } else if (level === 2 && lives > 0) {
             // Если прошли второй уровень, показываем поздравление
             resultModal.innerHTML = `
-                <h2>Поздравляем, вы спасли Ромашку!</h2>
-                <p>Ваша награда: ${gameCoins} Coin и ${daisyCoins} $Daisy</p>
-                <p>Бонус: +1000 Coin и +100 $Daisy</p>
-                <button class="replay-btn">Повторить 1 уровень</button>
-                <button class="home-btn">Домой</button>
-            `;
+            <h2>Поздравляем, вы спасли Ромашку!</h2>
+            <p>Вы собрали:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
+                <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
+            </ul>
+            <p>Бонус: +1000 Coin и +100 $Daisy</p>
+            <button class="replay-btn" style="background-color: green;">Играть снова (1 уровень)</button>
+            <button class="home-btn" style="background-color: red;">Домой</button>
+        `;
         } else {
             // Если игрок проиграл, предлагаем начать с первого уровня
             resultModal.innerHTML = `
-                <h2>Игра окончена!</h2>
-                <p>Вы потеряли все жизни. Начать заново?</p>
-                <button class="replay-btn">Повторить 1 уровень</button>
-                <button class="home-btn">Домой</button>
-            `;
+            <h2>Игра окончена!</h2>
+            <p>Вы собрали:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
+                <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
+            </ul>
+            <p>Вы потеряли все жизни. Начать заново?</p>
+            <button class="replay-btn" style="background-color: green;">Играть снова (1 уровень)</button>
+            <button class="home-btn" style="background-color: red;">Домой</button>
+        `;
         }
-    
+
         document.body.appendChild(resultModal);
-    
+
         // Кнопка для перехода на следующий уровень
         const nextLevelButton = resultModal.querySelector('.next-level-btn');
         const homeButton = resultModal.querySelector('.home-btn');
         const replayButton = resultModal.querySelector('.replay-btn');
-    
+        const replayButtons = document.querySelectorAll('.replay-btn');
+
+// Обновление текста для каждой кнопки "Играть снова"
+replayButtons.forEach(button => {
+    button.innerHTML = `
+    <p>Играть</p><img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon"> 
+    (${tickets})
+`;
+});
+
         if (nextLevelButton) {
             nextLevelButton.addEventListener('click', () => {
                 resultModal.remove();
@@ -577,7 +722,7 @@ const MiniGame = (function () {
                 startGame(); // Запускаем 2 уровень
             });
         }
-    
+
         // Кнопка для завершения игры и возврата на главный экран
         if (homeButton) {
             homeButton.addEventListener('click', () => {
@@ -585,46 +730,71 @@ const MiniGame = (function () {
                 endGame(); // Завершаем игру и возвращаемся на главный экран
             });
         }
-    
-        // Кнопка для перезапуска игры с 1-го уровня
+
         if (replayButton) {
             replayButton.addEventListener('click', () => {
-                resultModal.remove();
-                currentLevel = 1; // Возвращаемся на первый уровень
-                startGame(); // Начинаем игру заново
+                resultModal.remove(); // Удаляем модальное окно
+                currentLevel = 1; // Сбрасываем уровень на первый
+                gameCoins = 0; // Сбрасываем количество монет
+                daisyCoins = 0; // Сбрасываем $Daisy
+                clearInterval(beeInterval);
+                clearInterval(coinInterval);
+                clearInterval(heartInterval);
+                clearInterval(gameTimerInterval);
+                clearGameObjects(); // Очищаем все объекты
+        
+                // Сбрасываем флаг паузы и перезапускаем игру
+                isGamePaused = false;
+                isGameRunning = false; // Сбрасываем флаг, что игра закончена
+                startGame(); // Запускаем игру заново
             });
         }
     }
-    
+
     function endGame() {
         // Останавливаем игровой цикл и очищаем все интервалы
         isGamePaused = true;
-    
+
         clearInterval(beeInterval);
         clearInterval(coinInterval);
         clearInterval(heartInterval);
         clearInterval(gameTimerInterval);
-    
+
+        clearGameObjects(); // Скрываем все объекты
+            // Показать кнопку "Старт" снова для перезапуска игры
+    const startButton = document.getElementById('start-mini-game');
+    startButton.style.display = 'block'; // Показываем кнопку "Старт" после завершения игры
+
+    isGameRunning = false;
+
+        
         // Обновляем количество монет на главном экране
         updateGameCoinCount();
         document.querySelector('.game-container').style.display = 'flex';
         document.getElementById('protect-flower-game').style.display = 'none';
+
+    // Остановить музыку мини-игры
+    AudioManager.pauseOneLevelMusic();
+    AudioManager.pauseElectricChaosMusic();
+
+    // Запустить фоновую музыку главного меню
+    AudioManager.playBackgroundMusic();
     }
-    
+
     // Проверка на проигрыш
     function isGameOver() {
         if (lives <= 0) {
             endLevel(currentLevel); // Заканчиваем уровень, если жизни кончились
         }
     }
-    
+
     // Добавляем вызов проверки на проигрыш в местах, где игрок теряет жизни
     function updateBees(ctx, flower) {
         for (let i = bees.length - 1; i >= 0; i--) {
             const bee = bees[i];
             bee.move(flower);
             bee.draw();
-    
+
             if (isColliding(bee, flower)) {
                 lives--;
                 updateLives();
@@ -632,21 +802,21 @@ const MiniGame = (function () {
                 AudioManager.playUdarSound();
                 shakeScreen();
                 flashFlower();
-    
+
                 if (navigator.vibrate) {
                     navigator.vibrate(200);
                 }
-    
+
                 isGameOver(); // Проверяем, проиграл ли игрок после удара
             }
-    
-            if (bee.x < -bee.width || bee.x > canvas.width + bee.width || bee.y < -bee.height || bee.y > canvas.height + bee.height) {
+
+            if (bee.x < -bee.width || bee.x > canvas.width + bee.width || bee.y < -bee.height || bee.y > canvas.height) {
                 bees.splice(i, 1);
             }
         }
     }
-    
+
     return {
         init,
     };
-    })();
+})();

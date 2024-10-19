@@ -14,6 +14,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обновление интерфейса при загрузке
     document.getElementById('energy-count').textContent = window.energy;
 
+    document.getElementById('play-button').addEventListener('click', function () {
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.style.display = 'flex';
+        
+        // Показать кнопку "Старт" для начала игры
+        const startButton = document.getElementById('start-mini-game');
+        startButton.style.display = 'block';
+        
+        // Скрыть главное меню
+        document.querySelector('.game-container').style.display = 'none';
+    });
+    
+
     // Запуск основной логики
     initMain();
 });
