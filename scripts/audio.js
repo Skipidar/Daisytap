@@ -24,7 +24,7 @@ const AudioManager = (function() {
         heartPlusSound = new Audio('assets/sounds/heartplus.mp3');
         moneySound = new Audio('assets/sounds/moneyi.mp3');
         levelCompleteSound = new Audio('assets/sounds/1levelcomplete.mp3');
-        beeKillSound = new Audio('assets/sounds/beekill.mp3');
+        beeKillSound = new Audio('assets/sounds/BeeKill.wav');
 
         // Установка громкости
         backgroundMusic.volume = 0.25;

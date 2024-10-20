@@ -171,7 +171,7 @@ const MiniGame = (function () {
         bees = [];
         hearts = [];
         coins = [];
-        gameTime = 10; // Время для 1-го уровня (для теста)
+        gameTime = 30; // Время для 1-го уровня (для теста)
         gameCoins = 0;
         daisyCoins = 0;
         updateGameCoinCount();
@@ -200,7 +200,7 @@ const MiniGame = (function () {
                 if (gameTime <= 0) {
                     if (currentLevel === 1) {
                         currentLevel = 2;
-                        gameTime = 10; // Время для 2-го уровня (для теста)
+                        gameTime = 30; // Время для 2-го уровня (для теста)
                         clearInterval(beeInterval);
                         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
                         showLevelCompleteModal();
@@ -260,9 +260,9 @@ const MiniGame = (function () {
 
     function spawnBee(level) {
         const size = Math.floor(Math.random() * 60) + 40;
-        const speed = level === 1 ? 2 : 1.3;
+        const speed = level === 1 ? 1 : 1;
         let x, y;
-
+    
         const side = Math.floor(Math.random() * 4);
         switch (side) {
             case 0:
@@ -282,7 +282,7 @@ const MiniGame = (function () {
                 y = Math.random() * canvas.height;
                 break;
         }
-
+    
         const bee = {
             x: x,
             y: y,
@@ -291,20 +291,28 @@ const MiniGame = (function () {
             speed: speed,
             image: new Image(),
             draw: function () {
-                ctx.drawImage(
-                    this.image,
-                    this.x - this.width / 2,
-                    this.y - this.height / 2,
-                    this.width,
-                    this.height
-                );
+                ctx.save();
+                const halfScreen = canvas.width / 2;
+                
+                if (this.x < halfScreen) {
+                    // Отражаем пчёл в левой части экрана
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(this.image, -this.x - this.width, this.y - this.height / 2, this.width, this.height);
+                } else {
+                    // Обычное отображение пчёл в правой части
+                    ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+                }
+                ctx.restore();
             },
             move: function (flower) {
                 const angle = Math.atan2(flower.y - this.y, flower.x - this.x);
+                
+                // Пчёлы на обеих сторонах экрана летят к центру
                 this.x += Math.cos(angle) * this.speed;
                 this.y += Math.sin(angle) * this.speed;
-            },
+            }
         };
+    
         bee.image.src = level === 1 ? 'assets/images/Bee.webp' : 'assets/images/BeeRed.webp';
         bees.push(bee);
     }
@@ -670,20 +678,130 @@ function updateTicketCount() {
             <button class="next-level-btn" style="background-color: yellow;">Перейти на 2 уровень</button>
             <button class="home-btn" style="background-color: red;">Забрать монеты и закончить</button>
         `;
-        } else if (level === 2 && lives > 0) {
-            // Если прошли второй уровень, показываем поздравление
-            resultModal.innerHTML = `
-            <h2>Поздравляем, вы спасли Ромашку!</h2>
-            <p>Вы собрали:</p>
-            <ul style="list-style: none; padding: 0;">
-                <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
-                <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
-            </ul>
-            <p>Бонус: +1000 Coin и +100 $Daisy</p>
-            <button class="replay-btn" style="background-color: green;">Играть снова (1 уровень)</button>
-            <button class="home-btn" style="background-color: red;">Домой</button>
+        function showLevelCompleteModal() {
+            // Останавливаем игровой процесс
+            isGamePaused = true;
+            clearInterval(beeInterval);
+            clearInterval(coinInterval);
+            clearInterval(heartInterval);
+            clearInterval(gameTimerInterval);
+        
+            clearGameObjects(); // Скрываем все объекты
+        
+            const resultModal = document.createElement('div');
+            resultModal.style.position = 'fixed';
+            resultModal.style.top = '0';
+            resultModal.style.left = '0';
+            resultModal.style.width = '100%';
+            resultModal.style.height = '100%';
+            resultModal.style.display = 'flex';
+            resultModal.style.justifyContent = 'center';
+            resultModal.style.alignItems = 'center';
+            resultModal.style.background = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(111,24,164,1) 100%)'; // Чёрный в центре, фиолетовый по краям
+            resultModal.style.zIndex = '1000';
+            resultModal.style.color = 'white';
+            resultModal.style.padding = '20px';
+        
+            // Вставляем модальное окно на экран
+            const gameScreen = document.getElementById('protect-flower-game');
+            gameScreen.appendChild(resultModal);
+        
+            // Обработка кликов по кнопкам
+            resultModal.querySelector('.victory-button.play').addEventListener('click', () => {
+                resultModal.remove(); // Удаляем модальное окно
+                currentLevel = 1; // Сбрасываем уровень на первый
+                gameCoins = 0; // Сбрасываем количество монет
+                daisyCoins = 0; // Сбрасываем $Daisy
+                clearInterval(beeInterval);
+                clearInterval(coinInterval);
+                clearInterval(heartInterval);
+                clearInterval(gameTimerInterval);
+                clearGameObjects(); // Очищаем все объекты
+        
+                // Сбрасываем флаг паузы и перезапускаем игру
+                isGamePaused = false;
+                isGameRunning = false; // Сбрасываем флаг, что игра закончена
+                startGame(); // Запускаем игру заново
+            });
+        
+            resultModal.querySelector('.victory-button.share').addEventListener('click', () => {
+                alert('Функция "Поделиться" в разработке.');
+            });
+        
+            resultModal.querySelector('.victory-button.home').addEventListener('click', () => {
+                resultModal.remove(); // Убираем модальное окно
+                endGame(); // Возвращаемся на главный экран
+            });
+        }
+    } else if (level === 2 && lives > 0) {
+        // Если прошли второй уровень, показываем поздравление
+        resultModal.innerHTML = `
+        <div style="
+        position: fixed; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%) scale(1);
+        width: 100vw; 
+        height: 100vh; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center;
+        background: radial-gradient(circle, rgba(111,24,164,1) 0%, rgba(0,0,0,1) 100%); /* Фиолетовый в центре, чёрный по краям */
+        z-index: 1000; 
+        color: white; 
+        padding: 0; 
+        margin: 0;
+        text-align: center;
+    ">
+        <div style="width: 90%; max-width: 400px;">
+                <h2>Поздравляем, вы спасли Ромашку!</h2>
+                <p>Вы собрали:</p>
+                <ul style="list-style: none; padding: 0;">
+                    <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
+                    <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
+                </ul>
+                <p>Бонус: +1000 Coin и +100 $Daisy</p>
+    
+                <!-- Кнопки снизу -->
+                <div class="modal-buttons" style="display: flex; justify-content: space-around; margin-top: 2vh;">
+                    <button class="victory-button play">Играть <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">(${tickets})</button>
+                    <button class="victory-button share">Поделиться</button>
+                    <button class="victory-button home">Домой</button>
+                </div>
+            </div>
         `;
-        } else {
+    
+        // Вставляем модальное окно на экран
+        const gameScreen = document.getElementById('protect-flower-game');
+        gameScreen.appendChild(resultModal);
+    
+        // Обработка кликов по кнопкам
+        resultModal.querySelector('.victory-button.play').addEventListener('click', () => {
+            resultModal.remove(); // Удаляем модальное окно
+            currentLevel = 1; // Сбрасываем уровень на первый
+            gameCoins = 0; // Сбрасываем количество монет
+            daisyCoins = 0; // Сбрасываем $Daisy
+            clearInterval(beeInterval);
+            clearInterval(coinInterval);
+            clearInterval(heartInterval);
+            clearInterval(gameTimerInterval);
+            clearGameObjects(); // Очищаем все объекты
+    
+            // Сбрасываем флаг паузы и перезапускаем игру
+            isGamePaused = false;
+            isGameRunning = false; // Сбрасываем флаг, что игра закончена
+            startGame(); // Запускаем игру заново
+        });
+    
+        resultModal.querySelector('.victory-button.share').addEventListener('click', () => {
+            alert('Функция "Поделиться" в разработке.');
+        });
+    
+        resultModal.querySelector('.victory-button.home').addEventListener('click', () => {
+            resultModal.remove(); // Убираем модальное окно
+            endGame(); // Возвращаемся на главный экран
+        });
+    } else {
             // Если игрок проиграл, предлагаем начать с первого уровня
             resultModal.innerHTML = `
             <h2>Игра окончена!</h2>
