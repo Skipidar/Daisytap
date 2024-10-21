@@ -113,26 +113,26 @@ const Game = (function() {
             localStorage.setItem('lastPredictionTime', lastPredictionTime);
             AudioManager.playPredictionSound();
             Modal.open('prediction-modal');
-
+    
             const prediction = getRandomPrediction();
             updateElementText('prediction-title', prediction);
-            savePrediction(prediction);
-
+            Modal.savePrediction(prediction);  // Вызов через объект Modal
+    
             const earnedCoins = Math.floor(Math.random() * (550 - 250 + 1)) + 250;
             coins += earnedCoins;
             updateElementText('coin-count', coins);
             localStorage.setItem('coins', coins);
             startCountdown(6 * 60 * 60);
             createConfetti();
-
+    
             gainExperience(50);
-
+    
             const date = new Date().toLocaleString();
             predictionHistory.unshift({ prediction, date });
             if (predictionHistory.length > 10) predictionHistory.pop();
             localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
             updatePredictionHistory();
-
+    
             const ticketAmount = Math.floor(Math.random() * 5) + 1;
             tickets += ticketAmount;
             updateElementText('ticket-count', tickets);

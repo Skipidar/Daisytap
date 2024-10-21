@@ -623,6 +623,71 @@ footer button {
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
 
+.endGameButton {
+    background-color: rgba(255, 0, 0, 0.8); /* Красный цвет для кнопки "Домой" */
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    padding: 1vh 2vw;
+    border: 1px solid rgba(86, 78, 0, 0.165);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s; /* Добавляем плавность при наведении */
+}
+
+.endGameButton:hover {
+    background-color: rgba(200, 0, 0, 0.8); /* Изменение цвета при наведении */
+    transform: scale(1.05); /* Легкое увеличение при наведении */
+}
+
+.button-container {
+    display: flex; /* Выравнивание кнопок по горизонтали */
+    justify-content: space-between; /* Равномерное распределение пространства между кнопками */
+    align-items: center; /* Вертикальное выравнивание по центру */
+    width: 100%; /* Ширина контейнера */
+    gap: 10px; /* Отступ между кнопками */
+}
+
+.replay-btn, .home-btn {
+    flex: 1; /* Одинаковая ширина для обеих кнопок */
+    padding: 1.5vh 2vw;
+    border: 1px solid rgba(86, 78, 0, 0.165);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s; /* Плавные переходы */
+    text-align: center; /* Выравнивание текста по центру */
+    display: flex; /* Flex для выравнивания иконки и текста на одной линии */
+    justify-content: center;
+    align-items: center;
+}
+
+.replay-btn {
+    background-color: #32CD32; /* Зеленый цвет для кнопки "Играть" */
+    color: white;
+}
+
+.replay-btn:hover {
+    background-color: yellow;
+    color: green;
+    border: 2px solid green;
+}
+
+.home-btn {
+    background-color: rgba(255, 0, 0, 0.8); /* Красный цвет для кнопки "Домой" */
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+}
+
+.home-btn:hover {
+    background-color: rgba(200, 0, 0, 0.8); /* Изменение цвета при наведении */
+    transform: scale(1.05);
+}
+
+.ticket-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px; /* Отступ между иконкой и текстом */
+}
+
 .yellow-stripes-container {
     position: absolute;
     top: 0;
@@ -640,4 +705,179 @@ footer button {
     box-shadow: 0 0 10px rgb(255, 164, 6); /* Подсветка */
     opacity: 0.5;
     border-radius: 5px; /* Скругление */
+}
+
+/* Оформление кнопок в модальном окне */
+.modal-buttons {
+    position: absolute;
+    bottom: 50px; /* Размещение кнопок внизу экрана */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Центруем кнопки */
+    padding: 10px 0;
+    box-sizing: border-box;
+}
+
+/* Общий стиль кнопок */
+.victory-button {
+    padding: 1vh 2vw;
+    border-radius: 10px;
+    cursor: pointer;
+    text-shadow: 2px 2px 4px rgba(0,0,0,1);
+    transition: background-color 0.3s;
+    font-size: 16px;
+    color: white;
+    font-family: 'YourGameFont', sans-serif; /* Укажи здесь шрифт игры */
+}
+
+/* Кнопка "Играть" */
+.victory-button.play {
+    background-color: #32CD32; /* Зеленый цвет для кнопки "Играть" */
+    border: 1px solid rgba(86, 78, 0, 0.165);
+    display: flex;
+    align-items: center;
+    margin-right: 5px; /* Отступ справа, чтобы кнопки были ближе друг к другу */
+}
+
+.victory-button.play img {
+    margin-left: 5px;
+    vertical-align: middle; /* Выровнять картинку по тексту */
+}
+
+.victory-button.play:hover {
+    background-color: #28a428;
+}
+/* Стиль для кнопки "Играть" */
+.victory-button.play {
+    background-color: #32CD32; /* Основной цвет кнопки */
+    color: white;
+    padding: 1vh 2vw;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    animation: pulse 2s infinite; /* Анимация пульсации */
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 204, 0, 0.8);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(255, 204, 0, 1);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 204, 0, 0.8);
+    }
+}
+
+/* Наведение на кнопку для эффекта */
+.victory-button.play:hover {
+    background-color: #e6b800; /* Немного затемнённая версия при наведении */
+}
+
+
+/* Кнопка "Поделиться" */
+.victory-button.share {
+    background-color: rgba(70, 130, 180, 0.8); /* Синий цвет для кнопки "Поделиться" */
+    border: 1px solid rgba(86, 78, 0, 0.165);
+    margin: 0 -1px; /* Отступы вокруг кнопки */
+}
+
+.victory-button.share:hover {
+    background-color: rgba(60, 110, 160, 0.8);
+}
+
+/* Кнопка "Выход" */
+.victory-button.home {
+    background-color: rgba(255, 0, 0, 0.8); /* Красный цвет для кнопки "Выход" */
+    border: 1px solid rgba(86, 78, 0, 0.165);
+    margin-left: 5px; /* Отступ слева */
+}
+
+.victory-button.home:hover {
+    background-color: rgba(200, 0, 0, 0.8);
+}
+
+.continue-btn {
+    background-color: yellow; /* Основной цвет */
+    color: black; /* Цвет текста */
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(255, 255, 0, 0.6); /* Жёлтое свечение */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    line-height: 1; /* Убираем стандартное расстояние между строками */
+    margin-bottom: 10px; /* Используем отрицательный margin для уменьшения расстояния */
+}
+
+.continue-btn:hover {
+    background-color: #FFD700; /* Немного более тёмный оттенок жёлтого при наведении */
+    box-shadow: 0 0 15px rgba(255, 255, 0, 1); /* Более яркое свечение */
+}
+
+/* Стиль для текста с жёлтым цветом и анимацией */
+.gradient-text {
+    font-size: 24px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #ffcc00 20%, #ffffff 40%, #ffcc00 60%);
+    background-size: 200% auto;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    display: inline-block;
+    position: relative;
+    will-change: background-position; /* Оптимизация для плавности */
+    line-height: 1; /* Убираем стандартное расстояние между строками */
+    margin-bottom: -10px; /* Используем отрицательный margin для уменьшения расстояния */
+}
+
+/* Анимация для первой строки (справа налево) */
+.first-line {
+    animation: gradientAnimationReverse 3s linear infinite; /* Используем 'linear' для плавности */
+}
+
+/* Анимация для второй строки (слева направо) */
+.second-line {
+    animation: gradientAnimation 3s linear infinite;
+}
+
+/* Основная анимация блеска слева направо */
+@keyframes gradientAnimation {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Анимация блеска справа налево */
+@keyframes gradientAnimationReverse {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes spinCoin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spin-animation {
+    animation: spinCoin 1s linear;
 }

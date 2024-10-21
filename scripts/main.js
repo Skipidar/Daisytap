@@ -146,3 +146,25 @@ function initMain() {
         Modal.updatePredictionHistory();
     });
 }
+function rotateCoins() {
+    // Находим все элементы монет goldcoin и silvercoin
+    const goldCoins = document.querySelectorAll('img[src="assets/images/goldcoin.webp"]');
+    const silverCoins = document.querySelectorAll('img[src="assets/images/silvercoin.webp"]');
+    
+    // Объединяем оба набора монет в один массив
+    const allCoins = [...goldCoins, ...silverCoins];
+    
+    // Применяем к каждой монете анимацию
+    allCoins.forEach(coin => {
+        // Добавляем класс для анимации
+        coin.classList.add('spin-animation');
+
+        // Удаляем класс через 1 секунду (время анимации)
+        setTimeout(() => {
+            coin.classList.remove('spin-animation');
+        }, 1000);
+    });
+}
+
+// Запускаем анимацию каждые 10 секунд
+setInterval(rotateCoins, 10000);

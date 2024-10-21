@@ -137,7 +137,7 @@ const MiniGame = (function () {
         bees = [];
         hearts = [];
         coins = [];
-        gameTime = 10; // Время для 1-го уровня
+        gameTime = 60; // Время для 1-го уровня
         gameCoins = 0;
         daisyCoins = 0;
         updateGameCoinCount(); // Обновляем отображение количества монет
@@ -171,7 +171,7 @@ const MiniGame = (function () {
         bees = [];
         hearts = [];
         coins = [];
-        gameTime = 5; // Время для 1-го уровня (для теста)
+        gameTime = 60; // Время для 1-го уровня (для теста)
         gameCoins = 0;
         daisyCoins = 0;
         updateGameCoinCount();
@@ -200,7 +200,7 @@ const MiniGame = (function () {
                 if (gameTime <= 0) {
                     if (currentLevel === 1) {
                         currentLevel = 2;
-                        gameTime = 5; // Время для 2-го уровня (для теста)
+                        gameTime = 60; // Время для 2-го уровня (для теста)
                         clearInterval(beeInterval);
                         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
                         showLevelCompleteModal();
@@ -592,29 +592,30 @@ function updateTicketCount() {
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
         resultModal.style.zIndex = '1000';
+        resultModal.style.borderRadius = '20px'; // Закругляем края
         resultModal.innerHTML = `
-            <h2>Уровень завершен!</h2>
-            <p>Вы собрали:</p>
-            <ul style="list-style: none; padding: 0;">
-                <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
-                <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
-            </ul>
-            <button class="continue-btn" style="margin-right: 10px; background-color: yellow;">Перейти на 2-й уровень</button>
-            <button class="end-game-btn" style="background-color: red;">Забрать монеты и закончить</button>
+        <h2>Уровень завершен!</h2>
+        <p>Вы собрали:</p>
+        <ul style="list-style: none; padding: 0;">
+            <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
+            <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
+        </ul>
+        <button class="continue-btn">Перейти на 2-й уровень</button>
+        <button class="endGameButton">Домой</button>
         `;
-    
+        
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.appendChild(resultModal);
-    
+        
         const continueButton = resultModal.querySelector('.continue-btn');
-        const endGameButton = resultModal.querySelector('.end-game-btn');
-    
+        const endGameButton = resultModal.querySelector('.endGameButton'); // ИСПРАВЛЕНО
+        
         // Проверяем, если кнопка существует перед добавлением обработчика событий
         if (continueButton) {
             continueButton.addEventListener('click', () => {
                 resultModal.remove();
                 currentLevel = 2;
-                gameTime = 5; // Время для 2-го уровня
+                gameTime = 60; // Время для 2-го уровня
                 AudioManager.playElectricChaosMusic(); // Музыка для 2-го уровня
                 startCountdown(() => {
                     isCountdownDone = true;
@@ -624,7 +625,7 @@ function updateTicketCount() {
                     gameTimerInterval = setInterval(() => {
                         gameTime--;
                         document.getElementById('game-timer').textContent = formatTime(gameTime);
-    
+        
                         if (gameTime <= 0) {
                             endLevel(2); // Завершение второго уровня
                         }
@@ -632,11 +633,19 @@ function updateTicketCount() {
                 });
             });
         }
+        
+        if (endGameButton) {
+            endGameButton.addEventListener('click', () => { // ИСПРАВЛЕНО
+                resultModal.remove(); // Убираем модальное окно
+                endGame(); // Возвращаемся на главный экран
+            });
+        }
+        
     
         if (endGameButton) {
-            endGameButton.addEventListener('click', () => {
-                resultModal.remove();
-                endGame();
+        resultModal.querySelector('.endGameButton').addEventListener('click', () => {
+            resultModal.remove(); // Убираем модальное окно
+            endGame(); // Возвращаемся на главный экран
             });
         }
     }
@@ -665,7 +674,7 @@ function updateTicketCount() {
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
         resultModal.style.zIndex = '1000';
-
+        resultModal.style.borderRadius = '20px'; // Закругляем края
         if (level === 1 && lives > 0) {
             // Если прошли первый уровень, показываем модальное окно с предложением перейти на следующий уровень
             resultModal.innerHTML = `
@@ -756,8 +765,8 @@ function updateTicketCount() {
     ">
     <div class="yellow-stripes-container"></div> <!-- Контейнер для полосок -->
         <div style="width: 90%; max-width: 400px;">
-        <h2 style="line-height: 0.5;">Поздравляем!</h2>
-        <h2 style="line-height: 0.5;">Ромашка спасена!</h2>
+        <h2 class="gradient-text first-line">Поздравляем!</h2>
+        <h2 class="gradient-text second-line">Ромашка спасена!</h2>
                 <p>Вы собрали:</p>
                 <ul style="list-style: none; padding: 0;">
                     <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
@@ -765,11 +774,11 @@ function updateTicketCount() {
                 </ul>
     
                 <!-- Кнопки снизу -->
-                <div class="modal-buttons" style="display: flex; justify-content: space-around; margin-top: 2vh;">
-                    <button class="victory-button play">Играть <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">(${tickets})</button>
-                    <button class="victory-button share">Поделиться</button>
-                    <button class="victory-button home">Выход</button>
-                </div>
+                <div class="modal-buttons">
+                <button class="victory-button play">Играть <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">(${tickets})</button>
+                <button class="victory-button share">Поделиться</button>
+                <button class="victory-button home">Выход</button>
+            </div>
             </div>
         `;
         
@@ -786,7 +795,16 @@ function updateTicketCount() {
         currentLevel = 1; // Сбрасываем уровень на первый
         gameCoins = 0; // Сбрасываем количество монет
         daisyCoins = 0; // Сбрасываем $Daisy
+        clearInterval(beeInterval);
+        clearInterval(coinInterval);
+        clearInterval(heartInterval);
+        clearInterval(gameTimerInterval);
         clearGameObjects(); // Очищаем все объекты
+    // Сбрасываем состояние игры и перезапускаем игру
+         isGamePaused = false;
+         isCountdownDone = false; // Не забывай сбросить этот флаг, иначе таймер не начнётся
+         isGameRunning = false;
+
         startGame(); // Перезапуск игры
     });
 
@@ -855,8 +873,10 @@ function updateTicketCount() {
                 <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
             </ul>
             <p>Вы потеряли все жизни. Начать заново?</p>
-            <button class="replay-btn" style="background-color: green;">Играть снова (1 уровень)</button>
-            <button class="home-btn" style="background-color: red;">Домой</button>
+            <div class="button-container">
+            <button class="replay-btn"><img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">Играть</button>
+            <button class="home-btn">Домой</button>
+            </div>
         `;
         }
 
@@ -868,7 +888,7 @@ function updateTicketCount() {
         const replayButton = resultModal.querySelector('.replay-btn');
         const replayButtons = document.querySelectorAll('.replay-btn');
 
-// Обновление текста для каждой кнопки "Играть снова"
+// Обновление текста для каждой кнопки "Играть"
 replayButtons.forEach(button => {
     button.innerHTML = `
     <p>Играть</p><img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon"> 
@@ -914,33 +934,32 @@ replayButtons.forEach(button => {
     }
 
     function endGame() {
-        // Останавливаем игровой цикл и очищаем все интервалы
         isGamePaused = true;
-
+        isGameRunning = false; // Сбрасываем флаг
+        
+        // Очищаем все таймеры
         clearInterval(beeInterval);
         clearInterval(coinInterval);
         clearInterval(heartInterval);
         clearInterval(gameTimerInterval);
-
-        clearGameObjects(); // Скрываем все объекты
-            // Показать кнопку "Старт" снова для перезапуска игры
-    const startButton = document.getElementById('start-mini-game');
-    startButton.style.display = 'block'; // Показываем кнопку "Старт" после завершения игры
-
-    isGameRunning = false;
-
         
-        // Обновляем количество монет на главном экране
-        updateGameCoinCount();
+        clearGameObjects(); // Скрываем все объекты
+
+        // Переключаемся обратно на главный экран
         document.querySelector('.game-container').style.display = 'flex';
         document.getElementById('protect-flower-game').style.display = 'none';
-
-    // Остановить музыку мини-игры
-    AudioManager.pauseOneLevelMusic();
-    AudioManager.pauseElectricChaosMusic();
-
-    // Запустить фоновую музыку главного меню
-    AudioManager.playBackgroundMusic();
+    
+        // Показать кнопку "Старт" снова для перезапуска игры
+        const startButton = document.getElementById('start-mini-game');
+        startButton.style.display = 'block';
+    
+        // Обновляем количество монет на главном экране
+        updateGameCoinCount();
+    
+        // Останавливаем музыку мини-игры и включаем фоновую музыку
+        AudioManager.pauseOneLevelMusic();
+        AudioManager.pauseElectricChaosMusic();
+        AudioManager.playBackgroundMusic();
     }
 
     // Проверка на проигрыш
