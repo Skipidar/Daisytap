@@ -171,7 +171,7 @@ const MiniGame = (function () {
         bees = [];
         hearts = [];
         coins = [];
-        gameTime = 30; // Время для 1-го уровня (для теста)
+        gameTime = 5; // Время для 1-го уровня (для теста)
         gameCoins = 0;
         daisyCoins = 0;
         updateGameCoinCount();
@@ -200,7 +200,7 @@ const MiniGame = (function () {
                 if (gameTime <= 0) {
                     if (currentLevel === 1) {
                         currentLevel = 2;
-                        gameTime = 30; // Время для 2-го уровня (для теста)
+                        gameTime = 5; // Время для 2-го уровня (для теста)
                         clearInterval(beeInterval);
                         beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
                         showLevelCompleteModal();
@@ -614,7 +614,7 @@ function updateTicketCount() {
             continueButton.addEventListener('click', () => {
                 resultModal.remove();
                 currentLevel = 2;
-                gameTime = 10; // Время для 2-го уровня
+                gameTime = 5; // Время для 2-го уровня
                 AudioManager.playElectricChaosMusic(); // Музыка для 2-го уровня
                 startCountdown(() => {
                     isCountdownDone = true;
@@ -679,6 +679,7 @@ function updateTicketCount() {
             <button class="home-btn" style="background-color: red;">Забрать монеты и закончить</button>
         `;
         function showLevelCompleteModal() {
+            
             // Останавливаем игровой процесс
             isGamePaused = true;
             clearInterval(beeInterval);
@@ -723,7 +724,7 @@ function updateTicketCount() {
                 isGameRunning = false; // Сбрасываем флаг, что игра закончена
                 startGame(); // Запускаем игру заново
             });
-        
+
             resultModal.querySelector('.victory-button.share').addEventListener('click', () => {
                 alert('Функция "Поделиться" в разработке.');
             });
@@ -740,67 +741,110 @@ function updateTicketCount() {
         position: fixed; 
         top: 50%; 
         left: 50%; 
-        transform: translate(-50%, -50%) scale(1);
+        transform: translate(-50%, -50%) scale(1.1);
         width: 100vw; 
         height: 100vh; 
         display: flex; 
         justify-content: center; 
         align-items: center;
-        background: radial-gradient(circle, rgba(111,24,164,1) 0%, rgba(0,0,0,1) 100%); /* Фиолетовый в центре, чёрный по краям */
+        background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(111,24,164,1) 100%);
         z-index: 1000; 
         color: white; 
         padding: 0; 
         margin: 0;
         text-align: center;
     ">
+    <div class="yellow-stripes-container"></div> <!-- Контейнер для полосок -->
         <div style="width: 90%; max-width: 400px;">
-                <h2>Поздравляем, вы спасли Ромашку!</h2>
+        <h2 style="line-height: 0.5;">Поздравляем!</h2>
+        <h2 style="line-height: 0.5;">Ромашка спасена!</h2>
                 <p>Вы собрали:</p>
                 <ul style="list-style: none; padding: 0;">
                     <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
                     <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
                 </ul>
-                <p>Бонус: +1000 Coin и +100 $Daisy</p>
     
                 <!-- Кнопки снизу -->
                 <div class="modal-buttons" style="display: flex; justify-content: space-around; margin-top: 2vh;">
                     <button class="victory-button play">Играть <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">(${tickets})</button>
                     <button class="victory-button share">Поделиться</button>
-                    <button class="victory-button home">Домой</button>
+                    <button class="victory-button home">Выход</button>
                 </div>
             </div>
         `;
-    
-        // Вставляем модальное окно на экран
-        const gameScreen = document.getElementById('protect-flower-game');
-        gameScreen.appendChild(resultModal);
-    
-        // Обработка кликов по кнопкам
-        resultModal.querySelector('.victory-button.play').addEventListener('click', () => {
-            resultModal.remove(); // Удаляем модальное окно
-            currentLevel = 1; // Сбрасываем уровень на первый
-            gameCoins = 0; // Сбрасываем количество монет
-            daisyCoins = 0; // Сбрасываем $Daisy
-            clearInterval(beeInterval);
-            clearInterval(coinInterval);
-            clearInterval(heartInterval);
-            clearInterval(gameTimerInterval);
-            clearGameObjects(); // Очищаем все объекты
-    
-            // Сбрасываем флаг паузы и перезапускаем игру
-            isGamePaused = false;
-            isGameRunning = false; // Сбрасываем флаг, что игра закончена
-            startGame(); // Запускаем игру заново
-        });
-    
-        resultModal.querySelector('.victory-button.share').addEventListener('click', () => {
-            alert('Функция "Поделиться" в разработке.');
-        });
-    
-        resultModal.querySelector('.victory-button.home').addEventListener('click', () => {
-            resultModal.remove(); // Убираем модальное окно
-            endGame(); // Возвращаемся на главный экран
-        });
+        
+    // Вставляем модальное окно на экран
+    const gameScreen = document.getElementById('protect-flower-game');
+    gameScreen.appendChild(resultModal);
+
+    // Добавляем анимацию жёлтых полосок
+    createFlashAnimation(); // Убедись, что ты вызываешь именно эту функцию!
+
+    // Обработка кликов по кнопкам
+    resultModal.querySelector('.victory-button.play').addEventListener('click', () => {
+        resultModal.remove(); // Удаляем модальное окно
+        currentLevel = 1; // Сбрасываем уровень на первый
+        gameCoins = 0; // Сбрасываем количество монет
+        daisyCoins = 0; // Сбрасываем $Daisy
+        clearGameObjects(); // Очищаем все объекты
+        startGame(); // Перезапуск игры
+    });
+
+    resultModal.querySelector('.victory-button.share').addEventListener('click', () => {
+        alert('Функция "Поделиться" в разработке.');
+    });
+
+    resultModal.querySelector('.victory-button.home').addEventListener('click', () => {
+        resultModal.remove(); // Убираем модальное окно
+        endGame(); // Возвращаемся на главный экран
+    });
+        // Функция для генерации жёлтых полосок (добавляем после showLevelCompleteModal)
+        function createFlashAnimation() {
+            const container = document.querySelector('.yellow-stripes-container');
+            const numStripes = 100; // Увеличенное количество линий
+            const targetRadius = 100; // Радиус невидимого круга в центре
+        
+            for (let i = 0; i < numStripes; i++) {
+                const stripe = document.createElement('div');
+                stripe.classList.add('stripe');
+        
+                // Чередование коротких и длинных линий
+                const isShort = i % 2 === 0; // Чередование короткой и длинной линии
+                const stripeHeight = isShort ? Math.random() * 30 + 10 : Math.random() * 60 + 30; // Короткие 20px-50px, длинные 60px-160px
+                stripe.style.height = `${stripeHeight}px`;
+        
+                // Расчет угла для каждой линии
+                const angle = (i / numStripes) * 360;
+                const radians = angle * (Math.PI / 180); // Конвертация угла в радианы
+        
+                // Расчет начальных координат за пределами экрана
+                const startX = window.innerWidth / 2 + Math.cos(radians) * (window.innerWidth / 2 + 100);
+                const startY = window.innerHeight / 2 + Math.sin(radians) * (window.innerHeight / 2 + 100);
+        
+                stripe.style.left = `${startX}px`;
+                stripe.style.top = `${startY}px`;
+        
+                // Поворот линии под нужным углом
+                stripe.style.transform = `rotate(${angle - 90}deg)`; // Поворот на 90 градусов для правильного направления
+        
+                // Анимация движения линий к невидимому кругу
+                const moveDistanceX = Math.cos(radians) * -(window.innerWidth / 2 - targetRadius);
+                const moveDistanceY = Math.sin(radians) * -(window.innerHeight / 2 - targetRadius);
+        
+                stripe.animate([
+                    { transform: `translate(0, 0) rotate(${angle - 90}deg)`, opacity: 1 },  // Начальная точка
+                    { transform: `translate(${moveDistanceX}px, ${moveDistanceY}px) rotate(${angle - 90}deg)`, opacity: 0 }  // Финиш
+                ], {
+                    duration: Math.random() * 1400 + 1000,  // Быстрая анимация
+                    easing: 'ease-out',
+                    iterations: Infinity,  // Бесконечная анимация
+                    delay: Math.random() * 500  // Случайная задержка до 2 секунд
+                });
+        
+                container.appendChild(stripe);
+            }
+        }
+        
     } else {
             // Если игрок проиграл, предлагаем начать с первого уровня
             resultModal.innerHTML = `
