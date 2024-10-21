@@ -162,7 +162,7 @@ const MiniGame = (function () {
         flower.image.onload = () => {
             flower.draw();
         };
-    
+
         isGamePaused = false; // Сбрасываем флаг паузы
     
         lives = 3;
@@ -380,6 +380,10 @@ const MiniGame = (function () {
         const xClick = event.clientX - rect.left;
         const yClick = event.clientY - rect.top;
 
+         // Увеличиваем хитбокс пчелы
+    const hitboxPadding = 20; // Увеличиваем область клика на 20 пикселей с каждой стороны
+
+
         bees.forEach((bee, index) => {
             if (
                 xClick >= bee.x - bee.width / 2 &&
@@ -390,6 +394,10 @@ const MiniGame = (function () {
                 bees.splice(index, 1);
                 gameCoins += 1; // Coin
                 totalCoinsEarned += 1;
+
+            // Вызов анимации выстрела
+            shootBee(bee.x, bee.y); // Передаем координаты пчелы
+
                 updateGameCoinCount();
                 AudioManager.playBeeKillSound();
 
@@ -402,6 +410,39 @@ const MiniGame = (function () {
                 flyCoinToCounter(bee.x, bee.y);
             }
         });
+
+        // Функция выстрела
+        function shootBee(targetX, targetY) {
+            const startX = flower.x; // Центр цветка
+            const startY = flower.y - flower.height / 2; // Верхушка цветка
+        
+            const laser = document.createElement('div');
+            laser.classList.add('laser'); // Применяем CSS класс лазера
+        
+            laser.style.left = `${startX}px`;
+            laser.style.top = `${startY}px`;
+            document.body.appendChild(laser);
+        
+            const distanceX = targetX - startX;
+            const distanceY = targetY - startY;
+            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY); // Рассчитываем расстояние до пчелы
+            const angle = Math.atan2(distanceY, distanceX) * (180 / Math.PI); // Рассчитываем угол в градусах
+        
+            // Поворачиваем лазер в направлении пчелы с корректировкой на 90 градусов
+            laser.style.transform = `rotate(${angle + 90}deg)`; // Поворачиваем на 90 градусов
+        
+            laser.animate([
+                { transform: `translate(0, 0) rotate(${angle + 90}deg)` }, // Начальная позиция
+                { transform: `translate(${distanceX}px, ${distanceY}px) rotate(${angle + 90}deg)` } // Конечная позиция
+            ], {
+                duration: 300, // Скорость анимации
+                easing: 'linear',
+            });
+        
+            setTimeout(() => {
+                laser.remove();
+            }, 300); // Время жизни лазера
+        }
 
         coins.forEach((coin, index) => {
             if (
@@ -439,6 +480,28 @@ const MiniGame = (function () {
             }
         });
     }
+
+    bees.forEach((bee, index) => {
+        if (
+            xClick >= bee.x - bee.width / 2 - hitboxPadding &&
+            xClick <= bee.x + bee.width / 2 + hitboxPadding &&
+            yClick >= bee.y - bee.height / 2 - hitboxPadding &&
+            yClick <= bee.y + bee.height / 2 + hitboxPadding
+        ) {
+            bees.splice(index, 1); // Удаляем пчелу
+            gameCoins += 1; // Начисляем монеты
+    
+            // Вызываем анимацию выстрела
+            shootBee(bee.x, bee.y); // Передаем координаты пчелы
+    
+            // Остальная логика (монеты, звук, вибрация)
+            updateGameCoinCount();
+            AudioManager.playBeeKillSound();
+            createExplosionAnimation(bee.x, bee.y);
+            flyCoinToCounter(bee.x, bee.y);
+        }
+    });
+    
 
     function createExplosionAnimation(x, y) {
         const explosion = document.createElement('div');
@@ -482,6 +545,8 @@ const MiniGame = (function () {
             const bee = bees[i];
             bee.move(flower);
             bee.draw();
+            console.error(`Пчела с индексом ${i} не имеет метода move или не существует`);
+            bees.splice(i, 1); // Удаляем пчелу, если её нет или она не валидна
 
             if (isColliding(bee, flower)) {
                 lives--;
