@@ -881,3 +881,13 @@ footer button {
 .spin-animation {
     animation: spinCoin 1s linear;
 }
+
+
+.laser {
+    position: absolute;
+    width: 2px;
+    height: 50px;
+    background-color: red;
+    z-index: 1000; /* Убедись, что лазер отображается поверх других элементов */
+    transform-origin: top; /* Устанавливаем точку поворота для анимации */
+}
