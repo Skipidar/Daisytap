@@ -924,14 +924,17 @@ footer button {
 
 @keyframes electric-shock {
     0%, 100% {
+        -webkit-filter: brightness(1);
         filter: brightness(1);
     }
     50% {
+        -webkit-filter: brightness(3);
         filter: brightness(3);
     }
 }
 
 .electric-shock {
-    animation: electric-shock 0.1s infinite; /* Эффект тока повторяется каждые 0.1 секунды */
+    -webkit-animation: electric-shock 1s infinite;
+    animation: electric-shock 1s infinite;
 }
 
