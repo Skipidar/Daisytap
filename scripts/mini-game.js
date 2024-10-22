@@ -581,8 +581,18 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
         
             beeShock.style.transform = `scaleX(${scaleXValue})`; // Устанавливаем правильный масштаб для пчелы
         
-            beeShock.classList.add('electric-shock'); // Добавляем класс для анимации
             document.body.appendChild(beeShock);
+        
+            // Реализуем эффект мерцания через JavaScript
+            let isBright = true;
+            const flashInterval = setInterval(() => {
+                if (isBright) {
+                    beeShock.style.opacity = '0.5';
+                } else {
+                    beeShock.style.opacity = '1';
+                }
+                isBright = !isBright;
+            }, 100);
         
             // Анимация тряски с эффектом удара током, сохраняем правильный scaleX
             const shakeAnimation = [
@@ -594,18 +604,19 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
         
             beeShock.animate(shakeAnimation, {
                 duration: 100, // Продолжительность одного цикла
-                iterations: 4, // Количество повторов (тряска длится 1 сек)
+                iterations: 3, // Количество повторов (тряска длится 400 мс)
                 easing: 'ease-in-out',
             });
         
-            // Анимация "тока" длится 1 секунду
+            // Удаляем эффект через 400 мс
             setTimeout(() => {
-                beeShock.remove(); // Удаляем пчелу после завершения анимации
-                        // Добавляем эффект дыма
-        addSmokeEffect(x, y, width, height, () => {
-            // После эффекта дыма добавляем мертвую пчелу
-            handleBeeDeath(x, y);
-        });
+                clearInterval(flashInterval);
+                beeShock.remove();
+                // Добавляем эффект дыма
+                addSmokeEffect(x, y, width, height, () => {
+                    // После эффекта дыма добавляем мертвую пчелу
+                    handleBeeDeath(x, y);
+                });
             }, 300);
         }
 
