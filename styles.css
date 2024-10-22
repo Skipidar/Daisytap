@@ -245,6 +245,7 @@ body {
     display: block;  /* Кнопка должна быть видимой */
     pointer-events: auto;  /* Убедись, что события кликов включены */
     cursor: pointer;
+    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
     font-size: 2vh;
     transition: background-color 0.3s;
     width: 100%;
@@ -305,6 +306,7 @@ body {
     border: none;
     border-radius: 10px;
     cursor: pointer;
+    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
     transition: background-color 0.3s;
     animation: pulsePlayButton 2s infinite;
 }
@@ -398,6 +400,7 @@ footer button {
     font-weight: bold;
     color: #FFD700;
     cursor: pointer;
+    
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
@@ -630,6 +633,8 @@ footer button {
     padding: 1vh 2vw;
     border: 1px solid rgba(86, 78, 0, 0.165);
     border-radius: 10px;
+    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
+    height: 50px; /* Установите фиксированную высоту, если требуется */
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s; /* Добавляем плавность при наведении */
 }
@@ -649,12 +654,13 @@ footer button {
 
 .replay-btn, .home-btn {
     flex: 1; /* Одинаковая ширина для обеих кнопок */
-    padding: 1.5vh 2vw;
+    padding: 1vh 2vw;
     border: 1px solid rgba(86, 78, 0, 0.165);
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s; /* Плавные переходы */
     text-align: center; /* Выравнивание текста по центру */
+    height: 50px; /* Установите фиксированную высоту, если требуется */
     display: flex; /* Flex для выравнивания иконки и текста на одной линии */
     justify-content: center;
     align-items: center;
@@ -663,6 +669,8 @@ footer button {
 .replay-btn {
     background-color: #32CD32; /* Зеленый цвет для кнопки "Играть" */
     color: white;
+    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
 }
 
 .replay-btn:hover {
@@ -674,6 +682,7 @@ footer button {
 .home-btn {
     background-color: rgba(255, 0, 0, 0.8); /* Красный цвет для кнопки "Домой" */
     color: white;
+    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
 }
 
@@ -728,7 +737,7 @@ footer button {
     transition: background-color 0.3s;
     font-size: 16px;
     color: white;
-    font-family: 'YourGameFont', sans-serif; /* Укажи здесь шрифт игры */
+    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
 }
 
 /* Кнопка "Играть" */
@@ -804,14 +813,16 @@ footer button {
 }
 
 .continue-btn {
-    background-color: yellow; /* Основной цвет */
-    color: black; /* Цвет текста */
+    background-color: #32CD32; /* Основной цвет */
+    color: rgb(255, 255, 255); /* Цвет текста */
+    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
     padding: 10px 20px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    height: 50px; /* Установите фиксированную высоту, если требуется */
     box-shadow: 0 0 10px rgba(255, 255, 0, 0.6); /* Жёлтое свечение */
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     line-height: 1; /* Убираем стандартное расстояние между строками */
@@ -891,3 +902,36 @@ footer button {
     z-index: 1000; /* Лазер должен быть поверх игровых объектов */
     transform-origin: top; /* Поворот относительно верхней точки */
 }
+
+@keyframes electricShock {
+    0%, 100% {
+        filter: brightness(1);
+        transform: translate(0, 0);
+    }
+    25% {
+        filter: brightness(2);
+        transform: translate(2px, -2px); /* Эффект вибрации */
+    }
+    50% {
+        filter: brightness(0.5);
+        transform: translate(-2px, 2px); /* Эффект вибрации */
+    }
+    75% {
+        filter: brightness(1.5);
+        transform: translate(1px, -1px); /* Эффект вибрации */
+    }
+}
+
+@keyframes electric-shock {
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(3);
+    }
+}
+
+.electric-shock {
+    animation: electric-shock 0.1s infinite; /* Эффект тока повторяется каждые 0.1 секунды */
+}
+

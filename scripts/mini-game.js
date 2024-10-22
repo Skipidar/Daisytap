@@ -20,6 +20,7 @@ const MiniGame = (function () {
     let tickets = parseInt(localStorage.getItem('tickets')) || 200;
     let isCountdownDone = false;
     let spinCoins = 0; // Глобальная переменная для счётчика монет
+    
 
     function updateGameCoinCount(count) {
         const gameCoinCountElement = document.getElementById('game-coin-count');
@@ -100,7 +101,19 @@ const MiniGame = (function () {
         ctx = canvas.getContext('2d');
         canvas.width = gameScreen.clientWidth;
         canvas.height = gameScreen.clientHeight;
-    
+
+
+// Определяем объект flower, который будет содержать этот элемент
+    // Инициализируем цветок
+    const flowerElement = document.getElementById('flower'); // Убедитесь, что у вас есть элемент с id 'flower'
+    const flower = {
+        x: canvas.width / 2,  // Центр по X
+        y: canvas.height / 2, // Центр по Y
+        width: 100,           // Ширина
+        height: 100,          // Высота
+        image: flowerElement  // Само изображение цветка
+    };
+
         // Сбрасываем все игровые переменные
         resetGameVariables();
     
@@ -117,13 +130,13 @@ const MiniGame = (function () {
         function gameLoop() {
             if (!isCountdownDone || isGamePaused) return; // Прерываем цикл, если игра на паузе
             ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
-    
+        
             // Обновляем объекты игры (цветок, пчелы, сердца, монеты)
             flower.draw();
             updateBees(ctx, flower);
             updateHearts();
             updateCoins();
-    
+        
             // Запускаем следующий кадр
             requestAnimationFrame(gameLoop);
         }
@@ -142,23 +155,51 @@ const MiniGame = (function () {
         daisyCoins = 0;
         updateGameCoinCount(); // Обновляем отображение количества монет
     
-        flower = { // Присваиваем объект flower глобальной переменной
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            width: 100,
-            height: 100,
-            image: new Image(),
-            draw: function () {
-                ctx.drawImage(
-                    this.image,
-                    this.x - this.width / 2,
-                    this.y - this.height / 2,
-                    this.width,
-                    this.height
-                );
-            },
-        };
-        flower.image.src = 'assets/images/PodsolnuhBEE.webp';
+// Создаём новый объект изображения
+const boevoySmileImage = new Image();
+boevoySmileImage.src = 'assets/images/boevoysmile.webp';
+
+flower = {
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    width: 100,
+    height: 100,
+    angle: 0, // Угол в радианах
+    image: new Image(),
+    draw: function () {
+        // Рисуем вращающийся цветок
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        ctx.drawImage(
+            this.image,
+            -this.width / 2,
+            -this.height / 2,
+            this.width,
+            this.height
+        );
+        ctx.restore();
+
+        // Рисуем статичное изображение поверх цветка
+        if (boevoySmileImage.complete) {
+            // Задаём размеры для смайла (можете изменить по необходимости)
+            const smileWidth = this.width * 0.7; // 70% от ширины цветка
+            const smileHeight = this.height * 0.7; // 70% от высоты цветка
+
+            // Рисуем смайл без каких-либо трансформаций, чтобы он оставался статичным
+            ctx.drawImage(
+                boevoySmileImage,
+                this.x - smileWidth / 2,
+                this.y - smileHeight / 2,
+                smileWidth,
+                smileHeight
+            );
+        }
+    },
+};
+
+// Устанавливаем источник для изображения цветка
+flower.image.src = 'assets/images/blasterdaisy.webp';
         flower.image.onload = () => {
             flower.draw();
         };
@@ -191,7 +232,7 @@ const MiniGame = (function () {
             beeInterval = setInterval(() => spawnBee(currentLevel), spawnInterval);
     
             heartInterval = setInterval(spawnHeart, 20000);
-            coinInterval = setInterval(spawnCoin, currentLevel === 1 ? 25000 : 15000);
+            coinInterval = setInterval(spawnCoin, currentLevel === 1 ? 25000 : 10000);
     
             gameTimerInterval = setInterval(() => {
                 gameTime--;
@@ -202,7 +243,7 @@ const MiniGame = (function () {
                         currentLevel = 2;
                         gameTime = 60; // Время для 2-го уровня (для теста)
                         clearInterval(beeInterval);
-                        beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
+                        beeInterval = setInterval(() => spawnBee(currentLevel), 800);
                         showLevelCompleteModal();
                     } else {
                         endGame();
@@ -227,40 +268,71 @@ const MiniGame = (function () {
     }
 
     function startCountdown(callback) {
-        const countdown = document.createElement('div');
-        countdown.style.position = 'fixed';
-        countdown.style.top = '50%';
-        countdown.style.left = '50%';
-        countdown.style.transform = 'translate(-50%, -50%)';
-        countdown.style.fontSize = '72px';
-        countdown.style.color = 'white';
-        countdown.style.zIndex = '1001';
-        countdown.style.textShadow = '2px 2px 4px rgba(0,0,0,0.7)';
-        document.body.appendChild(countdown);
-
+        const countdownContainer = document.createElement('div');
+        countdownContainer.style.position = 'fixed';
+        countdownContainer.style.top = '0';
+        countdownContainer.style.left = '0';
+        countdownContainer.style.width = '100%';
+        countdownContainer.style.height = '100%';
+        countdownContainer.style.display = 'flex';
+        countdownContainer.style.justifyContent = 'center';
+        countdownContainer.style.alignItems = 'center';
+        countdownContainer.style.backgroundColor = 'rgba(0, 0, 0, 3)';
+        countdownContainer.style.zIndex = '1001';
+        document.body.appendChild(countdownContainer);
+    
+        const countdownNumber = document.createElement('div');
+        countdownNumber.style.fontSize = '100px';
+        countdownNumber.style.color = '#fff';
+        countdownNumber.style.textShadow = '0 0 20px #fff';
+        countdownNumber.style.opacity = '0';
+        countdownNumber.style.fontFamily = 'https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap'; // Вы можете заменить на желаемый шрифт
+        countdownContainer.appendChild(countdownNumber);
+    
         let counter = 3;
-        countdown.textContent = counter;
-
+        countdownNumber.textContent = counter;
+    
         const countdownInterval = setInterval(() => {
-            counter--;
+            // Эффект вспышки фона
+            countdownContainer.animate([
+                { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
+                { backgroundColor: 'rgba(255, 255, 255, 1)' },
+                { backgroundColor: 'rgba(0, 0, 0, 0.7)' }
+            ], {
+                duration: 500,
+                easing: 'ease-out'
+            });
+    
+            // Анимация появления числа
+            countdownNumber.animate([
+                { transform: 'scale(0.5)', opacity: '0', offset: 0 },
+                { transform: 'scale(1.2)', opacity: '1', offset: 0.5 },
+                { transform: 'scale(1)', opacity: '1', offset: 0.7 },
+                { transform: 'translateY(-200px)', opacity: '0', offset: 1 }
+            ], {
+                duration: 1000,
+                easing: 'ease-in-out'
+            });
+    
             if (counter > 0) {
-                countdown.textContent = counter;
-                countdown.classList.add('pulsate');
-                setTimeout(() => countdown.classList.remove('pulsate'), 500);
+                countdownNumber.textContent = counter;
+                counter--;
             } else {
-                countdown.textContent = 'Поехали!';
+                countdownNumber.textContent = 'Поехали!';
+                clearInterval(countdownInterval);
+    
+                // Небольшая задержка перед началом игры
                 setTimeout(() => {
-                    countdown.remove();
+                    countdownContainer.remove();
                     callback();
                 }, 1000);
-                clearInterval(countdownInterval);
             }
         }, 1000);
     }
 
     function spawnBee(level) {
         const size = Math.floor(Math.random() * 60) + 40;
-        const speed = level === 1 ? 1 : 1;
+        const speed = level === 1 ? 0.8 : 1.1;
         let x, y;
     
         const side = Math.floor(Math.random() * 4);
@@ -283,25 +355,26 @@ const MiniGame = (function () {
                 break;
         }
     
-        const bee = {
+        const bee = { 
             x: x,
             y: y,
             width: size,
             height: size,
             speed: speed,
             image: new Image(),
+            isLeft: x < canvas.width / 2, // Флаг для направления пчелы (слева или справа)
             draw: function () {
                 ctx.save();
-                const halfScreen = canvas.width / 2;
                 
-                if (this.x < halfScreen) {
-                    // Отражаем пчёл в левой части экрана
+                if (this.isLeft) {
+                    // Отражаем пчёл, летящих слева
                     ctx.scale(-1, 1);
-                    ctx.drawImage(this.image, -this.x - this.width, this.y - this.height / 2, this.width, this.height);
+                    ctx.drawImage(this.image, -this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
                 } else {
-                    // Обычное отображение пчёл в правой части
+                    // Обычное отображение пчёл
                     ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
                 }
+        
                 ctx.restore();
             },
             move: function (flower) {
@@ -312,7 +385,7 @@ const MiniGame = (function () {
                 this.y += Math.sin(angle) * this.speed;
             }
         };
-    
+        
         bee.image.src = level === 1 ? 'assets/images/Bee.webp' : 'assets/images/BeeRed.webp';
         bees.push(bee);
     }
@@ -323,7 +396,7 @@ const MiniGame = (function () {
             y: -50,
             width: 40,
             height: 40,
-            speed: 1.5,
+            speed: 0.8, // Замедляем скорость падения с 1.5 до 1
             image: new Image(),
             draw: function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
@@ -340,9 +413,9 @@ const MiniGame = (function () {
         const coin = {
             x: Math.random() * canvas.width,
             y: -50,
-            width: 30,
-            height: 30,
-            speed: 1.5,
+            width: 50, // Увеличиваем ширину с 30 до 50 пикселей
+            height: 50, // Увеличиваем высоту с 30 до 50 пикселей
+            speed: 1, // Замедляем скорость падения с 1.5 до 1
             image: new Image(),
             draw: function () {
                 ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
@@ -381,7 +454,7 @@ const MiniGame = (function () {
         const yClick = event.clientY - rect.top;
 
          // Увеличиваем хитбокс пчелы
-    const hitboxPadding = 20; // Увеличиваем область клика на 20 пикселей с каждой стороны
+    const hitboxPadding = 40; // Увеличиваем область клика на 0 пикселей с каждой стороны
 
 
         bees.forEach((bee, index) => {
@@ -391,12 +464,28 @@ const MiniGame = (function () {
                 yClick >= bee.y - bee.height / 2 &&
                 yClick <= bee.y + bee.height / 2
             ) {
+        // Поворачиваем цветок к пчеле
+        rotateFlowerToBee(bee.x, bee.y);
+
+        shootBee(bee.x, bee.y); // Стреляем лазером в пчелу
+
                 bees.splice(index, 1);
                 gameCoins += 1; // Coin
                 totalCoinsEarned += 1;
 
+                            // Сохраняем направление пчелы (слева или справа)
+            const direction = bee.x < canvas.width / 2 ? 'left' : 'right';
+
+            // Добавляем эффект электрического удара перед смертью
+                addElectricShockEffect(bee.x, bee.y, bee.width, bee.height, bee.isLeft ? 'left' : 'right');
+
                 updateGameCoinCount();
                 AudioManager.playBeeKillSound();
+
+                    // Добавляем звук SHOKBOOM.mp3 после лазера с небольшой задержкой
+    setTimeout(() => {
+        AudioManager.playShokBoomSound();
+    }, 30); // Задержка в миллисекундах (настройте по необходимости)
 
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
@@ -404,8 +493,11 @@ const MiniGame = (function () {
 
                 // Вызов функции появления поджаренной пчелы
 
-                shootBee(bee.x, bee.y); // Стреляем лазером в пчелу
-                handleBeeDeath(bee.x, bee.y); // Обрабатываем смерть пчелы
+          // Через 1.5 секунды превращаем пчелу в обугленную
+                 setTimeout(() => {
+
+                 handleBeeDeath(bee.x, bee.y); // Вызываем функцию смерти пчелы
+        }, 1500);
 
                 // Добавляем анимацию взрыва и монетки
                 createExplosionAnimation(bee.x, bee.y);
@@ -414,37 +506,130 @@ const MiniGame = (function () {
         });
 
         // Функция выстрела
+        function rotateFlowerToBee(targetX, targetY) {
+            const distanceX = targetX - flower.x;
+            const distanceY = targetY - flower.y;
+            const angle = Math.atan2(distanceY, distanceX);
+            flower.angle = angle + Math.PI / 2; // Добавляем 90 градусов для корректной ориентации
+        }
+        
         function shootBee(targetX, targetY) {
-            const startX = flower.x; // Центр цветка
-            const startY = flower.y; // центр цветка
+            // Получаем позицию canvas относительно окна
+            const canvasRect = canvas.getBoundingClientRect();
         
+            // Вычисляем угол между цветком и пчелой
+            const angle = Math.atan2(targetY - flower.y, targetX - flower.x);
+        
+            // Радиус цветка (предполагаем, что он круглый)
+            const flowerRadius = (flower.width + flower.height) / 4;
+        
+            // Начальные координаты лазера на краю цветка
+            const startX = canvasRect.left + window.pageXOffset + flower.x + Math.cos(angle) * flowerRadius;
+            const startY = canvasRect.top + window.pageYOffset + flower.y + Math.sin(angle) * flowerRadius;
+        
+            // Координаты цели (пчелы) на экране
+            const targetScreenX = canvasRect.left + window.pageXOffset + targetX;
+            const targetScreenY = canvasRect.top + window.pageYOffset + targetY;
+        
+            // Создаем элемент лазера
             const laser = document.createElement('div');
-            laser.classList.add('laser'); // Применяем CSS класс лазера
+            laser.classList.add('laser');
         
+            // Устанавливаем позицию лазера
             laser.style.left = `${startX}px`;
             laser.style.top = `${startY}px`;
+        
+            // Корректируем угол поворота лазера
+            laser.style.transform = `rotate(${angle - Math.PI / 2}rad)`;
+        
+            // Вычисляем расстояние до пчелы от стартовой точки
+            const distance = Math.hypot(targetScreenX - startX, targetScreenY - startY);
+        
+            // Устанавливаем высоту лазера в зависимости от расстояния до пчелы
+            laser.style.height = `${distance}px`;
+        
+            // Добавляем лазер в документ
             document.body.appendChild(laser);
         
-            const distanceX = targetX - startX;
-            const distanceY = targetY - startY;
-            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY); // Рассчитываем расстояние до пчелы
-            const angle = Math.atan2(distanceY, distanceX) * (180 / Math.PI); // Рассчитываем угол в градусах
-        
-            // Поворачиваем лазер в направлении пчелы с корректировкой на 90 градусов
-            laser.style.transform = `rotate(${angle + 90}deg)`; // Поворачиваем на 90 градусов
-        
+            // Анимируем лазер (опционально)
             laser.animate([
-                { transform: `translate(0, 0) rotate(${angle + 90}deg)` }, // Начальная позиция
-                { transform: `translate(${distanceX}px, ${distanceY}px) rotate(${angle + 90}deg)` } // Конечная позиция
+                { height: '0px' },
+                { height: `${distance}px` }
             ], {
-                duration: 250, // Скорость анимации
+                duration: 200,
                 easing: 'linear',
+                fill: 'forwards'
             });
         
+            // Удаляем лазер после завершения анимации
             setTimeout(() => {
                 laser.remove();
-            }, 250); // Время жизни лазера
+            }, 200);
         }
+        function addElectricShockEffect(x, y, width, height, direction) {
+            const beeShock = document.createElement('img');
+            beeShock.src = 'assets/images/bee.webp'; // Изображение пчелы
+            beeShock.style.position = 'absolute';
+            beeShock.style.left = `${x - width / 2}px`;
+            beeShock.style.top = `${y - height / 2}px`;
+            beeShock.style.width = `${width}px`;
+            beeShock.style.height = `${height}px`;
+            beeShock.style.zIndex = '1000';
+        
+            // Если пчела летела слева, сохраняем её отражение
+            let scaleXValue = direction === 'left' ? -1 : 1; // Отражаем пчелу по оси X для пчел слева
+        
+            beeShock.style.transform = `scaleX(${scaleXValue})`; // Устанавливаем правильный масштаб для пчелы
+        
+            beeShock.classList.add('electric-shock'); // Добавляем класс для анимации
+            document.body.appendChild(beeShock);
+        
+            // Анимация тряски с эффектом удара током, сохраняем правильный scaleX
+            const shakeAnimation = [
+                { transform: `translate(0, 0) scaleX(${scaleXValue})` },
+                { transform: `translate(-5px, 5px) scaleX(${scaleXValue})` },
+                { transform: `translate(5px, -5px) scaleX(${scaleXValue})` },
+                { transform: `translate(0, 0) scaleX(${scaleXValue})` }
+            ];
+        
+            beeShock.animate(shakeAnimation, {
+                duration: 100, // Продолжительность одного цикла
+                iterations: 4, // Количество повторов (тряска длится 1 сек)
+                easing: 'ease-in-out',
+            });
+        
+            // Анимация "тока" длится 1 секунду
+            setTimeout(() => {
+                beeShock.remove(); // Удаляем пчелу после завершения анимации
+                        // Добавляем эффект дыма
+        addSmokeEffect(x, y, width, height, () => {
+            // После эффекта дыма добавляем мертвую пчелу
+            handleBeeDeath(x, y);
+        });
+            }, 300);
+        }
+
+        // Функция для добавления анимации дыма
+function addSmokeEffect(x, y, width, height, callback) {
+    const smoke = document.createElement('img');
+    smoke.src = 'assets/images/smoke.gif'; // Пусть к анимации дыма
+    smoke.style.position = 'absolute';
+    smoke.style.left = `${x - width / 3}px`;
+    smoke.style.top = `${y - height / 3}px`;
+    smoke.style.width = `${width}px`;
+    smoke.style.height = `${height}px`;
+    smoke.style.zIndex = '1000';
+    document.body.appendChild(smoke);
+
+    // Удаляем анимацию дыма через 0.5 секунды и вызываем колбэк
+    setTimeout(() => {
+        smoke.remove();
+        if (callback) {
+            callback(); // Вызываем колбэк после завершения эффекта дыма
+        }
+    }, 1200); // Время анимации дыма
+}
+        
 
         coins.forEach((coin, index) => {
             if (
@@ -483,26 +668,6 @@ const MiniGame = (function () {
         });
     }
 
-    bees.forEach((bee, index) => {
-        if (
-            xClick >= bee.x - bee.width / 2 - hitboxPadding &&
-            xClick <= bee.x + bee.width / 2 + hitboxPadding &&
-            yClick >= bee.y - bee.height / 2 - hitboxPadding &&
-            yClick <= bee.y + bee.height / 2 + hitboxPadding
-        ) {
-            bees.splice(index, 1); // Удаляем пчелу
-            gameCoins += 1; // Начисляем монеты
-    
-            // Вызываем анимацию выстрела
-            shootBee(bee.x, bee.y); // Передаем координаты пчелы
-    
-            // Остальная логика (монеты, звук, вибрация)
-            updateGameCoinCount();
-            AudioManager.playBeeKillSound();
-            createExplosionAnimation(bee.x, bee.y);
-            flyCoinToCounter(bee.x, bee.y);
-        }
-    });
     
 
     function createExplosionAnimation(x, y) {
@@ -688,7 +853,7 @@ function updateTicketCount() {
                     isCountdownDone = true;
                     beeInterval = setInterval(() => spawnBee(currentLevel), 1000);
                     heartInterval = setInterval(spawnHeart, 20000);
-                    coinInterval = setInterval(spawnCoin, 15000);
+                    coinInterval = setInterval(spawnCoin, 10000);
                     gameTimerInterval = setInterval(() => {
                         gameTime--;
                         document.getElementById('game-timer').textContent = formatTime(gameTime);
@@ -1070,42 +1235,48 @@ replayButtons.forEach(button => {
         burnedBee.style.position = 'absolute';
         burnedBee.style.left = `${x}px`;
         burnedBee.style.top = `${y}px`;
-        burnedBee.style.width = '75px'; // Увеличиваем размер в 1.5 раза
-        burnedBee.style.height = '75px';
-        burnedBee.style.zIndex = '999'; // Устанавливаем z-index ниже модальных окон
+        burnedBee.style.width = '50px'; 
+        burnedBee.style.height = '50px'; 
+        burnedBee.style.zIndex = '999'; 
         document.body.appendChild(burnedBee);
     
-        // Останавливаем пчелу на 1.5 секунды перед тем, как она начнёт опускаться
+        // Добавляем эффект тока
+        burnedBee.style.animation = 'electricShock 1.5s ease-in-out infinite';
+    
         setTimeout(() => {
-            // Анимация медленного падения вниз после паузы
+            // Пчела падает медленно вниз
             burnedBee.animate([
                 { transform: 'translateY(0)', opacity: 1 },
                 { transform: `translateY(${window.innerHeight - y}px)`, opacity: 1 }
             ], {
-                duration: 3000, // Медленное падение
+                duration: 3000, 
                 easing: 'ease-in-out',
                 fill: 'forwards'
             });
     
-            // Удаляем пчелу после анимации
             setTimeout(() => {
                 burnedBee.remove();
             }, 3000);
     
-            // Создаем серебряные монеты, которые можно собрать
-            let numCoins = 3; // Количество монет
+            // Создаем монеты (рандом от 1 до 3 монет)
+            let numCoins = Math.floor(Math.random() * 3) + 1;
+            let coinCreated = false; 
+    
             for (let i = 0; i < numCoins; i++) {
                 setTimeout(() => {
-                    spawnCollectibleCoin(x, y + (i * 50)); // Монеты падают с отступами
-                }, i * 500); // Время появления каждой монеты
+                    if (!coinCreated) { // Если золотая монета не создана
+                        if (Math.random() < 0.1) { 
+                            spawnGoldCoin(x + 40, y); // Создаем золотую монету
+                            coinCreated = true; // Отметим, что золотая монета создана
+                        } else {
+                            spawnCollectibleCoin(x, y + (i * 50)); // Создаем обычные монеты
+                        }
+                    } else {
+                        spawnCollectibleCoin(x, y + (i * 50)); // Создаем обычные монеты
+                    }
+                }, i * 500); 
             }
-    
-            // Шанс на выпадение золотой монеты (10% вероятность выпадения)
-            if (Math.random() < 0.1) { // Только 10% шанс
-                spawnGoldCoin(x, y + 100); // Создаем золотую монету ниже обугленной пчелы
-            }
-    
-        }, 1500); // Задержка в 1.5 секунды
+        }, 1500);
     }
     
     // Функция для создания собираемых серебряных монет
@@ -1115,18 +1286,21 @@ replayButtons.forEach(button => {
         coin.style.position = 'absolute';
         coin.style.left = `${x}px`;
         coin.style.top = `${y}px`;
-        coin.style.width = '30px';
-        coin.style.height = '30px';
-        coin.style.zIndex = '999'; // Монеты ниже модальных окон
-        coin.classList.add('collectible-coin'); // Добавляем класс для взаимодействия
+        coin.style.width = '25px'; // Уменьшаем размер монет
+        coin.style.height = '25px';
+        coin.style.zIndex = '998'; // Ставим ниже, чем обугленная пчела
+        coin.classList.add('collectible-coin');
         document.body.appendChild(coin);
     
-        // Добавляем обработчик клика по монете, чтобы собрать её
         coin.addEventListener('click', () => {
-            coin.remove(); // Убираем монету при сборе
-            gameCoins += 10; // Например, даём +10 за монету
-            updateGameCoinCount(); // Обновляем отображение количества монет
+            coin.remove();
+            gameCoins += 1; // За одну монету +1 coin
+            updateGameCoinCount();
         });
+    
+        setTimeout(() => {
+            coin.remove();
+        }, 3000); // Монеты исчезают через 3 секунды
     }
     
     // Функция для создания золотых монет (редкие выпадения)
@@ -1134,22 +1308,24 @@ replayButtons.forEach(button => {
         const goldCoin = document.createElement('img');
         goldCoin.src = 'assets/images/goldcoin.webp';
         goldCoin.style.position = 'absolute';
-        goldCoin.style.left = `${x}px`;
+        goldCoin.style.left = `${x + 20}px`; // Смещаем на 20px для равномерного распределения
         goldCoin.style.top = `${y}px`;
-        goldCoin.style.width = '30px';
+        goldCoin.style.width = '30px'; 
         goldCoin.style.height = '30px';
-        goldCoin.style.zIndex = '999'; // Монеты ниже модальных окон
-        goldCoin.classList.add('collectible-coin'); // Добавляем класс для взаимодействия
+        goldCoin.style.zIndex = '998'; // Ставим ниже, чем обугленная пчела
+        goldCoin.classList.add('collectible-coin');
         document.body.appendChild(goldCoin);
     
-        // Добавляем обработчик клика по монете, чтобы собрать её
         goldCoin.addEventListener('click', () => {
-            goldCoin.remove(); // Убираем монету при сборе
-            daisyCoins += 50; // Например, даём +50 за золотую монету
-            updateGameCoinCount(); // Обновляем отображение количества монет
+            goldCoin.remove();
+            daisyCoins += 10; // За одну золотую монету +10 daisy
+            updateGameCoinCount();
         });
-    }
     
+        setTimeout(() => {
+            goldCoin.remove();
+        }, 3000);
+    }
     
     
     

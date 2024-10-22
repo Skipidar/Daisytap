@@ -10,6 +10,7 @@ const AudioManager = (function() {
     let moneySound;
     let levelCompleteSound;
     let beeKillSound;
+    let shokBoomSound; // Добавляем переменную для SHOKBOOM.mp3
 
     let soundEnabled = JSON.parse(localStorage.getItem('soundEnabled'));
     if (soundEnabled === null) soundEnabled = true;
@@ -25,6 +26,7 @@ const AudioManager = (function() {
         moneySound = new Audio('assets/sounds/moneyi.mp3');
         levelCompleteSound = new Audio('assets/sounds/1levelcomplete.mp3');
         beeKillSound = new Audio('assets/sounds/BeeKill.wav');
+        shokBoomSound = new Audio('assets/sounds/SHOKBOOM.mp3'); // Звук SHOKBOOM
 
         // Установка громкости
         backgroundMusic.volume = 0.25;
@@ -37,6 +39,7 @@ const AudioManager = (function() {
         moneySound.volume = 0.2;
         levelCompleteSound.volume = 0.3;
         beeKillSound.volume = 0.2;
+        shokBoomSound.volume = 0.3; // Устанавливаем громкость SHOKBOOM
 
         backgroundMusic.loop = true;
         oneLevelMusic.loop = true;
@@ -76,6 +79,7 @@ const AudioManager = (function() {
             moneySound.pause();
             levelCompleteSound.pause();
             beeKillSound.pause();
+            shokBoomSound.pause(); // Останавливаем SHOKBOOM при отключении звука
         }
     }
 
@@ -89,31 +93,59 @@ const AudioManager = (function() {
     }
 
     function playClickSound() {
-        if (soundEnabled) clickSound.play();
+        if (soundEnabled) {
+            clickSound.currentTime = 0;
+            clickSound.play();
+        }
     }
 
     function playPredictionSound() {
-        if (soundEnabled) predictionSound.play();
+        if (soundEnabled) {
+            predictionSound.currentTime = 0;
+            predictionSound.play();
+        }
     }
 
     function playUdarSound() {
-        if (soundEnabled) udarSound.play();
+        if (soundEnabled) {
+            udarSound.currentTime = 0;
+            udarSound.play();
+        }
     }
 
     function playHeartPlusSound() {
-        if (soundEnabled) heartPlusSound.play();
+        if (soundEnabled) {
+            heartPlusSound.currentTime = 0;
+            heartPlusSound.play();
+        }
     }
 
     function playMoneySound() {
-        if (soundEnabled) moneySound.play();
+        if (soundEnabled) {
+            moneySound.currentTime = 0;
+            moneySound.play();
+        }
     }
 
     function playLevelCompleteSound() {
-        if (soundEnabled) levelCompleteSound.play();
+        if (soundEnabled) {
+            levelCompleteSound.currentTime = 0;
+            levelCompleteSound.play();
+        }
     }
 
     function playBeeKillSound() {
-        if (soundEnabled) beeKillSound.play();
+        if (soundEnabled) {
+            beeKillSound.currentTime = 0;
+            beeKillSound.play();
+        }
+    }
+
+    function playShokBoomSound() {
+        if (soundEnabled) {
+            shokBoomSound.currentTime = 0;
+            shokBoomSound.play();
+        }
     }
 
     function playOneLevelMusic() {
@@ -156,6 +188,7 @@ const AudioManager = (function() {
         playMoneySound,
         playLevelCompleteSound,
         playBeeKillSound,
+        playShokBoomSound, // Добавляем метод для SHOKBOOM
         playOneLevelMusic,
         pauseOneLevelMusic,
         playElectricChaosMusic,
