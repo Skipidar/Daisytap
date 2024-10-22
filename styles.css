@@ -735,7 +735,7 @@ footer button {
     cursor: pointer;
     text-shadow: 2px 2px 4px rgba(0,0,0,1);
     transition: background-color 0.3s;
-    font-size: 12px;
+    font-size: 16px;
     color: white;
     font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
 }
@@ -922,4 +922,16 @@ footer button {
     }
 }
 
+@keyframes electric-shock {
+    0%, 100% {
+        filter: brightness(1);
+    }
+    50% {
+        filter: brightness(3);
+    }
+}
+
+.electric-shock {
+    animation: electric-shock 0.1s infinite; /* Эффект тока повторяется каждые 0.1 секунды */
+}
 
