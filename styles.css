@@ -735,7 +735,7 @@ footer button {
     cursor: pointer;
     text-shadow: 2px 2px 4px rgba(0,0,0,1);
     transition: background-color 0.3s;
-    font-size: 16px;
+    font-size: 12px;
     color: white;
     font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
 }
@@ -922,19 +922,4 @@ footer button {
     }
 }
 
-@keyframes electric-shock {
-    0%, 100% {
-        -webkit-filter: brightness(1);
-        filter: brightness(1);
-    }
-    50% {
-        -webkit-filter: brightness(3);
-        filter: brightness(3);
-    }
-}
-
-.electric-shock {
-    -webkit-animation: electric-shock 1s infinite;
-    animation: electric-shock 1s infinite;
-}
 
