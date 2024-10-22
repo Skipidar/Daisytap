@@ -395,15 +395,17 @@ const MiniGame = (function () {
                 gameCoins += 1; // Coin
                 totalCoinsEarned += 1;
 
-            // Вызов анимации выстрела
-            shootBee(bee.x, bee.y); // Передаем координаты пчелы
-
                 updateGameCoinCount();
                 AudioManager.playBeeKillSound();
 
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
                 }
+
+                // Вызов функции появления поджаренной пчелы
+
+                shootBee(bee.x, bee.y); // Стреляем лазером в пчелу
+                handleBeeDeath(bee.x, bee.y); // Обрабатываем смерть пчелы
 
                 // Добавляем анимацию взрыва и монетки
                 createExplosionAnimation(bee.x, bee.y);
@@ -414,7 +416,7 @@ const MiniGame = (function () {
         // Функция выстрела
         function shootBee(targetX, targetY) {
             const startX = flower.x; // Центр цветка
-            const startY = flower.y - flower.height / 2; // Верхушка цветка
+            const startY = flower.y; // центр цветка
         
             const laser = document.createElement('div');
             laser.classList.add('laser'); // Применяем CSS класс лазера
@@ -435,13 +437,13 @@ const MiniGame = (function () {
                 { transform: `translate(0, 0) rotate(${angle + 90}deg)` }, // Начальная позиция
                 { transform: `translate(${distanceX}px, ${distanceY}px) rotate(${angle + 90}deg)` } // Конечная позиция
             ], {
-                duration: 300, // Скорость анимации
+                duration: 250, // Скорость анимации
                 easing: 'linear',
             });
         
             setTimeout(() => {
                 laser.remove();
-            }, 300); // Время жизни лазера
+            }, 250); // Время жизни лазера
         }
 
         coins.forEach((coin, index) => {
@@ -1062,6 +1064,95 @@ replayButtons.forEach(button => {
         }
     }
 
+    function handleBeeDeath(x, y) {
+        const burnedBee = document.createElement('img');
+        burnedBee.src = 'assets/images/laserassbee.webp';
+        burnedBee.style.position = 'absolute';
+        burnedBee.style.left = `${x}px`;
+        burnedBee.style.top = `${y}px`;
+        burnedBee.style.width = '75px'; // Увеличиваем размер в 1.5 раза
+        burnedBee.style.height = '75px';
+        burnedBee.style.zIndex = '999'; // Устанавливаем z-index ниже модальных окон
+        document.body.appendChild(burnedBee);
+    
+        // Останавливаем пчелу на 1.5 секунды перед тем, как она начнёт опускаться
+        setTimeout(() => {
+            // Анимация медленного падения вниз после паузы
+            burnedBee.animate([
+                { transform: 'translateY(0)', opacity: 1 },
+                { transform: `translateY(${window.innerHeight - y}px)`, opacity: 1 }
+            ], {
+                duration: 3000, // Медленное падение
+                easing: 'ease-in-out',
+                fill: 'forwards'
+            });
+    
+            // Удаляем пчелу после анимации
+            setTimeout(() => {
+                burnedBee.remove();
+            }, 3000);
+    
+            // Создаем серебряные монеты, которые можно собрать
+            let numCoins = 3; // Количество монет
+            for (let i = 0; i < numCoins; i++) {
+                setTimeout(() => {
+                    spawnCollectibleCoin(x, y + (i * 50)); // Монеты падают с отступами
+                }, i * 500); // Время появления каждой монеты
+            }
+    
+            // Шанс на выпадение золотой монеты (10% вероятность выпадения)
+            if (Math.random() < 0.1) { // Только 10% шанс
+                spawnGoldCoin(x, y + 100); // Создаем золотую монету ниже обугленной пчелы
+            }
+    
+        }, 1500); // Задержка в 1.5 секунды
+    }
+    
+    // Функция для создания собираемых серебряных монет
+    function spawnCollectibleCoin(x, y) {
+        const coin = document.createElement('img');
+        coin.src = 'assets/images/silvercoin.webp';
+        coin.style.position = 'absolute';
+        coin.style.left = `${x}px`;
+        coin.style.top = `${y}px`;
+        coin.style.width = '30px';
+        coin.style.height = '30px';
+        coin.style.zIndex = '999'; // Монеты ниже модальных окон
+        coin.classList.add('collectible-coin'); // Добавляем класс для взаимодействия
+        document.body.appendChild(coin);
+    
+        // Добавляем обработчик клика по монете, чтобы собрать её
+        coin.addEventListener('click', () => {
+            coin.remove(); // Убираем монету при сборе
+            gameCoins += 10; // Например, даём +10 за монету
+            updateGameCoinCount(); // Обновляем отображение количества монет
+        });
+    }
+    
+    // Функция для создания золотых монет (редкие выпадения)
+    function spawnGoldCoin(x, y) {
+        const goldCoin = document.createElement('img');
+        goldCoin.src = 'assets/images/goldcoin.webp';
+        goldCoin.style.position = 'absolute';
+        goldCoin.style.left = `${x}px`;
+        goldCoin.style.top = `${y}px`;
+        goldCoin.style.width = '30px';
+        goldCoin.style.height = '30px';
+        goldCoin.style.zIndex = '999'; // Монеты ниже модальных окон
+        goldCoin.classList.add('collectible-coin'); // Добавляем класс для взаимодействия
+        document.body.appendChild(goldCoin);
+    
+        // Добавляем обработчик клика по монете, чтобы собрать её
+        goldCoin.addEventListener('click', () => {
+            goldCoin.remove(); // Убираем монету при сборе
+            daisyCoins += 50; // Например, даём +50 за золотую монету
+            updateGameCoinCount(); // Обновляем отображение количества монет
+        });
+    }
+    
+    
+    
+    
     return {
         init,
     };
