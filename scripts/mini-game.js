@@ -20,7 +20,11 @@ const MiniGame = (function () {
     let tickets = parseInt(localStorage.getItem('tickets')) || 200;
     let isCountdownDone = false;
     let spinCoins = 0; // Глобальная переменная для счётчика монет
+    let dpr;
     
+    function init() {
+        dpr = window.devicePixelRatio || 1;
+    }
 
     function updateGameCoinCount(count) {
         const gameCoinCountElement = document.getElementById('game-coin-count');
@@ -99,8 +103,21 @@ const MiniGame = (function () {
     
         canvas = document.getElementById('game-canvas');
         ctx = canvas.getContext('2d');
-        canvas.width = gameScreen.clientWidth;
-        canvas.height = gameScreen.clientHeight;
+    
+        const dpr = window.devicePixelRatio || 1;
+    
+        canvas.width = gameScreen.clientWidth * dpr;
+        canvas.height = gameScreen.clientHeight * dpr;
+
+        // Устанавливаем размеры canvas с учетом dpr
+                canvas.width = canvas.clientWidth * dpr;
+                canvas.height = canvas.clientHeight * dpr;
+    
+        ctx.scale(dpr, dpr);
+    
+        // Включаем сглаживание
+        ctx.imageSmoothingEnabled = true;
+        
 
 
 // Определяем объект flower, который будет содержать этот элемент
@@ -154,49 +171,45 @@ const MiniGame = (function () {
         gameCoins = 0;
         daisyCoins = 0;
         updateGameCoinCount(); // Обновляем отображение количества монет
+        const dpr = window.devicePixelRatio || 1;
     
-// Создаём новый объект изображения
-const boevoySmileImage = new Image();
-boevoySmileImage.src = 'assets/images/boevoysmile.webp';
+    // Инициализируем цветок
+    const boevoySmileImage = new Image();
+    boevoySmileImage.src = 'assets/images/boevoysmile.webp';
 
-flower = {
-    x: canvas.width / 2,
-    y: canvas.height / 2,
-    width: 100,
-    height: 100,
-    angle: 0, // Угол в радианах
-    image: new Image(),
-    draw: function () {
-        // Рисуем вращающийся цветок
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.angle);
-        ctx.drawImage(
-            this.image,
-            -this.width / 2,
-            -this.height / 2,
-            this.width,
-            this.height
-        );
-        ctx.restore();
-
-        // Рисуем статичное изображение поверх цветка
-        if (boevoySmileImage.complete) {
-            // Задаём размеры для смайла (можете изменить по необходимости)
-            const smileWidth = this.width * 0.7; // 70% от ширины цветка
-            const smileHeight = this.height * 0.7; // 70% от высоты цветка
-
-            // Рисуем смайл без каких-либо трансформаций, чтобы он оставался статичным
+    flower = {
+        x: canvas.width / (2 * dpr),
+        y: canvas.height / (2 * dpr),
+        width: 100,
+        height: 100,
+        angle: 0,
+        image: new Image(),
+        draw: function () {
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.angle);
             ctx.drawImage(
-                boevoySmileImage,
-                this.x - smileWidth / 2,
-                this.y - smileHeight / 2,
-                smileWidth,
-                smileHeight
+                this.image,
+                -this.width / 2,
+                -this.height / 2,
+                this.width,
+                this.height
             );
-        }
-    },
-};
+            ctx.restore();
+
+            if (boevoySmileImage.complete) {
+                const smileWidth = this.width * 0.7;
+                const smileHeight = this.height * 0.7;
+                ctx.drawImage(
+                    boevoySmileImage,
+                    this.x - smileWidth / 2,
+                    this.y - smileHeight / 2,
+                    smileWidth,
+                    smileHeight
+                );
+            }
+        },
+    };
 
 // Устанавливаем источник для изображения цветка
 flower.image.src = 'assets/images/blasterdaisy.webp';
