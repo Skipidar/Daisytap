@@ -135,63 +135,198 @@ body {
     position: relative;
 }
 
-/* Кнопка смены языка */
-#language-toggle {
-    background: none;
+/* Шестерёнка */
+.settings-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 10vh;
+    height: 5vh;
+    background-color: transparent;
     border: none;
     cursor: pointer;
-    z-index: 150;
-    font-size: 3vh;
-    color: #FFD700;
+    z-index: 100; /* Под окном настроек */
 }
 
-/* Кнопка отключения звука */
-#sound-toggle {
+/* Скрыть шестерёнку на экране загрузки */
+#loading-screen + .settings-button {
+    display: none;
+}
+
+/* Меню настроек */
+.settings-menu {
+    position: fixed;
+    top: 10px; /* Отступ от верха */
+    right: -250px; /* Скрываем за правым краем */
+    width: 250px;
+    height: 300px; /* Высота только для верхней части */
+    background: linear-gradient(135deg, rgba(26, 5, 36, 0.554), rgba(110, 24, 164, 0.81)); /* Тёмный слева и градиент */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Уменьшен отступ между элементами */
+    transition: right 0.3s ease; /* Анимация выдвижения */
+    z-index: 150; /* Поверх игры */
+    border-top-left-radius: 20px; /* Закругление верхнего левого угла */
+    border-bottom-left-radius: 20px; /* Закругление нижнего левого угла */
+    backdrop-filter: blur(3px); /* Лёгкое размытие для эффекта прозрачности */
+}
+
+.close-settings {
+    align-self: flex-start; /* Перемещаем крестик влево */
     background: none;
     border: none;
+    font-size: 1.5rem; /* Уменьшенный размер шрифта */
+    color: white;
     cursor: pointer;
-    z-index: 150;
-    font-size: 3vh;
-    color: #FFD700;
+}
+
+/* Серые подложки для элементов в меню настроек с уменьшенной высотой и шрифтом */
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem; /* Уменьшенный шрифт */
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2); /* Полупрозрачная серая подложка */
+    padding: 3px 10px; /* Компактные отступы внутри элементов */
+    border-radius: 10px; /* Закругленные края */
+    margin-bottom: 1px; /* Уменьшаем отступ между элементами */
+}
+
+/* Кнопки и значки с меньшими размерами */
+.settings-item button, .settings-item a {
+    width: 5vh; /* Уменьшенные размеры кнопок */
+    height: 5vh;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px; /* Уменьшаем отступ между текстом и кнопкой */
+}
+
+.settings-item img {
+    width: 100%; /* Картинки внутри кнопок будут адаптироваться */
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Изображение для телеграм-значка */
+.telegram-icon {
     width: 5vh;
     height: 5vh;
 }
 
-/* Изображение внутри кнопки громкости */
-#sound-toggle img, #language-toggle img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+
+/* Анимация для открытия меню с правой стороны */
+.settings-menu.open {
+    right: 0;
+}
+
+/* Общие стили для кнопок */
+button {
+    background-color: transparent; /* Прозрачный фон */
+    border: none;
+    cursor: pointer;
+    width: 6vh; /* Размер кнопки */
+    height: 6vh;
+    border-radius: 50%; /* Делаем кнопку круглой */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Эффект при наведении */
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Изображение внутри кнопок */
+button img {
+    width: 5vh; /* Сделаем изображение чуть больше */
+    height: 5vh;
+    object-fit: contain; /* Сохраняем пропорции изображения */
+}
+
+/* Адаптация для мобильных устройств с изменёнными размерами */
+@media (max-width: 768px) {
+    button {
+        width: auto; /* Оставляем кнопки с автоматической шириной */
+        height: auto; /* Оставляем кнопки с автоматической высотой */
+    }
+
+    button img {
+        width: 6vh; /* Можно оставить изображение с другим размером */
+        height: 6vh;
+    }
+}
+
+/* Анимация вращения для значка настроек */
+@keyframes rotateGear {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Применение анимации к значку */
+.settings-button img {
+    animation: rotateGear 2s linear infinite; /* Вращение за 2 секунды, бесконечно */
+    transform-origin: 50% 50%; /* Вращение вокруг своего центра */
 }
 
 /* Уровень игрока и прогресс */
 #player-level-container {
     width: 90%;
     max-width: 400px;
+    margin: 5px auto; /* Центрирование и отступ сверху/снизу */
+    padding: 0 20px; /* Добавляем отступы по бокам */
     color: #FFD700;
     text-shadow: 2px 2px 4px rgba(0,0,0,1);
     font-size: 2vh;
-    margin-top: 1vh;
+    margin-top: 4vh;
+    
 }
 
 #player-level-text {
-    color: #FFD700;
-    font-size: 2vh;
-    margin-bottom: 1vh;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #FFD700; /* Золотой цвет для уровня игрока */
 }
 
 #level-progress-bar {
-    width: 100%;
-    height: 1.5vh;
-    background-color: #555;
-    border-radius: 5px;
+    width: 90%;
+    height: 3vh;
+    background-color: rgba(255, 255, 255, 0.2); /* Полупрозрачный фон */
+    border-radius: 15px; /* Закругленные края */
+    overflow: hidden; /* Скрываем всё, что выходит за границы */
+    position: relative;
 }
 
 #level-progress {
-    width: 0%;
     height: 100%;
-    background-color: #FFD700;
-    border-radius: 5px;
+    background-color: #FFD700; /* Цвет прогресса (золотистый) */
+    width: 0%; /* Это будет обновляться через JavaScript */
+    border-radius: 5px 0 0 5px;
+    transition: width 0.3s ease; /* Плавное увеличение прогресса */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+/* Текст внутри прогресс-бара */
+.xp-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: #000; /* Цвет текста */
+    font-size: 0.7rem; /* Уменьшенный шрифт */
+    font-weight: font-weight-absolute;
+    pointer-events: auto; /* Текст не блокирует клики */
+    z-index: 1;
 }
 
 /* Прибыль в час */
@@ -236,11 +371,10 @@ body {
 #booster {
     grid-column: 1 / -1;
     background-color: rgba(138, 43, 226, 0.8);
-    box-shadow: 0px 2px 2px rgba(255, 255, 0, 0.3);
     color: #FFD700;
     text-shadow: 2px 2px 4px rgba(0,0,0,1);
     border: none;
-    border-radius: 10px;
+    border-radius: 13px;
     padding: 1vh 0;
     display: block;  /* Кнопка должна быть видимой */
     pointer-events: auto;  /* Убедись, что события кликов включены */
@@ -264,9 +398,9 @@ body {
 /* Ромашка */
 .chamomile-container {
     position: relative;
-    width: 30vh;
-    height: 30vh;
-    margin: 2vh 0;
+    width: 38vh;
+    height: 38vh;
+    margin: -4vh  0 1vh 0; /* Отступ вниз на 5vh */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -568,7 +702,7 @@ footer button {
 
 #start-mini-game {
     position: absolute;
-    bottom: 5vh;
+    bottom: 50vh;
     padding: 1vh 2vw;
     background-color: #FFD700;
     border: none;

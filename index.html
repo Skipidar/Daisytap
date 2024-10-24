@@ -21,28 +21,46 @@
         </div>
     </div>
 
-    <!-- Контейнер игры -->
-    <div class="game-container" style="display: none;">
-        <!-- Верхний блок с кнопками -->
-        <div class="top-buttons">
-            <!-- Кнопка смены локализации -->
-            <button id="language-toggle">
-                <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
-            </button>
+<!-- Контейнер игры -->
+<div class="game-container" style="display: none;">
 
-            <!-- Кнопка отключения звука -->
-            <button id="sound-toggle">
-                <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
-            </button>
-        </div>
+    <!-- Кнопка для открытия меню настроек -->
+<button id="settings-button" class="settings-button">
+    <img src="assets/images/settings-icon.webp" alt="Настройки">
+</button>
 
+<!-- Меню настроек -->
+<div id="settings-menu" class="settings-menu">
+    <button id="close-settings" class="close-settings">×</button>
+    
+    <div class="settings-item">
+        <label for="language-toggle">Язык</label>
+        <button id="language-toggle">
+            <img src="assets/images/ru.svg" alt="Язык" class="language-icon">
+        </button>
+    </div>
+    
+    <div class="settings-item">
+        <label for="sound-toggle">Звук</label>
+        <button id="sound-toggle">
+            <img src="assets/images/on.webp" alt="Звук включен" id="sound-icon">
+        </button>
+    </div>
+    
+    <div class="settings-item">
+        <label for="community">Будь рядом</label>
+        <a href="https://t.me/daisytap" target="_blank">
+            <img src="assets/images/telegram-icon.webp" alt="Telegram" class="telegram-icon">
+        </a>
+    </div>
+</div>
         <!-- Уровень игрока и прогресс -->
         <div id="player-level-container">
-            <div id="player-level-text">
-                <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
-            </div>
-            <div id="level-progress-bar">
-                <div id="level-progress"></div>
+            <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
+        </div>
+        <div id="level-progress-bar">
+            <div id="level-progress">
+                <span id="xp-display" class="xp-text">0 / 100 XP</span>
             </div>
         </div>
 
