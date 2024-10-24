@@ -166,5 +166,20 @@ function rotateCoins() {
     });
 }
 
+document.getElementById('settings-button').addEventListener('click', function() {
+    document.getElementById('settings-menu').classList.add('open');
+});
+
+document.getElementById('close-settings').addEventListener('click', function() {
+    document.getElementById('settings-menu').classList.remove('open');
+});
+document.getElementById('language-toggle').addEventListener('click', function() {
+    alert('Переключение языка'); // Заменить на реальную логику переключения языка
+});
+
+document.getElementById('sound-toggle').addEventListener('click', function() {
+    alert('Переключение звука'); // Заменить на реальную логику включения/выключения звука
+});
+
 // Запускаем анимацию каждые 10 секунд
 setInterval(rotateCoins, 10000);

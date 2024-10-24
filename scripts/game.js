@@ -12,6 +12,9 @@ const Game = (function() {
     let incomePerHour = parseInt(localStorage.getItem('incomePerHour')) || 0;
     let lastIncomeTime = parseInt(localStorage.getItem('lastIncomeTime')) || Date.now();
     let tickets = parseInt(localStorage.getItem('tickets')) || 200;
+    let currentXP = 150; // Пример текущего опыта
+    let xpForNextLevel = 300; // Пример опыта для следующего уровня
+
 
     // Энергия сохраняется в localStorage
     let energy = parseInt(localStorage.getItem('energy')) || 1000; // Инициализируем энергию
@@ -307,15 +310,35 @@ const Game = (function() {
         localStorage.setItem('playerLevel', level);
     }
 
-    function updateLevelProgress() {
-        const progressPercent = (experience / experienceToNextLevel) * 100;
-        const levelProgressElement = document.getElementById('level-progress');
-        if (levelProgressElement) {
-            levelProgressElement.style.width = `${progressPercent}%`;
-        } else {
-            console.error('Элемент с id="level-progress" не найден в DOM.');
-        }
+// Обновляем текст и прогресс XP
+function updateLevelProgress() {
+    const progressPercent = (experience / experienceToNextLevel) * 100;
+    const levelProgressElement = document.getElementById('level-progress');
+    const xpDisplayElement = document.getElementById('xp-display'); // Элемент для отображения XP
+
+    if (levelProgressElement && xpDisplayElement) {
+        // Обновляем ширину прогресс-бара
+        levelProgressElement.style.width = `${progressPercent}%`;
+
+        // Обновляем текст внутри полоски прогресса
+        xpDisplayElement.textContent = `${experience} / ${experienceToNextLevel} XP`;
     }
+}
+
+// Функция для получения опыта (пример)
+function gainXP(amount) {
+    currentXP += amount;
+    
+    // Если текущий опыт больше или равен опыту для следующего уровня
+    if (currentXP >= xpForNextLevel) {
+        currentXP = currentXP - xpForNextLevel; // Обнулить лишний опыт
+        xpForNextLevel += 100; // Увеличить требуемый опыт для следующего уровня (пример)
+        document.getElementById('level-number').textContent = parseInt(document.getElementById('level-number').textContent) + 1;
+    }
+
+    // Обновляем прогресс
+    updateLevelProgress();
+}
 
     function calculatePassiveIncome() {
         const now = Date.now();
