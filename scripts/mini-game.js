@@ -1330,28 +1330,41 @@ replayButtons.forEach(button => {
         coin.style.top = `${y}px`;
         coin.style.width = '25px';
         coin.style.height = '25px';
-        coin.style.zIndex = '998'; 
+        coin.style.zIndex = '998';
         coin.classList.add('collectible-coin');
-        document.body.appendChild(coin);
-        
-        coin.addEventListener('click', () => {
-            coin.classList.add('coin-glow'); // Добавляем яркость и подсветку
+    
+        // Создаем невидимую область для увеличения зоны нажатия
+        const hitArea = document.createElement('div');
+        hitArea.style.position = 'absolute';
+        hitArea.style.left = `${x - 10}px`; // Немного смещаем, чтобы центр совпадал с монетой
+        hitArea.style.top = `${y - 10}px`;
+        hitArea.style.width = '45px'; // Увеличиваем ширину
+        hitArea.style.height = '45px'; // Увеличиваем высоту
+        hitArea.style.zIndex = '997'; // Убедитесь, что она под монеткой
+        hitArea.style.cursor = 'pointer';
+        hitArea.style.backgroundColor = 'transparent'; // Сделаем её невидимой
+    
+        // Обработка клика на области
+        hitArea.addEventListener('click', () => {
+            coin.classList.add('coin-glow');
             setTimeout(() => {
                 coin.classList.remove('coin-glow');
-                coin.remove(); // Убираем монету после эффекта
-            }, 500); 
-    
+                coin.remove();
+                hitArea.remove(); // Убираем также область нажатия
+            }, 500);
             gameCoins += 1;
             updateGameCoinCount();
-        
-            // Вибрация
             if (navigator.vibrate) {
-                navigator.vibrate(50); // Легкая вибрация при сборе монеты
+                navigator.vibrate(50);
             }
         });
     
+        document.body.appendChild(hitArea);
+        document.body.appendChild(coin);
+    
         setTimeout(() => {
             coin.remove();
+            hitArea.remove();
         }, 3000);
     }
     
@@ -1365,26 +1378,39 @@ replayButtons.forEach(button => {
         goldCoin.style.height = '30px';
         goldCoin.style.zIndex = '998';
         goldCoin.classList.add('collectible-coin');
-        document.body.appendChild(goldCoin);
-        
-        goldCoin.addEventListener('click', () => {
-            goldCoin.classList.add('coin-glow'); // Добавляем подсветку
+    
+        // Создаем невидимую область для увеличения зоны нажатия
+        const hitArea = document.createElement('div');
+        hitArea.style.position = 'absolute';
+        hitArea.style.left = `${x + 10}px`; // Немного смещаем, чтобы центр совпадал с монетой
+        hitArea.style.top = `${y - 10}px`;
+        hitArea.style.width = '50px'; // Увеличиваем ширину
+        hitArea.style.height = '50px'; // Увеличиваем высоту
+        hitArea.style.zIndex = '997'; // Убедитесь, что она под монеткой
+        hitArea.style.cursor = 'pointer';
+        hitArea.style.backgroundColor = 'transparent'; // Сделаем её невидимой
+    
+        // Обработка клика на области
+        hitArea.addEventListener('click', () => {
+            goldCoin.classList.add('coin-glow');
             setTimeout(() => {
                 goldCoin.classList.remove('coin-glow');
-                goldCoin.remove(); // Убираем монету после эффекта
-            }, 500); 
-    
+                goldCoin.remove();
+                hitArea.remove();
+            }, 500);
             daisyCoins += 10;
             updateGameCoinCount();
-        
-            // Вибрация
             if (navigator.vibrate) {
-                navigator.vibrate(50); // Легкая вибрация при сборе монеты
+                navigator.vibrate(50);
             }
         });
     
+        document.body.appendChild(hitArea);
+        document.body.appendChild(goldCoin);
+    
         setTimeout(() => {
             goldCoin.remove();
+            hitArea.remove();
         }, 3000);
     }
     
