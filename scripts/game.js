@@ -14,11 +14,6 @@ const Game = (function() {
     let tickets = parseInt(localStorage.getItem('tickets')) || 200;
     let currentXP = 150; // Пример текущего опыта
     let xpForNextLevel = 300; // Пример опыта для следующего уровня
-
-
-    // Энергия сохраняется в localStorage
-    let energy = parseInt(localStorage.getItem('energy')) || 1000; // Инициализируем энергию
-
     let usedPredictions = JSON.parse(localStorage.getItem('usedPredictions')) || [];
     let predictionHistory = JSON.parse(localStorage.getItem('predictionHistory')) || [];
     let chamomile;
@@ -29,12 +24,15 @@ const Game = (function() {
             console.error('Элемент с id="chamomile" не найден в DOM.');
             return;
         }
+    
+        // Обновляем начальное состояние ромашки
+        updateEnergyBar();
 
         // Обновление отображения монет и билетов
         updateElementText('coin-count', coins);
         updateElementText('spin-coin-count', spinCoins);
         updateElementText('ticket-count', tickets);
-        updateElementText('energy-count', energy); // Обновляем отображение энергии
+        updateElementText('energy-count', window.energy); // Обновляем отображение энергии
 
         // Обновление уровня и прогресса
         updateElementText('level-number', level);
@@ -83,27 +81,23 @@ const Game = (function() {
 
     function handleChamomileClick(e) {
         const now = Date.now();
-        if (now - lastClickTime >= 500 && window.energy > 0 && isFlowerClickable) {  // Используем глобальную переменную energy
+        if (now - lastClickTime >= 500 && window.energy > 0 && isFlowerClickable) {
             lastClickTime = now;
             AudioManager.playClickSound();
             spinCoins += 1;
             updateElementText('spin-coin-count', spinCoins);
             localStorage.setItem('spinCoins', spinCoins);
     
-            // Уменьшаем глобальную переменную energy и сохраняем её
             window.energy -= 10;
-            if (window.energy < 0) window.energy = 0; // Не даём энергии опуститься ниже 0
+            if (window.energy < 0) window.energy = 0;
             updateElementText('energy-count', window.energy);
-            localStorage.setItem('energy', window.energy); // Сохраняем энергию в localStorage
+            localStorage.setItem('energy', window.energy);
     
-            // Обновляем опыт и уровень
+            updateEnergyBar();
             gainExperience(1);
-    
-            // Вращаем ромашку
             rotationAngle += 360 * 4.5 + Math.random() * 360;
             chamomile.style.transition = 'transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)';
             chamomile.style.transform = `rotate(${rotationAngle}deg)`;
-    
             createSparks(e.clientX, e.clientY);
             animateCoin(e.clientX, e.clientY);
         }
@@ -145,11 +139,13 @@ const Game = (function() {
     }
 
     function updateEnergyBar() {
-        if (energy > 0) {
+        if (window.energy >= 10) {
             chamomile.style.filter = "none";
+            chamomile.style.pointerEvents = 'auto';
             isFlowerClickable = true;
         } else {
             chamomile.style.filter = "grayscale(100%)";
+            chamomile.style.pointerEvents = 'none';
             isFlowerClickable = false;
         }
     }
@@ -194,13 +190,30 @@ const Game = (function() {
         });
     }
 
-    function createConfetti() {
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
-    }
+// Проверка и создание canvas для конфетти
+let confettiCanvas = document.getElementById('confetti-canvas');
+if (!confettiCanvas) {
+    confettiCanvas = document.createElement('canvas');
+    confettiCanvas.id = 'confetti-canvas';
+    confettiCanvas.style.position = 'fixed';
+    confettiCanvas.style.top = '0';
+    confettiCanvas.style.left = '0';
+    confettiCanvas.style.width = '100vw';
+    confettiCanvas.style.height = '100vh';
+    confettiCanvas.style.pointerEvents = 'none';
+    confettiCanvas.style.zIndex = '1000'; // Высокий z-index для поверх всех окон
+    document.body.appendChild(confettiCanvas);
+}
+
+// Функция для запуска конфетти
+function createConfetti() {
+    const confettiInstance = confetti.create(confettiCanvas, { resize: true });
+    confettiInstance({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+    });
+}
 
     function animateCoin(x, y) {
         const coin = document.createElement('img');
@@ -257,18 +270,23 @@ const Game = (function() {
     }
 
     function startCountdown(seconds) {
-        const countdownElement = document.createElement('div');
-        countdownElement.className = 'countdown';
+        // Находим или создаем элемент таймера только для "До следующего предсказания"
+        const countdownElement = document.getElementById('prediction-timer');
+        if (!countdownElement) {
+            console.error('Таймер не найден');
+            return;
+        }
+    
+        // Обновляем текст таймера
         countdownElement.textContent = formatTime(seconds);
-        document.querySelector('.game-container').appendChild(countdownElement);
-
+    
         let remaining = seconds;
         const interval = setInterval(() => {
             remaining--;
             countdownElement.textContent = formatTime(remaining);
             if (remaining <= 0) {
                 clearInterval(interval);
-                countdownElement.remove();
+                countdownElement.textContent = '00:00:00';
             }
         }, 1000);
     }
@@ -353,14 +371,23 @@ function gainXP(amount) {
         }
     }
 
-    function showTicketNotification(amount) {
+    function showTicketNotification() {
         const ticketNotification = document.getElementById('ticket-notification');
         if (ticketNotification) {
-            ticketNotification.innerHTML = `Поздравляем! Ваш подарок: <span id="ticket-amount">${amount}</span> билетов.`;
-            ticketNotification.style.display = 'block';
+            ticketNotification.innerHTML = `
+                <p>Поздравляем! Ваш подарок: <span id="ticket-amount">3</span> билета</p>
+                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+            `;
+            
+            // Показываем уведомление с задержкой после конфетти
             setTimeout(() => {
-                ticketNotification.style.display = 'none';
-            }, 3000); // Скрываем уведомление через 3 секунды
+                ticketNotification.classList.add('show');
+    
+                // Убираем уведомление через 5 секунд
+                setTimeout(() => {
+                    ticketNotification.classList.remove('show');
+                }, 5000);
+            }, 1000);
         } else {
             console.error('Элемент с id="ticket-notification" не найден в DOM.');
         }
@@ -376,7 +403,8 @@ function gainXP(amount) {
     }
 
     return {
-        init
+        init,
+        updateEnergyBar
     };
 })();
 

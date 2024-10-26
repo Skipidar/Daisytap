@@ -87,8 +87,10 @@ function initMain() {
 
     // Обновление UI бустера
     function updateBoosterUI() {
-        document.getElementById('booster').textContent = `Бустер ${boosterCharges}/6`;
-        document.getElementById('booster').disabled = boosterCharges === 0;
+        const boosterButton = document.getElementById('booster');
+        boosterButton.innerHTML = `<span style="color: #FFD700;">Бустер</span> 
+                                   <span style="color: #FFFFFF; font-weight: bold;">${boosterCharges}/6</span>`;
+        boosterButton.disabled = boosterCharges === 0;
     }
 
     // Восстановление бустера
@@ -116,14 +118,18 @@ function initMain() {
     function updateBoosterTimer() {
         const now = Date.now();
         const remainingTime = (boosterLastUsed + 60 * 60 * 1000) - now;
-
+    
+        const boosterButton = document.getElementById('booster');
+    
         if (remainingTime > 0) {
             const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-
-            document.getElementById('booster').textContent = `Бустер ${boosterCharges}/6 (${minutes}:${seconds})`;
+    
+            boosterButton.innerHTML = `<span style="color: #FFD700;">Бустер</span> 
+                                       <span style="color: #FFFFFF; font-weight: bold;">${boosterCharges}/6</span> 
+                                       <span style="color: #FFFFFF; font-weight: bold;">(${minutes}:${seconds})</span>`;
         } else {
-            document.getElementById('booster').textContent = 'Бустер восполнен!';
+            boosterButton.innerHTML = '<span style="color: #FFD700;">Бустер восполнен!</span>';
             replenishBooster();
         }
     }
@@ -134,6 +140,9 @@ function initMain() {
             window.energy += 1;
             document.getElementById('energy-count').textContent = window.energy;
             localStorage.setItem('energy', window.energy);
+    
+            // Вызываем функцию для обновления состояния ромашки
+            Game.updateEnergyBar();
         }
     }
 
@@ -174,11 +183,9 @@ document.getElementById('close-settings').addEventListener('click', function() {
     document.getElementById('settings-menu').classList.remove('open');
 });
 document.getElementById('language-toggle').addEventListener('click', function() {
-    alert('Переключение языка'); // Заменить на реальную логику переключения языка
 });
 
 document.getElementById('sound-toggle').addEventListener('click', function() {
-    alert('Переключение звука'); // Заменить на реальную логику включения/выключения звука
 });
 
 // Запускаем анимацию каждые 10 секунд
