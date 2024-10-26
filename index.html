@@ -7,6 +7,10 @@
     <!-- Подключение нового шрифта -->
     <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
@@ -56,43 +60,54 @@
 </div>
         <!-- Уровень игрока и прогресс -->
         <div id="player-level-container">
-            <span data-localize="player_level">Уровень игрока:</span> <span id="level-number">1</span>
-        </div>
-        <div id="level-progress-bar">
-            <div id="level-progress">
-                <span id="xp-display" class="xp-text">0 / 100 XP</span>
+            <div id="player-level-text">
+                <span data-localize="player_level">Уровень игрока:</span> 
+                <span id="level-number" class="number-white">1</span> <!-- Цифра уровня игрока -->
+            </div>
+            <div id="level-progress-bar">
+                <div id="level-progress"></div>
+                <span id="xp-display" class="xp-text">0 / 100 XP</span> <!-- Независимый текст опыта -->
             </div>
         </div>
 
         <!-- Прибыль в час -->
         <div id="income-counter" class="counter">
-            <span data-localize="income_per_hour">Прибыль в час:</span> <span id="income-per-hour">0</span> Coin
+            <span data-localize="income_per_hour">Прибыль в час:</span> 
+            <span id="income-per-hour" class="number-white">0</span> Coin
         </div>
 
         <!-- Счётчики -->
         <div class="counters">
         <!-- $Daisy -->
-            <div id="coin-counter" class="counter">
-                <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
-                <span class="daisy-coin" id="coin-count">10000</span> $Daisy
-            </div>
-            <!-- Coin -->
-            <div id="spin-coin-counter" class="counter">
-                <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-                <span class="secondary-coin" id="spin-coin-count">10000</span> Coin
-            </div>
-            <!-- Tickets -->
-            <div id="ticket-counter" class="counter">
-                <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-                <span id="ticket-count">200</span> Билеты
-            </div>
-            <!-- Энергия -->
-            <div id="energy-counter" class="counter">
-                <img src="assets/images/energy-icon.png" alt="Энергия" class="energy-icon">
-                <span id="energy-count">1000</span> Энергия
-            </div>
+        <div id="coin-counter" class="counter">
+            <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
+            <span class="number-white" id="coin-count">10000</span> 
+            <span class="highlight-yellow">$Daisy</span>
+        </div>
+        
+        <div id="spin-coin-counter" class="counter">
+            <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
+            <span class="number-white" id="spin-coin-count">10000</span> 
+            <span class="highlight-yellow">Coin</span>
+        </div>
+        
+        <div id="ticket-counter" class="counter">
+            <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+            <span class="number-white" id="ticket-count">200</span> 
+            <span class="highlight-yellow">Билеты</span>
+        </div>
+        
+        <div id="energy-counter" class="counter">
+            <img src="assets/images/energy-icon.png" alt="Энергия" class="energy-icon">
+            <span class="number-white" id="energy-count">1000</span> 
+            <span class="highlight-yellow">Энергия</span>
+        </div>
             <!-- Бустер -->
-            <button id="booster">Бустер 6/6 (01:00)</button> <span id="booster-timer"></span>
+            <button id="booster">
+                <span>Бустер</span> <!-- Жёлтый цвет благодаря #booster -->
+                <span class="number-white" style="margin-left: 5px;">6/6</span> 
+                <span class="number-white" id="booster-timer" style="margin-left: 5px;">(01:00)</span>
+            </button>
         </div>
 
         <!-- Ромашка -->
@@ -102,7 +117,8 @@
 
         <!-- Таймер до следующего предсказания -->
         <div id="next-prediction-timer" style="cursor: pointer; background-color: rgba(255, 255, 255, 0.2); padding: 5px; border-radius: 10px;">
-            <span data-localize="next_prediction_in">До следующего предсказания:</span> <span id="prediction-timer">06:00:00</span>
+            <span data-localize="next_prediction_in">До следующего предсказания:</span> 
+            <span id="prediction-timer" class="number-white">06:00:00</span>
         </div>
 
         <footer>
@@ -113,29 +129,36 @@
             <button id="tasks-btn" data-localize="tasks">Задачи</button>
         </footer>
 
-        <!-- Модальные окна -->
-        <!-- Предсказание -->
-        <div id="prediction-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn">&times;</span>
-                <h2 data-localize="your_prediction">Ваше предсказание на сегодня:</h2>
-                <p id="prediction-title"></p>
-                <div class="prediction-buttons">
-                    <button class="share-btn" data-localize="share_with_friends">Поделиться с друзьями</button>
-                    <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
-                </div>
-                <div id="ticket-notification" class="ticket-notification" style="display: none;">
-                    <p data-localize="congratulations_ticket">Поздравляем! Ваш подарок: <span id="ticket-amount">0</span> билетов.</p>
-                </div>
-                <div id="predictions-history">
-                    <h3 data-localize="prediction_history">История предсказаний:</h3>
-                    <!-- Здесь будут отображаться предыдущие предсказания -->
-                </div>
-            </div>
+<!-- Модальное окно предсказаний -->
+<div id="prediction-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+
+        <!-- Текст "Ваше предсказание на сегодня" с желтым цветом -->
+        <h2 class="prediction-heading" data-localize="your_prediction">Предсказание на сегодня:</h2>
+
+        <!-- Основной текст предсказания с белым шрифтом и черной обводкой -->
+        <p id="prediction-title" class="prediction-text">Ваше предсказание появится здесь...</p>
+
+        <div class="prediction-buttons">
+            <button class="share-btn" data-localize="share_with_friends">Поделиться с друзьями</button>
+            <button class="publish-btn" data-localize="publish_story">Опубликовать историю</button>
         </div>
+
+        <!-- Уведомление о подарке -->
+        <div id="ticket-notification" class="ticket-notification">
+            <p>Поздравляем! Ваш подарок: <span id="ticket-amount">3</span> билета</p>
+            <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+        </div>
+
+        <div id="predictions-history">
+            <h3 data-localize="prediction_history">История предсказаний:</h3>
+            <!-- Здесь будут отображаться предыдущие предсказания -->
+        </div>
+    </div>
+</div>
                 <!-- Кнопка "Играть" -->
                 <button id="play-button" data-localize="play_button">Играть</button>
-        
             </div>
         </div>
 

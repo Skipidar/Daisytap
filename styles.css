@@ -205,8 +205,6 @@ body {
 }
 
 .settings-item img {
-    width: 100%; /* Картинки внутри кнопок будут адаптироваться */
-    height: 100%;
     object-fit: contain;
 }
 
@@ -234,12 +232,6 @@ button {
     justify-content: center;
     align-items: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Эффект при наведении */
-button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 /* Изображение внутри кнопок */
@@ -274,6 +266,9 @@ button img {
 
 /* Применение анимации к значку */
 .settings-button img {
+    width: 80%; /* Уменьшаем ширину изображения до 50% */
+    height: 80%; /* Уменьшаем высоту изображения до 50% */
+    object-fit: contain; /* Сохраняем пропорции */
     animation: rotateGear 2s linear infinite; /* Вращение за 2 секунды, бесконечно */
     transform-origin: 50% 50%; /* Вращение вокруг своего центра */
 }
@@ -282,51 +277,54 @@ button img {
 #player-level-container {
     width: 90%;
     max-width: 400px;
-    margin: 5px auto; /* Центрирование и отступ сверху/снизу */
-    padding: 0 20px; /* Добавляем отступы по бокам */
+    margin: 10px auto; /* Центрируем по горизонтали */
+    padding: 0 0px; /* Добавляем отступы по бокам */
     color: #FFD700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,1);
     font-size: 2vh;
-    margin-top: 4vh;
+    margin-top: 3vh;
     
 }
 
 #player-level-text {
-    font-size: 1.2rem;
+    font-size: 0.8rem;
     margin-bottom: 5px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,1);
     color: #FFD700; /* Золотой цвет для уровня игрока */
 }
 
 #level-progress-bar {
-    width: 90%;
-    height: 3vh;
-    background-color: rgba(255, 255, 255, 0.2); /* Полупрозрачный фон */
-    border-radius: 15px; /* Закругленные края */
-    overflow: hidden; /* Скрываем всё, что выходит за границы */
-    position: relative;
+    width: 100%;
+    height: 2vh;
+    margin-bottom: -10px;
+    background-color: rgba(255, 255, 255, 0.2); /* Серый фон */
+    border-radius: 15px;
+    position: relative; /* Относительное позиционирование для вложенных элементов */
 }
 
 #level-progress {
     height: 100%;
-    background-color: #FFD700; /* Цвет прогресса (золотистый) */
-    width: 0%; /* Это будет обновляться через JavaScript */
-    border-radius: 5px 0 0 5px;
-    transition: width 0.3s ease; /* Плавное увеличение прогресса */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+    background-color: #FFD700; /* Желтый цвет прогресса */
+    width: 0%; /* Заполняется динамически */
+    border-radius: 15px 0 0 15px;
+    transition: width 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0; /* Под текстом */
 }
 /* Текст внутри прогресс-бара */
 .xp-text {
     position: absolute;
-    width: 100%;
-    text-align: center;
-    color: #000; /* Цвет текста */
-    font-size: 0.7rem; /* Уменьшенный шрифт */
-    font-weight: font-weight-absolute;
-    pointer-events: auto; /* Текст не блокирует клики */
-    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgb(5, 39, 7); /* Бледный цвет текста */
+    font-size: 0.7rem;
+    font-weight: bold;
+    pointer-events: none; /* Текст не блокирует клики */
+    z-index: 1; /* Поверх желтой полоски */
+    mix-blend-mode: multiply; /* Текст темнеет при перекрытии желтой полоской */
+    font-family: 'Roboto', sans-serif;
 }
 
 /* Прибыль в час */
@@ -371,15 +369,15 @@ button img {
 #booster {
     grid-column: 1 / -1;
     background-color: rgba(138, 43, 226, 0.8);
-    color: #FFD700;
+    color: #FFD700; /* Цвет для текста "Бустер" */
     text-shadow: 2px 2px 4px rgba(0,0,0,1);
     border: none;
     border-radius: 13px;
     padding: 1vh 0;
-    display: block;  /* Кнопка должна быть видимой */
-    pointer-events: auto;  /* Убедись, что события кликов включены */
+    display: block;
+    pointer-events: auto;
     cursor: pointer;
-    font-family: 'Dela Gothic One', sans-serif; /* Укажи здесь шрифт игры */
+    font-family: 'Dela Gothic One', sans-serif;
     font-size: 2vh;
     transition: background-color 0.3s;
     width: 100%;
@@ -413,6 +411,7 @@ button img {
     object-fit: contain;
 }
 
+
 /* Класс для вращения ромашки */
 .rotate-animation {
     animation: rotate 3s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -425,6 +424,17 @@ button img {
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Стили для ромашки */
+#chamomile {
+    transition: filter 0.3s ease; /* Плавный переход между цветным и серым состоянием */
+}
+
+/* Серая ромашка (добавляется через JavaScript) */
+#chamomile.grayscale {
+    filter: grayscale(100%);
+    pointer-events: none; /* Отключение кликов */
 }
 
 /* Кнопка "Играть" */
@@ -474,26 +484,47 @@ button img {
     background-color: rgba(0, 0, 0, 0.317);
     padding: 2vh;
     border-radius: 10px;
+    backdrop-filter: blur(3px);
 }
 
-.history-item p {
-    color: #ffffff; /* Текст предсказания белый */
+.history-item {
+    background-color: rgba(255, 255, 255, 0.1); /* Полупрозрачный фон */
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
 }
 
-.history-date {
-    color: #FFD700; /* Дата предсказания жёлтая */
+.history-item .history-date {
+    color: #FFD700; /* Желтый цвет для даты */
+    font-size: 0.9rem;
 }
 
-/* Кнопки в истории предсказаний */
-.share-btn {
-    background-color: #32CD32; /* Зелёный цвет для кнопки "Поделиться с друзьями" */
+/* Контейнер для кнопок в истории предсказаний */
+.prediction-buttons {
+    display: flex;
+    gap: 10px; /* Расстояние между кнопками */
+    justify-content: center; /* Центрируем кнопки */
+    margin-top: 10px; /* Отступ сверху */
+}
+
+/* Стили для кнопок */
+.share-btn, .publish-btn {
+    background-color: #32CD32; /* Зеленый цвет для "Поделиться" */
     color: white;
     text-shadow: 2px 2px 4px rgba(0,0,0,1);
     padding: 1vh 2vw;
-    border: 1px solid rgba(86, 78, 0, 0.165);;
+    border: 1px solid rgba(86, 78, 0, 0.165);
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
+}
+
+/* Индивидуальные цвета кнопок */
+.share-btn {
+    background-color: #32CD32;
 }
 
 .share-btn:hover {
@@ -501,14 +532,7 @@ button img {
 }
 
 .publish-btn {
-    background-color: rgba(138, 43, 226, 0.8); /* Синий цвет для кнопки "Опубликовать историю" */
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0,0,0,1);
-    padding: 1vh 2vw;
-    border: 1px solid rgba(86, 78, 0, 0.165);;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+    background-color: rgba(138, 43, 226, 0.8);
 }
 
 .publish-btn:hover {
@@ -554,6 +578,7 @@ footer button {
     align-items: center;
     z-index: 300; /* Устанавливаем окно поверх всех элементов игры */
     overflow: hidden; /* Избегаем прокрутки всего окна */
+    backdrop-filter: blur(2px);
 }
 
 .modal-content {
@@ -734,17 +759,65 @@ footer button {
 
 /* Стилизация для подсчета билетов */
 .ticket-notification {
-    position: absolute;
-    top: 50%;
+    position: fixed;
+    top: -80px; /* Начальное положение за экраном */
     left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 215, 0, 0.9);
-    padding: 2vh;
-    border-radius: 10px;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 300px;
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.8); /* Темный фон, как в настройках */
+    color: #fff;
     text-align: center;
-    color: #000;
-    z-index: 200;
+    border-radius: 15px; /* Полностью закругленные углы */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0; /* По умолчанию скрыто */
+    transition: top 0.5s ease, opacity 0.5s ease;
 }
+
+.ticket-notification.show {
+    top: 20px; /* Конечная позиция для видимости */
+    opacity: 1;
+}
+
+.ticket-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Стили для заголовка "Ваше предсказание на сегодня:" */
+.prediction-heading {
+    font-size: 1rem;
+    color: #FFD700; /* Желтый цвет */
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+/* Стили для основного текста предсказания */
+.prediction-text {
+    font-size: 1.3rem;
+    color: #ffffff; /* Белый цвет текста */
+    text-align: center;
+    font-weight: bold;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; /* Черная обводка */
+    margin-bottom: 15px;
+}
+
+/* Белый цвет для чисел */
+.number-white {
+    color: #FFFFFF;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 700; /* Жирный вес */
+    font-weight: bold;
+    font-size: 1.2em; /* Увеличивает размер всех чисел на 20% */
+}
+
+.highlight-yellow {
+    color: #FFD700; /* Жёлтый цвет */
+    font-weight: bold;
+}
+
+
 /* Анимация тряски экрана */
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
