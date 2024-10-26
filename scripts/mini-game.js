@@ -1280,6 +1280,7 @@ replayButtons.forEach(button => {
         burnedBee.style.width = '50px'; 
         burnedBee.style.height = '50px'; 
         burnedBee.style.zIndex = '999'; 
+        burnedBee.style.pointerEvents = 'none'; // Пчёлы не будут мешать нажатию
         document.body.appendChild(burnedBee);
     
         // Добавляем эффект тока
@@ -1333,29 +1334,29 @@ replayButtons.forEach(button => {
         coin.style.zIndex = '998'; 
         coin.classList.add('collectible-coin');
     
-        // Создаем увеличенную невидимую область для нажатия
         const hitArea = document.createElement('div');
         hitArea.style.position = 'absolute';
-        hitArea.style.left = `${x - 15}px`; // Смещаем для центрирования
+        hitArea.style.left = `${x - 15}px`; 
         hitArea.style.top = `${y - 15}px`;
-        hitArea.style.width = '55px'; // Увеличенная площадь
+        hitArea.style.width = '55px'; 
         hitArea.style.height = '55px'; 
         hitArea.style.zIndex = '997'; 
         hitArea.style.cursor = 'pointer';
-        hitArea.style.backgroundColor = 'transparent'; // Невидимая область
+        hitArea.style.backgroundColor = 'transparent'; 
     
-        // Обработка клика на увеличенной области
         const handleClick = () => {
+            if (coin.style.pointerEvents === 'none') return; // Проверка, чтобы исключить повторный клик
+    
             coin.classList.add('coin-glow');
             coin.style.pointerEvents = 'none'; // Отключаем возможность повторных кликов
-            hitArea.remove(); // Удаляем область нажатия сразу
-            setTimeout(() => {
-                coin.remove(); // Убираем монету после эффекта
-            }, 500);
+            hitArea.style.pointerEvents = 'none'; // Убираем область нажатия
+            coin.remove(); // Немедленно удаляем монетку
+            hitArea.remove();
+            
             gameCoins += 1;
             updateGameCoinCount();
             if (navigator.vibrate) {
-                navigator.vibrate(50); // Легкая вибрация при сборе монеты
+                navigator.vibrate(50); 
             }
         };
     
@@ -1382,29 +1383,29 @@ replayButtons.forEach(button => {
         goldCoin.style.zIndex = '998';
         goldCoin.classList.add('collectible-coin');
     
-        // Создаем увеличенную невидимую область для нажатия
         const hitArea = document.createElement('div');
         hitArea.style.position = 'absolute';
-        hitArea.style.left = `${x + 5}px`; // Смещаем для центрирования
+        hitArea.style.left = `${x + 5}px`; 
         hitArea.style.top = `${y - 15}px`;
-        hitArea.style.width = '60px'; // Увеличенная площадь
+        hitArea.style.width = '60px'; 
         hitArea.style.height = '60px';
         hitArea.style.zIndex = '997';
         hitArea.style.cursor = 'pointer';
         hitArea.style.backgroundColor = 'transparent'; 
     
-        // Обработка клика на увеличенной области
         const handleClick = () => {
+            if (goldCoin.style.pointerEvents === 'none') return; // Проверка, чтобы исключить повторный клик
+    
             goldCoin.classList.add('coin-glow');
-            goldCoin.style.pointerEvents = 'none'; // Отключаем возможность повторных кликов
-            hitArea.remove(); // Удаляем область нажатия сразу
-            setTimeout(() => {
-                goldCoin.remove(); // Убираем монету после эффекта
-            }, 500);
+            goldCoin.style.pointerEvents = 'none'; 
+            hitArea.style.pointerEvents = 'none';
+            goldCoin.remove(); // Немедленно удаляем монетку
+            hitArea.remove();
+            
             daisyCoins += 10;
             updateGameCoinCount();
             if (navigator.vibrate) {
-                navigator.vibrate(50); // Легкая вибрация при сборе монеты
+                navigator.vibrate(50); 
             }
         };
     
@@ -1419,6 +1420,7 @@ replayButtons.forEach(button => {
             hitArea.remove();
         }, 3000);
     }
+    
     
     
     return {
