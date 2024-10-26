@@ -41,23 +41,11 @@ const MiniGame = (function () {
         coins = [];
     }
 
-    function init() {
-        const startButton = document.getElementById('start-mini-game');
-        startButton.addEventListener('click', startGame);
-
-        // Добавлен обработчик кнопки "Назад"
-        document.addEventListener('backbutton', handleBackButton, false);
-    }
-
     function handleBackButton() {
         if (isGameRunning) {
             endGame();
-            document.querySelector('.game-container').style.display = 'flex';
-            document.getElementById('protect-flower-game').style.display = 'none';
-    
-            // Показать кнопку "Старт" при возврате в игру
-            const startButton = document.getElementById('start-mini-game');
-            startButton.style.display = 'block';
+            document.getElementById('protect-flower-game').style.display = 'none'; // Скрыть экран мини-игры
+            document.querySelector('.game-container').style.display = 'flex'; // Показать главное меню
         } else {
             navigator.app.exitApp();
         }
@@ -66,10 +54,6 @@ const MiniGame = (function () {
 
     // Обновление текста кнопки с отображением количества билетов
     function updateStartButton() {
-        startButton.innerHTML = `
-            <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon"> 
-            Старт (Билеты: ${tickets})
-        `;
     }
     
     // Вызов функции для обновления кнопки
@@ -97,8 +81,6 @@ const MiniGame = (function () {
     
         // Показываем холст и скрываем кнопку старта
         const gameScreen = document.getElementById('protect-flower-game');
-        const startButton = document.getElementById('start-mini-game');
-        startButton.style.display = 'none'; // Скрываем кнопку "Старт"
         gameScreen.style.display = 'flex'; // Показываем экран игры
     
         canvas = document.getElementById('game-canvas');
@@ -236,7 +218,6 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
             AudioManager.playElectricChaosMusic();
         }
     
-        document.getElementById('start-mini-game').style.display = 'none';
         canvas.addEventListener('click', handleCanvasClick);
     
         startCountdown(() => {
@@ -290,42 +271,30 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
         countdownContainer.style.display = 'flex';
         countdownContainer.style.justifyContent = 'center';
         countdownContainer.style.alignItems = 'center';
-        countdownContainer.style.backgroundColor = 'rgba(0, 0, 0, 3)';
+        countdownContainer.style.backdropFilter = 'blur(15px)'; // Легкий блюр фона
+        countdownContainer.style.transition = 'backdrop-filter 1.5s ease'; // Плавный переход блюра
         countdownContainer.style.zIndex = '1001';
         document.body.appendChild(countdownContainer);
     
         const countdownNumber = document.createElement('div');
-        countdownNumber.style.fontSize = '100px';
+        countdownNumber.style.fontSize = '50px'; // Уменьшен размер шрифта
         countdownNumber.style.color = '#fff';
-        countdownNumber.style.textShadow = '0 0 20px #fff';
+        countdownNumber.style.textShadow = '0 0 5px rgba(0, 0, 0, 0.7)'; // Тень для контраста
+        countdownNumber.style.webkitTextStroke = '1px black'; // Добавлена обводка
         countdownNumber.style.opacity = '0';
-        countdownNumber.style.fontFamily = 'https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap'; // Вы можете заменить на желаемый шрифт
         countdownContainer.appendChild(countdownNumber);
     
         let counter = 3;
         countdownNumber.textContent = counter;
     
         const countdownInterval = setInterval(() => {
-            // Эффект вспышки фона
-            countdownContainer.animate([
-                { backgroundColor: 'rgba(0, 0, 0, 0.7)' },
-                { backgroundColor: 'rgba(255, 255, 255, 1)' },
-                { backgroundColor: 'rgba(0, 0, 0, 0.7)' }
-            ], {
-                duration: 500,
-                easing: 'ease-out'
-            });
+            // Эффект глитча для каждой цифры
+            applyGlitchEffect(countdownNumber);
+            countdownNumber.style.opacity = '1';
     
-            // Анимация появления числа
-            countdownNumber.animate([
-                { transform: 'scale(0.5)', opacity: '0', offset: 0 },
-                { transform: 'scale(1.2)', opacity: '1', offset: 0.5 },
-                { transform: 'scale(1)', opacity: '1', offset: 0.7 },
-                { transform: 'translateY(-200px)', opacity: '0', offset: 1 }
-            ], {
-                duration: 1000,
-                easing: 'ease-in-out'
-            });
+            setTimeout(() => {
+                countdownNumber.style.opacity = '0';
+            }, 800);
     
             if (counter > 0) {
                 countdownNumber.textContent = counter;
@@ -334,71 +303,129 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
                 countdownNumber.textContent = 'Поехали!';
                 clearInterval(countdownInterval);
     
-                // Небольшая задержка перед началом игры
+                // Эффект разлетающихся частиц для "Поехали!"
+                createEnhancedParticlesEffect(countdownContainer, countdownNumber);
+    
+                // Постепенное снятие блюра к моменту появления "Поехали!"
+                countdownContainer.style.backdropFilter = 'blur(0px)';
+    
                 setTimeout(() => {
                     countdownContainer.remove();
                     callback();
-                }, 1000);
+                }, 1500);
             }
         }, 1000);
     }
-
+    
+    // Функция для эффекта глитча
+    function applyGlitchEffect(element) {
+        const glitchAnimation = [
+            { transform: 'translate(2px, 0)', textShadow: '2px 2px #ff00ff' },
+            { transform: 'translate(-2px, 0)', textShadow: '-2px -2px #00ffff' },
+            { transform: 'translate(1px, -1px)', textShadow: '1px -1px #ff00ff' },
+            { transform: 'translate(0px, 0)', textShadow: '0px 0px #ffffff' }
+        ];
+    
+        // Применяем случайную анимацию глитча на короткое время
+        glitchAnimation.forEach((style, index) => {
+            setTimeout(() => {
+                element.style.transform = style.transform;
+                element.style.textShadow = style.textShadow;
+            }, index * 50);
+        });
+    
+        setTimeout(() => {
+            element.style.transform = 'none';
+            element.style.textShadow = '0 0 5px rgba(0, 0, 0, 0.7)';
+        }, 200);
+    }
+    
+    // Функция для разлетающихся частиц
+    function createEnhancedParticlesEffect(container, element) {
+        const textRect = element.getBoundingClientRect();
+        const particleCount = 80;
+    
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = '4px';
+            particle.style.height = '4px';
+            particle.style.backgroundColor = `rgba(255, 255, 255, ${Math.random()})`;
+            particle.style.borderRadius = '50%';
+            particle.style.left = `${textRect.left + Math.random() * textRect.width}px`;
+            particle.style.top = `${textRect.top + Math.random() * textRect.height}px`;
+            particle.style.opacity = '1';
+            particle.style.transition = `transform 1.2s ease, opacity 1.2s ease`;
+            particle.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.6)'; 
+    
+            container.appendChild(particle);
+    
+            setTimeout(() => {
+                particle.style.transform = `translate(${Math.random() * 300 - 150}px, ${Math.random() * 300 - 150}px)`;
+                particle.style.opacity = '0';
+            }, 100);
+    
+            setTimeout(() => {
+                particle.remove();
+            }, 1200);
+        }
+    }
+    
+    
+    
     function spawnBee(level) {
         const size = Math.floor(Math.random() * 60) + 40;
         const speed = level === 1 ? 0.8 : 1.1;
         let x, y;
+        let isFromLeft = false;
     
-        const side = Math.floor(Math.random() * 4);
-        switch (side) {
-            case 0:
-                x = Math.random() * canvas.width;
-                y = -size;
-                break;
-            case 1:
-                x = canvas.width + size;
-                y = Math.random() * canvas.height;
-                break;
-            case 2:
-                x = Math.random() * canvas.width;
-                y = canvas.height + size;
-                break;
-            case 3:
-                x = -size;
-                y = Math.random() * canvas.height;
-                break;
+        // Определяем сторону появления пчелы
+        const side = Math.random() < 0.5 ? 'left' : 'right';
+        
+        if (side === 'left') {
+            // Пчела появляется слева, с небольшим смещением от верхней и нижней границ экрана
+            x = -size;
+            y = Math.random() * (canvas.height - 100) + 50; // Отступы в 50px сверху и снизу
+            isFromLeft = true;
+        } else {
+            // Пчела появляется справа
+            x = canvas.width + size;
+            y = Math.random() * (canvas.height - 100) + 50;
         }
     
-        const bee = { 
+        const bee = {
             x: x,
             y: y,
             width: size,
             height: size,
             speed: speed,
             image: new Image(),
-            isLeft: x < canvas.width / 2, // Флаг для направления пчелы (слева или справа)
+            isFromLeft: isFromLeft,
             draw: function () {
                 ctx.save();
+                ctx.translate(this.x, this.y);
                 
-                if (this.isLeft) {
-                    // Отражаем пчёл, летящих слева
+                // Отражение по горизонтали для пчёл слева
+                if (this.isFromLeft) {
                     ctx.scale(-1, 1);
-                    ctx.drawImage(this.image, -this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
-                } else {
-                    // Обычное отображение пчёл
-                    ctx.drawImage(this.image, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
                 }
-        
+    
+                ctx.drawImage(
+                    this.image,
+                    -this.width / 2,
+                    -this.height / 2,
+                    this.width,
+                    this.height
+                );
                 ctx.restore();
             },
             move: function (flower) {
                 const angle = Math.atan2(flower.y - this.y, flower.x - this.x);
-                
-                // Пчёлы на обеих сторонах экрана летят к центру
                 this.x += Math.cos(angle) * this.speed;
                 this.y += Math.sin(angle) * this.speed;
             }
         };
-        
+    
         bee.image.src = level === 1 ? 'assets/images/Bee.webp' : 'assets/images/BeeRed.webp';
         bees.push(bee);
     }
@@ -467,7 +494,7 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
         const yClick = event.clientY - rect.top;
 
          // Увеличиваем хитбокс пчелы
-    const hitboxPadding = 40; // Увеличиваем область клика на 0 пикселей с каждой стороны
+    const hitboxPadding = 50; // Увеличиваем область клика на 0 пикселей с каждой стороны
 
 
         bees.forEach((bee, index) => {
@@ -723,35 +750,41 @@ function addSmokeEffect(x, y, width, height, callback) {
     function updateBees(ctx, flower) {
         for (let i = bees.length - 1; i >= 0; i--) {
             const bee = bees[i];
-            bee.move(flower);
-            bee.draw();
-            console.error(`Пчела с индексом ${i} не имеет метода move или не существует`);
-            bees.splice(i, 1); // Удаляем пчелу, если её нет или она не валидна
-
-            if (isColliding(bee, flower)) {
-                lives--;
-                updateLives();
-                bees.splice(i, 1);
-                AudioManager.playUdarSound();
-                shakeScreen();
-                flashFlower();
-
-                if (navigator.vibrate) {
-                    navigator.vibrate(200);
+    
+            if (bee) {
+                bee.move(flower);
+                bee.draw();
+    
+                if (isColliding(bee, flower)) {
+                    lives--;
+                    updateLives();
+                    bees.splice(i, 1);
+                    AudioManager.playUdarSound();
+                    shakeScreen();
+                    flashFlower();
+    
+                    if (navigator.vibrate) {
+                        navigator.vibrate(200);
+                    }
+    
+                    if (lives <= 0) {
+                        endGame();
+                    }
+                    continue; // Переходим к следующей итерации цикла
                 }
-
-                if (lives <= 0) {
-                    endGame();
+    
+                if (
+                    bee.x < -bee.width ||
+                    bee.x > canvas.width + bee.width ||
+                    bee.y < -bee.height ||
+                    bee.y > canvas.height
+                ) {
+                    bees.splice(i, 1);
+                    continue; // Переходим к следующей итерации цикла
                 }
-            }
-
-            if (
-                bee.x < -bee.width ||
-                bee.x > canvas.width + bee.width ||
-                bee.y < -bee.height ||
-                bee.y > canvas.height
-            ) {
-                bees.splice(i, 1);
+            } else {
+                console.error(`Пчела с индексом ${i} не существует`);
+                bees.splice(i, 1); // Удаляем неопределенную пчелу из массива
             }
         }
     }
@@ -1181,22 +1214,18 @@ replayButtons.forEach(button => {
     function endGame() {
         isGamePaused = true;
         isGameRunning = false; // Сбрасываем флаг
-        
+    
         // Очищаем все таймеры
         clearInterval(beeInterval);
         clearInterval(coinInterval);
         clearInterval(heartInterval);
         clearInterval(gameTimerInterval);
-        
+    
         clearGameObjects(); // Скрываем все объекты
-
-        // Переключаемся обратно на главный экран
+    
+        // Возвращаемся на экран выбора мини-игры
         document.querySelector('.game-container').style.display = 'flex';
         document.getElementById('protect-flower-game').style.display = 'none';
-    
-        // Показать кнопку "Старт" снова для перезапуска игры
-        const startButton = document.getElementById('start-mini-game');
-        startButton.style.display = 'block';
     
         // Обновляем количество монет на главном экране
         updateGameCoinCount();
@@ -1299,40 +1328,59 @@ replayButtons.forEach(button => {
         coin.style.position = 'absolute';
         coin.style.left = `${x}px`;
         coin.style.top = `${y}px`;
-        coin.style.width = '25px'; // Уменьшаем размер монет
+        coin.style.width = '25px';
         coin.style.height = '25px';
-        coin.style.zIndex = '998'; // Ставим ниже, чем обугленная пчела
+        coin.style.zIndex = '998'; 
         coin.classList.add('collectible-coin');
         document.body.appendChild(coin);
-    
+        
         coin.addEventListener('click', () => {
-            coin.remove();
-            gameCoins += 1; // За одну монету +1 coin
+            coin.classList.add('coin-glow'); // Добавляем яркость и подсветку
+            setTimeout(() => {
+                coin.classList.remove('coin-glow');
+                coin.remove(); // Убираем монету после эффекта
+            }, 500); 
+    
+            gameCoins += 1;
             updateGameCoinCount();
+        
+            // Вибрация
+            if (navigator.vibrate) {
+                navigator.vibrate(50); // Легкая вибрация при сборе монеты
+            }
         });
     
         setTimeout(() => {
             coin.remove();
-        }, 3000); // Монеты исчезают через 3 секунды
+        }, 3000);
     }
     
-    // Функция для создания золотых монет (редкие выпадения)
     function spawnGoldCoin(x, y) {
         const goldCoin = document.createElement('img');
         goldCoin.src = 'assets/images/goldcoin.webp';
         goldCoin.style.position = 'absolute';
-        goldCoin.style.left = `${x + 20}px`; // Смещаем на 20px для равномерного распределения
+        goldCoin.style.left = `${x + 20}px`;
         goldCoin.style.top = `${y}px`;
-        goldCoin.style.width = '30px'; 
+        goldCoin.style.width = '30px';
         goldCoin.style.height = '30px';
-        goldCoin.style.zIndex = '998'; // Ставим ниже, чем обугленная пчела
+        goldCoin.style.zIndex = '998';
         goldCoin.classList.add('collectible-coin');
         document.body.appendChild(goldCoin);
-    
+        
         goldCoin.addEventListener('click', () => {
-            goldCoin.remove();
-            daisyCoins += 10; // За одну золотую монету +10 daisy
+            goldCoin.classList.add('coin-glow'); // Добавляем подсветку
+            setTimeout(() => {
+                goldCoin.classList.remove('coin-glow');
+                goldCoin.remove(); // Убираем монету после эффекта
+            }, 500); 
+    
+            daisyCoins += 10;
             updateGameCoinCount();
+        
+            // Вибрация
+            if (navigator.vibrate) {
+                navigator.vibrate(50); // Легкая вибрация при сборе монеты
+            }
         });
     
         setTimeout(() => {
@@ -1341,8 +1389,8 @@ replayButtons.forEach(button => {
     }
     
     
-    
     return {
         init,
+    startGame, // Добавляем эту строку
     };
 })();

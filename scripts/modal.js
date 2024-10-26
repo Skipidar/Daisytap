@@ -25,14 +25,6 @@ const Modal = (function() {
         setupTasksModal();
         setupGiftModal();
 
-        // Обработчик кнопки "Играть"
-        const playButton = document.getElementById('play-button');
-        if (playButton) {
-            playButton.addEventListener('click', function() {
-                document.querySelector('.game-container').style.display = 'none';
-                document.getElementById('protect-flower-game').style.display = 'flex';
-            });
-        }
     }
 
     function open(modalId) {
@@ -165,6 +157,33 @@ const Modal = (function() {
         predictionHistory.push({ prediction: prediction, date: date });  // Добавляем предсказание и дату в историю
         localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));  // Сохраняем историю в localStorage
     }
+
+// Открытие модального окна с анимацией
+function openGameDescriptionModal() {
+    const modal = document.getElementById('game-description-modal');
+    modal.classList.add('active'); // Показать модальное окно
+    modal.classList.remove('closing'); // Убрать закрывающий класс (если он есть)
+}
+
+// Закрытие модального окна с анимацией
+function closeGameDescriptionModal() {
+    const modal = document.getElementById('game-description-modal');
+    modal.classList.add('closing'); // Добавить класс закрытия
+
+    // Убрать активное окно через 0.4 сек (время завершения анимации)
+    setTimeout(() => {
+        modal.classList.remove('active');
+        modal.classList.remove('closing');
+    }, 400);
+}
+
+// Добавить обработчик для открытия описания игры
+const gameThumbnail = document.querySelector('.game-option img');
+gameThumbnail.addEventListener('click', openGameDescriptionModal);
+
+// Обработчик для кнопки закрытия
+document.getElementById('close-game-description').addEventListener('click', closeGameDescriptionModal);
+
     
     return {
         init,

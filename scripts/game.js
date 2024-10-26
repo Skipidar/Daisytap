@@ -65,16 +65,6 @@ const Game = (function() {
         // Обновление энергии
         updateEnergyBar();
 
-        // Обработчик кнопки "Играть"
-        const playButton = document.getElementById('play-button');
-        if (playButton) {
-            playButton.addEventListener('click', () => {
-                Modal.open('protect-flower-game');
-            });
-        } else {
-            console.error('Элемент с id="play-button" не найден в DOM.');
-        }
-
         // Инициализация магазина
         Shop.updateBalance(coins, spinCoins);
     }
@@ -87,6 +77,14 @@ const Game = (function() {
             spinCoins += 1;
             updateElementText('spin-coin-count', spinCoins);
             localStorage.setItem('spinCoins', spinCoins);
+    
+            // Показать +1 рядом с местом клика
+            showPlusOne(e.clientX, e.clientY);
+    
+            chamomile.classList.add('chamomile-glow');
+            setTimeout(() => {
+                chamomile.classList.remove('chamomile-glow');
+            }, 500);
     
             window.energy -= 10;
             if (window.energy < 0) window.energy = 0;
@@ -267,6 +265,34 @@ function createConfetti() {
         spark.textContent = '+1';
         document.body.appendChild(spark);
         setTimeout(() => spark.remove(), 1000);
+    }
+
+    function showPlusOne(x, y) {
+        const plusOne = document.createElement('div');
+        plusOne.textContent = '+1';
+        plusOne.style.position = 'absolute';
+        plusOne.style.left = `${x}px`;
+        plusOne.style.top = `${y}px`;
+        plusOne.style.transform = 'translate(-50%, -50%)'; // Центрируем по точке клика
+        plusOne.style.color = '#FFD700'; // Желтый цвет
+        plusOne.style.fontSize = '1.5rem';
+        plusOne.style.fontWeight = 'bold';
+        plusOne.style.pointerEvents = 'none';
+        plusOne.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        plusOne.style.opacity = '1';
+        
+        document.body.appendChild(plusOne);
+        
+        // Анимация: движение вверх и исчезновение
+        setTimeout(() => {
+            plusOne.style.transform = 'translate(-50%, -100%)'; // Сместим вверх
+            plusOne.style.opacity = '0';
+        }, 50);
+        
+        // Удаление элемента после анимации
+        setTimeout(() => {
+            plusOne.remove();
+        }, 550);
     }
 
     function startCountdown(seconds) {

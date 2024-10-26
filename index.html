@@ -93,7 +93,7 @@
         
         <div id="ticket-counter" class="counter">
             <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
-            <span class="number-white" id="ticket-count">200</span> 
+            <span class="number-white" id="ticket-count">0</span> 
             <span class="highlight-yellow">Билеты</span>
         </div>
         
@@ -160,7 +160,42 @@
                 <!-- Кнопка "Играть" -->
                 <button id="play-button" data-localize="play_button">Играть</button>
             </div>
-        </div>
+
+<!-- Экран выбора мини-игры -->
+<div id="mini-game-selection" class="game-screen" style="display: none;">
+    <button id="close-mini-game" class="close-mini-game">×</button>
+
+    <div class="game-ticket-center">
+        <span>Билеты</span>
+        <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+        <span id="mini-game-ticket-count">0</span>
+    </div>
+
+    <div class="game-option">
+        <h3>Защитись от пчёл</h3>
+        <img src="assets/images/game1-thumbnail.jpg" alt="Защитись от пчёл" class="game-thumbnail">
+        <button id="start-game-1">Старт</button>
+    </div>
+    <div class="game-option">
+        <h3>Гонка с пчёлами</h3>
+        <img src="assets/images/game2-thumbnail.jpg" alt="Гонка с пчёлами" class="game-thumbnail">
+        <button id="start-game-2" disabled>Скоро</button> <!-- Кнопка пока неактивна -->
+    </div>
+</div>
+
+<!-- Модальное окно описания первой игры -->
+<div id="game-description-modal" class="modal game-description-modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close-btn" id="close-game-description">×</span>
+        <h2>Защити цветок</h2>
+        <p>
+            В этой мини-игре вам предстоит защищать нежный цветок от нашествия вредителей. Управляйте подсолнухом, стреляя
+            по назойливым пчелам, которые пытаются захватить вашу территорию. Используйте энергию и стратегически расставляйте 
+            оборону, чтобы продержаться как можно дольше и заработать ценные монеты $Daisy. Готовы ли вы защитить природу?
+        </p>
+        <button id="start-game-from-description">Начать игру</button>
+    </div>
+</div>
 
         <!-- Airdrop -->
         <div id="airdrop-modal" class="modal">
@@ -247,8 +282,6 @@
                 <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
                 <span id="game-daisy-count">0</span>
             </div>
-            <!-- Кнопка "Старт" внутри мини-игры -->
-            <button id="start-mini-game" data-localize="start">Старт</button>
         </div>
         
         <!-- Подключаем скрипты -->
@@ -256,18 +289,6 @@
             // Упрощенный скрипт для открытия истории предсказаний
             document.getElementById('next-prediction-timer').addEventListener('click', function() {
                 document.getElementById('prediction-modal').style.display = 'flex';
-            });
-
-            // Упрощенный скрипт для запуска мини-игры
-            document.getElementById('play-button').addEventListener('click', function() {
-                document.querySelector('.game-container').style.display = 'block'; // Показываем контейнер с игрой
-            });
-
-            document.getElementById('start-mini-game').addEventListener('click', function() {
-                const canvas = document.getElementById('game-canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = 500;
-                canvas.height = 500;
             });
         </script>
 
