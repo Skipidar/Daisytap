@@ -25,15 +25,16 @@ const Game = (function() {
             return;
         }
 
-          // Обработчики для запрета скачивания изображения ромашки
-    chamomile.addEventListener('contextmenu', function (e) {
-        e.preventDefault(); // Отключить контекстное меню на правый клик
-    }, false);
-
-    // Отключить длительное нажатие на мобильных устройствах
-    chamomile.addEventListener('touchstart', function (e) {
-        e.preventDefault(); // Отключить длительное нажатие для предотвращения загрузки
-    }, false);
+        document.getElementById('chamomile').addEventListener('contextmenu', function (e) {
+            e.preventDefault(); // Отключить контекстное меню на правый клик
+        }, false);
+        
+        // Отключить длительное нажатие на мобильных устройствах, но не блокировать обычные клики
+        document.getElementById('chamomile').addEventListener('touchstart', function (e) {
+            if (e.touches.length === 1) {
+                e.stopPropagation(); // Остановить распространение события, но не блокировать его
+            }
+        }, false);
     
         // Обновляем начальное состояние ромашки
         updateEnergyBar();
