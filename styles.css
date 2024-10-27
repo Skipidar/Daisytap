@@ -11,7 +11,6 @@ img {
     -webkit-user-drag: none;
     -moz-user-drag: none;
     -ms-user-drag: none;
-    user-drag: none;
     pointer-events: none; /* Отключение возможности взаимодействия */
 }
 /* Разрешить клики по монеткам в мини-игре */
@@ -462,8 +461,8 @@ button img {
 
 .chamomile-glow {
     position: absolute;
-    width: 50%; /* Размер */
-    height: 50%;
+    width: 60%; /* Размер */
+    height: 60%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
