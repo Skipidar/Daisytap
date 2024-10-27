@@ -24,6 +24,16 @@ const Game = (function() {
             console.error('Элемент с id="chamomile" не найден в DOM.');
             return;
         }
+
+          // Обработчики для запрета скачивания изображения ромашки
+    chamomile.addEventListener('contextmenu', function (e) {
+        e.preventDefault(); // Отключить контекстное меню на правый клик
+    }, false);
+
+    // Отключить длительное нажатие на мобильных устройствах
+    chamomile.addEventListener('touchstart', function (e) {
+        e.preventDefault(); // Отключить длительное нажатие для предотвращения загрузки
+    }, false);
     
         // Обновляем начальное состояние ромашки
         updateEnergyBar();
@@ -441,3 +451,4 @@ function gainXP(amount) {
 })();
 
 document.addEventListener('DOMContentLoaded', Game.init);
+
