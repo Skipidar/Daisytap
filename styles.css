@@ -16,12 +16,21 @@ img {
 
 /* Запретить скачивание ромашки, но разрешить клики */
 #chamomile {
-    -webkit-user-drag: none; /* Отключить перетаскивание в Chrome/Safari */
-    -moz-user-drag: none;    /* Отключить перетаскивание в Firefox */
-    -ms-user-drag: none;     /* Отключить перетаскивание в IE/Edge */
-    user-drag: none;         /* Общий стиль для браузеров */
-    pointer-events: auto;    /* Разрешить клики */
+    pointer-events: auto; /* Включает взаимодействие */
+    -webkit-user-select: none; /* Отключить выделение */
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none; /* Запрет перетаскивания */
+    -webkit-tap-highlight-color: transparent; /* Отключить выделение при тапе на мобильных устройствах */
+    -webkit-touch-callout: none; /* Отключить всплывающие действия при долгом нажатии на iOS */
+    -moz-user-drag: none;
+    -ms-user-drag: none;
+    outline: none;             /* Убрать контур вокруг изображения */
+    user-drag: none;
+    image-rendering: pixelated; /* Сглаживание искажается, если кто-то попытается сохранить картинку */
 }
+
 
 
 /* Разрешить клики по монеткам в мини-игре */
