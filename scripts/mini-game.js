@@ -10,6 +10,7 @@ const MiniGame = (function () {
     let lives = 3;
     let gameCoins = 0; // Это Coin
     let daisyCoins = 0; // Это $Daisy
+    let activeCoins = []; // Массив для отслеживания активных монет
     let currentLevel = 1;
     let isGamePaused = false; // Новый флаг для паузы
     let flower; // Переменная для цветка
@@ -108,8 +109,8 @@ const MiniGame = (function () {
     const flower = {
         x: canvas.width / 2,  // Центр по X
         y: canvas.height / 2, // Центр по Y
-        width: 100,           // Ширина
-        height: 100,          // Высота
+        width: 70,           // Ширина
+        height: 70,          // Высота
         image: flowerElement  // Само изображение цветка
     };
 
@@ -162,8 +163,8 @@ const MiniGame = (function () {
     flower = {
         x: canvas.width / (2 * dpr),
         y: canvas.height / (2 * dpr),
-        width: 100,
-        height: 100,
+        width: 70,
+        height: 70,
         angle: 0,
         image: new Image(),
         draw: function () {
@@ -271,48 +272,50 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
         countdownContainer.style.display = 'flex';
         countdownContainer.style.justifyContent = 'center';
         countdownContainer.style.alignItems = 'center';
-        countdownContainer.style.backdropFilter = 'blur(15px)'; // Легкий блюр фона
-        countdownContainer.style.transition = 'backdrop-filter 1.5s ease'; // Плавный переход блюра
         countdownContainer.style.zIndex = '1001';
         document.body.appendChild(countdownContainer);
     
         const countdownNumber = document.createElement('div');
-        countdownNumber.style.fontSize = '50px'; // Уменьшен размер шрифта
+        countdownNumber.style.fontSize = '50px';
         countdownNumber.style.color = '#fff';
-        countdownNumber.style.textShadow = '0 0 5px rgba(0, 0, 0, 0.7)'; // Тень для контраста
-        countdownNumber.style.webkitTextStroke = '1px black'; // Добавлена обводка
-        countdownNumber.style.opacity = '0';
+        countdownNumber.style.textShadow = '0 0 5px rgba(0, 0, 0, 0.7)'; 
+        countdownNumber.style.webkitTextStroke = '1px black'; 
+        countdownNumber.style.opacity = '0'; // Начальная прозрачность
+        countdownNumber.style.transition = 'opacity 0.2s ease, transform 0.6s ease'; // Плавное появление и масштабирование
         countdownContainer.appendChild(countdownNumber);
     
         let counter = 3;
         countdownNumber.textContent = counter;
     
         const countdownInterval = setInterval(() => {
-            // Эффект глитча для каждой цифры
-            applyGlitchEffect(countdownNumber);
-            countdownNumber.style.opacity = '1';
-    
+            // Анимация появления цифр с увеличением и исчезновением вверх
+            countdownNumber.style.opacity = '0'; // Скрываем перед сменой цифры
+            countdownNumber.style.transform = 'scale(0.5)'; // Уменьшаем перед началом анимации
             setTimeout(() => {
-                countdownNumber.style.opacity = '0';
-            }, 800);
+                countdownNumber.style.opacity = '1'; // Плавное появление новой цифры
+                countdownNumber.style.transform = 'scale(1.5) translateY(-20px)'; // Увеличение и подъем вверх
+            }, 50);
     
             if (counter > 0) {
+                applyGlitchEffect(countdownNumber); // Применяем глитч к каждой цифре
                 countdownNumber.textContent = counter;
                 counter--;
             } else {
                 countdownNumber.textContent = 'Поехали!';
                 clearInterval(countdownInterval);
+                applyGlitchEffect(countdownNumber); // Применяем глитч к "Поехали!"
+                createEnhancedParticlesEffect(countdownContainer, countdownNumber); // Эффект разлетающихся частиц
     
-                // Эффект разлетающихся частиц для "Поехали!"
-                createEnhancedParticlesEffect(countdownContainer, countdownNumber);
-    
-                // Постепенное снятие блюра к моменту появления "Поехали!"
-                countdownContainer.style.backdropFilter = 'blur(0px)';
-    
+                // Эффект для "Поехали!"
                 setTimeout(() => {
-                    countdownContainer.remove();
-                    callback();
-                }, 1500);
+                    countdownNumber.style.transition = 'transform 1.2s ease, opacity 1s ease'; // Плавный выход вверх
+                    countdownNumber.style.transform = 'scale(2) translateY(-100px)'; // Большое увеличение и исчезновение вверх
+                    countdownNumber.style.opacity = '0'; // Исчезновение
+                    setTimeout(() => {
+                        countdownContainer.remove();
+                        callback();
+                    }, 1500);
+                }, 1000); // Показывается 1 секунду перед исчезновением
             }
         }, 1000);
     }
@@ -320,9 +323,9 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
     // Функция для эффекта глитча
     function applyGlitchEffect(element) {
         const glitchAnimation = [
-            { transform: 'translate(2px, 0)', textShadow: '2px 2px #ff00ff' },
-            { transform: 'translate(-2px, 0)', textShadow: '-2px -2px #00ffff' },
-            { transform: 'translate(1px, -1px)', textShadow: '1px -1px #ff00ff' },
+            { transform: 'translate(4px, 0)', textShadow: '4px 4px #ff00ff' },
+            { transform: 'translate(-4px, 0)', textShadow: '-4px -4px #00ffff' },
+            { transform: 'translate(2px, -2px)', textShadow: '2px -2px #ff00ff' },
             { transform: 'translate(0px, 0)', textShadow: '0px 0px #ffffff' }
         ];
     
@@ -336,27 +339,27 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
     
         setTimeout(() => {
             element.style.transform = 'none';
-            element.style.textShadow = '0 0 5px rgba(0, 0, 0, 0.7)';
-        }, 200);
+            element.style.textShadow = '0 0 10px rgba(0, 0, 0, 0.7)';
+        }, 400);
     }
     
     // Функция для разлетающихся частиц
     function createEnhancedParticlesEffect(container, element) {
         const textRect = element.getBoundingClientRect();
-        const particleCount = 80;
+        const particleCount = 120; // Увеличено количество частиц
     
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.style.position = 'absolute';
-            particle.style.width = '4px';
-            particle.style.height = '4px';
+            particle.style.width = '6px'; // Увеличен размер частиц
+            particle.style.height = '6px';
             particle.style.backgroundColor = `rgba(255, 255, 255, ${Math.random()})`;
             particle.style.borderRadius = '50%';
             particle.style.left = `${textRect.left + Math.random() * textRect.width}px`;
             particle.style.top = `${textRect.top + Math.random() * textRect.height}px`;
             particle.style.opacity = '1';
-            particle.style.transition = `transform 1.2s ease, opacity 1.2s ease`;
-            particle.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.6)'; 
+            particle.style.transition = `transform 1.5s ease, opacity 1.5s ease`;
+            particle.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.6)'; 
     
             container.appendChild(particle);
     
@@ -367,9 +370,12 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
     
             setTimeout(() => {
                 particle.remove();
-            }, 1200);
+            }, 1500);
         }
     }
+    
+    
+    
     
     
     
@@ -606,7 +612,7 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
                 laser.remove();
             }, 200);
         }
-        function addElectricShockEffect(x, y, width, height, direction) {
+        function addElectricShockEffect(x, y, width, height, isFromLeft) {
             const beeShock = document.createElement('img');
             beeShock.src = 'assets/images/Bee.webp'; // Изображение пчелы
             beeShock.style.position = 'absolute';
@@ -616,36 +622,36 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
             beeShock.style.height = `${height}px`;
             beeShock.style.zIndex = '1000';
         
-            // Если пчела летела слева, сохраняем её отражение
-            let scaleXValue = direction === 'left' ? -1 : 1; // Отражаем пчелу по оси X для пчел слева
-        
-            beeShock.style.transform = `scaleX(${scaleXValue})`; // Устанавливаем правильный масштаб для пчелы
+            // Настройка направления для пчел: жестко задаем без применения scaleX
+            if (isFromLeft) {
+                beeShock.style.transform = 'scaleX(-1)'; // Отражаем только тех, кто летел слева
+            } else {
+                beeShock.style.transform = 'scaleX(1)'; // Указываем положительный масштаб для пчел справа, чтобы точно не было отражения
+            }
         
             beeShock.classList.add('electric-shock'); // Добавляем класс для анимации
             document.body.appendChild(beeShock);
         
-            // Анимация тряски с эффектом удара током, сохраняем правильный scaleX
-            const shakeAnimation = [
-                { transform: `translate(0, 0) scaleX(${scaleXValue})` },
-                { transform: `translate(-5px, 5px) scaleX(${scaleXValue})` },
-                { transform: `translate(5px, -5px) scaleX(${scaleXValue})` },
-                { transform: `translate(0, 0) scaleX(${scaleXValue})` }
+            // Анимация тряски
+            const shakeKeyframes = [
+                { transform: `translate(0px, 0px) scaleX(${isFromLeft ? -1 : 1})` },
+                { transform: `translate(-5px, 5px) scaleX(${isFromLeft ? -1 : 1})` },
+                { transform: `translate(5px, -5px) scaleX(${isFromLeft ? -1 : 1})` },
+                { transform: `translate(0px, 0px) scaleX(${isFromLeft ? -1 : 1})` }
             ];
         
-            beeShock.animate(shakeAnimation, {
-                duration: 100, // Продолжительность одного цикла
+            beeShock.animate(shakeKeyframes, {
+                duration: 50, // Продолжительность одного цикла
                 iterations: 4, // Количество повторов (тряска длится 1 сек)
                 easing: 'ease-in-out',
             });
         
-            // Анимация "тока" длится 1 секунду
+            // Удаляем после завершения
             setTimeout(() => {
-                beeShock.remove(); // Удаляем пчелу после завершения анимации
-                        // Добавляем эффект дыма
-        addSmokeEffect(x, y, width, height, () => {
-            // После эффекта дыма добавляем мертвую пчелу
-            handleBeeDeath(x, y);
-        });
+                beeShock.remove();
+                addSmokeEffect(x, y, width, height, () => {
+                    handleBeeDeath(x, y, isFromLeft);
+                });
             }, 300);
         }
 
@@ -1271,7 +1277,7 @@ replayButtons.forEach(button => {
         }
     }
 
-    function handleBeeDeath(x, y) {
+    function handleBeeDeath(x, y, isFromLeft) {
         const burnedBee = document.createElement('img');
         burnedBee.src = 'assets/images/laserassbee.webp';
         burnedBee.style.position = 'absolute';
@@ -1281,15 +1287,21 @@ replayButtons.forEach(button => {
         burnedBee.style.height = '50px'; 
         burnedBee.style.zIndex = '999'; 
         burnedBee.style.pointerEvents = 'none'; // Пчёлы не будут мешать нажатию
+    
+        // Сохраняем ориентацию пчелы
+        if (isFromLeft) {
+            burnedBee.style.transform = 'scaleX(-1)'; // Отражаем по оси X
+        }
+    
         document.body.appendChild(burnedBee);
     
         // Добавляем эффект тока
         burnedBee.style.animation = 'electricShock 1.5s ease-in-out infinite';
     
         setTimeout(() => {
-            // Пчела падает медленно вниз
+            // Пчела падает медленно вниз, сохраняя ориентацию
             burnedBee.animate([
-                { transform: 'translateY(0)', opacity: 1 },
+                { transform: `translateY(0)`, opacity: 1 },
                 { transform: `translateY(${window.innerHeight - y}px)`, opacity: 1 }
             ], {
                 duration: 3000, 
@@ -1324,6 +1336,13 @@ replayButtons.forEach(button => {
     
     // Функция для создания собираемых серебряных монет
     function spawnCollectibleCoin(x, y) {
+        // Проверка позиции перед созданием монеты
+        if (isPositionOccupied(x, y)) {
+            // Если позиция занята, находим другую
+            x += Math.floor(Math.random() * 50) - 25; // Сдвигаем по X
+            y += Math.floor(Math.random() * 50) - 25; // Сдвигаем по Y
+        }
+    
         const coin = document.createElement('img');
         coin.src = 'assets/images/silvercoin.webp';
         coin.style.position = 'absolute';
@@ -1334,45 +1353,42 @@ replayButtons.forEach(button => {
         coin.style.zIndex = '998'; 
         coin.classList.add('collectible-coin');
     
-        const hitArea = document.createElement('div');
-        hitArea.style.position = 'absolute';
-        hitArea.style.left = `${x - 15}px`; 
-        hitArea.style.top = `${y - 15}px`;
-        hitArea.style.width = '55px'; 
-        hitArea.style.height = '55px'; 
-        hitArea.style.zIndex = '997'; 
-        hitArea.style.cursor = 'pointer';
-        hitArea.style.backgroundColor = 'transparent'; 
+        activeCoins.push({ x, y, width: 25, height: 25 }); // Сохраняем позицию монеты
     
         const handleClick = () => {
-            if (coin.style.pointerEvents === 'none') return; // Проверка, чтобы исключить повторный клик
+            if (coin.classList.contains('collected')) return;
     
-            coin.classList.add('coin-glow');
-            coin.style.pointerEvents = 'none'; // Отключаем возможность повторных кликов
-            hitArea.style.pointerEvents = 'none'; // Убираем область нажатия
-            coin.remove(); // Немедленно удаляем монетку
-            hitArea.remove();
-            
+            coin.classList.add('collected');
+            coin.style.pointerEvents = 'none';
+    
+            // Добавляем статичную подсветку и запускаем полет
+            coin.style.filter = 'brightness(2) drop-shadow(0 0 10px rgba(255, 223, 0, 1))';
+            animateCoinToCounter(coin);
+    
             gameCoins += 1;
             updateGameCoinCount();
             if (navigator.vibrate) {
-                navigator.vibrate(50); 
+                navigator.vibrate(50);
             }
         };
     
-        hitArea.addEventListener('click', handleClick);
         coin.addEventListener('click', handleClick);
-    
-        document.body.appendChild(hitArea);
         document.body.appendChild(coin);
     
         setTimeout(() => {
             coin.remove();
-            hitArea.remove();
+            activeCoins = activeCoins.filter(c => c.x !== x || c.y !== y); // Удаляем позицию из массива
         }, 3000);
     }
     
     function spawnGoldCoin(x, y) {
+        // Проверка позиции перед созданием монеты
+        if (isPositionOccupied(x, y)) {
+            // Если позиция занята, находим другую
+            x += Math.floor(Math.random() * 50) - 25; // Сдвигаем по X
+            y += Math.floor(Math.random() * 50) - 25; // Сдвигаем по Y
+        }
+    
         const goldCoin = document.createElement('img');
         goldCoin.src = 'assets/images/goldcoin.webp';
         goldCoin.style.position = 'absolute';
@@ -1383,45 +1399,62 @@ replayButtons.forEach(button => {
         goldCoin.style.zIndex = '998';
         goldCoin.classList.add('collectible-coin');
     
-        const hitArea = document.createElement('div');
-        hitArea.style.position = 'absolute';
-        hitArea.style.left = `${x + 5}px`; 
-        hitArea.style.top = `${y - 15}px`;
-        hitArea.style.width = '60px'; 
-        hitArea.style.height = '60px';
-        hitArea.style.zIndex = '997';
-        hitArea.style.cursor = 'pointer';
-        hitArea.style.backgroundColor = 'transparent'; 
+        activeCoins.push({ x: x + 20, y, width: 30, height: 30 }); // Сохраняем позицию монеты
     
         const handleClick = () => {
-            if (goldCoin.style.pointerEvents === 'none') return; // Проверка, чтобы исключить повторный клик
+            if (goldCoin.classList.contains('collected')) return;
     
-            goldCoin.classList.add('coin-glow');
-            goldCoin.style.pointerEvents = 'none'; 
-            hitArea.style.pointerEvents = 'none';
-            goldCoin.remove(); // Немедленно удаляем монетку
-            hitArea.remove();
-            
+            goldCoin.classList.add('collected');
+            goldCoin.style.pointerEvents = 'none';
+    
+            // Добавляем статичную подсветку и запускаем полет
+            goldCoin.style.filter = 'brightness(2) drop-shadow(0 0 10px rgba(255, 223, 0, 1))';
+            animateCoinToCounter(goldCoin);
+    
             daisyCoins += 10;
             updateGameCoinCount();
             if (navigator.vibrate) {
-                navigator.vibrate(50); 
+                navigator.vibrate(50);
             }
         };
     
-        hitArea.addEventListener('click', handleClick);
         goldCoin.addEventListener('click', handleClick);
-    
-        document.body.appendChild(hitArea);
         document.body.appendChild(goldCoin);
     
         setTimeout(() => {
             goldCoin.remove();
-            hitArea.remove();
+            activeCoins = activeCoins.filter(c => c.x !== x + 20 || c.y !== y); // Удаляем позицию из массива
         }, 3000);
     }
     
+    function animateCoinToCounter(coin) {
+        const coinRect = coin.getBoundingClientRect();
+        const counter = document.getElementById('game-coin-count');
+        const counterRect = counter.getBoundingClientRect();
     
+        const deltaX = counterRect.left - coinRect.left;
+        const deltaY = counterRect.top - coinRect.top;
+    
+        // Устанавливаем стили для анимации полета (ускоренный полет)
+        coin.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        coin.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.3)`; // Уменьшаем размер в пути
+    
+        // Удаляем монетку после анимации
+        setTimeout(() => {
+            coin.remove();
+        }, 300);
+    }
+    
+    function isPositionOccupied(x, y) {
+        for (let coin of activeCoins) {
+            const distanceX = Math.abs(coin.x - x);
+            const distanceY = Math.abs(coin.y - y);
+            if (distanceX < 30 && distanceY < 30) { // Проверка на минимальную дистанцию
+                return true;
+            }
+        }
+        return false;
+    }
     
     return {
         init,

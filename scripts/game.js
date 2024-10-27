@@ -71,20 +71,25 @@ const Game = (function() {
 
     function handleChamomileClick(e) {
         const now = Date.now();
-        if (now - lastClickTime >= 500 && window.energy > 0 && isFlowerClickable) {
+        if (now - lastClickTime >= 100 && window.energy > 0 && isFlowerClickable) {
             lastClickTime = now;
             AudioManager.playClickSound();
             spinCoins += 1;
             updateElementText('spin-coin-count', spinCoins);
             localStorage.setItem('spinCoins', spinCoins);
     
-            // Показать +1 рядом с местом клика
             showPlusOne(e.clientX, e.clientY);
     
-            chamomile.classList.add('chamomile-glow');
+            const chamomileContainer = document.querySelector('.chamomile-container');
+            const glowElement = chamomileContainer.querySelector('.chamomile-glow');
+            glowElement.classList.add('active');
+            console.log('Added active class to chamomile-glow');
+    
             setTimeout(() => {
-                chamomile.classList.remove('chamomile-glow');
-            }, 500);
+                glowElement.classList.remove('active');
+                console.log('Removed active class from chamomile-glow');
+            }, 100); // Соответствует длительности анимации 0.1s
+    
     
             window.energy -= 10;
             if (window.energy < 0) window.energy = 0;
@@ -100,6 +105,7 @@ const Game = (function() {
             animateCoin(e.clientX, e.clientY);
         }
     }
+    
 
     function handleChamomileDblClick() {
         const now = Date.now();
