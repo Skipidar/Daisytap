@@ -1,3 +1,24 @@
+/* Запрет на выделение текста */
+body, img {
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* Internet Explorer/Edge */
+    user-select: none;         /* Non-prefixed version, currently supported by Chrome, Opera and Safari */
+}
+
+/* Запрет на перетаскивание изображений */
+img {
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    -ms-user-drag: none;
+    user-drag: none;
+    pointer-events: none; /* Отключение возможности взаимодействия */
+}
+/* Разрешить клики по монеткам в мини-игре */
+.collectible-coin {
+    pointer-events: auto; /* Включить возможность клика */
+}
+
 /* Общие стили */
 * {
     box-sizing: border-box;
@@ -405,6 +426,8 @@ button img {
 }
 
 .chamomile-container img {
+    position: relative;
+    z-index: 1; /* Повышаем выше, чем glow */
     width: 100%;
     height: 100%;
     cursor: pointer;
@@ -437,21 +460,43 @@ button img {
     pointer-events: none; /* Отключение кликов */
 }
 
-/* Анимация для центральной подсветки */
-@keyframes chamomileGlow {
-    0%, 100% {
-        filter: brightness(1) drop-shadow(0 0 10px rgba(255, 223, 0, 0.5));
+.chamomile-glow {
+    position: absolute;
+    width: 50%; /* Размер */
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 30px rgb(255, 221, 3); /* Glow */
+    z-index: 0; /* Под ромашкой, но выше фона */
+    pointer-events: none;
+    border-radius: 50%;
+    opacity: 0; /* Начальная прозрачность */
+    /* Удаляем переходы */
+    /* transition: opacity 0.1s ease-in-out, box-shadow 0.1s ease-in-out; */
+}
+
+.chamomile-glow.active {
+    animation: glowEffect 0.1s forwards;
+}
+
+@keyframes glowEffect {
+    0% {
+        opacity: 0;
+        box-shadow: 0 0 30px rgb(255, 221, 3);
+        transform: translate(-50%, -50%) scale(1);
     }
     50% {
-        filter: brightness(1.5) drop-shadow(0 0 30px rgba(255, 223, 0, 1));
+        opacity: 1;
+        box-shadow: 0 0 60px rgb(255, 221, 0);
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        box-shadow: 0 0 30px rgb(255, 221, 3);
+        transform: translate(-50%, -50%) scale(1);
     }
 }
-
-/* Класс для подсветки ромашки */
-.chamomile-glow {
-    animation: chamomileGlow 0.5s ease-out;
-}
-
 
 /* Кнопка "Играть" */
 #play-button {
@@ -1270,6 +1315,15 @@ footer button {
     transform-origin: top; /* Поворот относительно верхней точки */
 }
 
+.bee-left {
+    transform: scaleX(-1); /* Отражаем только тех, кто летит слева */
+}
+
+.bee-right {
+    transform: scaleX(-1); /* Никакого отражения */
+}
+
+
 @keyframes electricShock {
     0%, 100% {
         filter: brightness(1);
@@ -1420,12 +1474,26 @@ footer button {
         filter: brightness(1);
     }
     50% {
-        filter: brightness(2) drop-shadow(0 0 20px rgba(255, 223, 0, 1));
+        filter: brightness(2) drop-shadow(0 0 10px rgba(255, 223, 0, 1));
     }
 }
 
 .coin-glow {
-    animation: coinBrightGlow 0.5s ease-out;
-    position: relative;
-    z-index: 1001; /* Убедитесь, что подсветка выше всех элементов */
+    animation: coinBrightGlow 0.7s infinite; /* Постоянная подсветка */
+}
+
+
+@keyframes scale-up-fade {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) translateY(-10px);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.5) translateY(-50px);
+    }
 }
