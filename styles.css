@@ -16,7 +16,6 @@ img {
 
 /* Запретить скачивание ромашки, но разрешить клики */
 #chamomile {
-    pointer-events: auto; /* Включает взаимодействие */
     -webkit-user-select: none; /* Отключить выделение */
     -moz-user-select: none;
     -ms-user-select: none;
@@ -28,9 +27,9 @@ img {
     -ms-user-drag: none;
     outline: none;             /* Убрать контур вокруг изображения */
     user-drag: none;
-    image-rendering: pixelated; /* Сглаживание искажается, если кто-то попытается сохранить картинку */
+    image-rendering: auto; /* Установить рендеринг по умолчанию */
+    touch-action: manipulation; /* Разрешить только клики и манипуляции */
 }
-
 
 
 /* Разрешить клики по монеткам в мини-игре */
