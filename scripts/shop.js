@@ -188,16 +188,16 @@ const Shop = (function() {
         // Устанавливаем новый скин
         ownedSkins[skinId].equipped = true;
         localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
-
+    
         const chamomile = document.getElementById('chamomile');
-        chamomile.src = skinsData[skinId].image;
+        chamomile.style.backgroundImage = `url('${skinsData[skinId].image}')`; // Устанавливаем фоновое изображение
     }
-
+    
     function setEquippedSkin() {
         for (let skinId in ownedSkins) {
             if (ownedSkins[skinId].equipped) {
                 const chamomile = document.getElementById('chamomile');
-                chamomile.src = skinsData[skinId].image;
+                chamomile.style.backgroundImage = `url('${skinsData[skinId].image}')`; // Устанавливаем фоновое изображение
                 break;
             }
         }
