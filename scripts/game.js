@@ -37,16 +37,29 @@ chamomile.addEventListener('touchstart', function (e) {
     }
 }, false);
 
-// Дополнительно: предотвращение длительного нажатия с всплывающим меню
+// Объявляем переменную для таймера
 let touchDuration;
-chamomile.addEventListener('touchstart', function (e) {
-    touchDuration = setTimeout(() => {
-        e.preventDefault(); // Предотвратить действия при долгом нажатии
-    }, 500); // Продолжительность, которую вы считаете "долгим нажатием"
+
+// Отключаем контекстное меню при долгом нажатии
+chamomile.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
 }, false);
 
+// Отключаем действия при мультитаче и предотвращаем долгое нажатие
+chamomile.addEventListener('touchstart', function (e) {
+    if (e.touches.length > 1) {
+        e.preventDefault(); // Отключает действия при мультитаче
+    } else {
+        // Устанавливаем таймер для долгого нажатия
+        touchDuration = setTimeout(() => {
+            e.preventDefault(); // Отключение контекстного меню
+        }, 500); // Время для определения "долгого нажатия"
+    }
+}, false);
+
+// Очистка таймера при отпускании пальца
 chamomile.addEventListener('touchend', function () {
-    clearTimeout(touchDuration); // Очистить таймер при отпускании пальца
+    clearTimeout(touchDuration);
 }, false);
         // Обновляем начальное состояние ромашки
         updateEnergyBar();
@@ -426,23 +439,23 @@ function gainXP(amount) {
 
     function showTicketNotification() {
         const ticketNotification = document.getElementById('ticket-notification');
+        const ticketAmount = 3; // Фиксированное значение билетов
+    
         if (ticketNotification) {
             ticketNotification.innerHTML = `
-                <p>Поздравляем! Ваш подарок: <span id="ticket-amount">3</span> билета</p>
                 <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
+                <span>Ваш подарок: ${ticketAmount} билета(ов)</span>
             `;
             
-            // Показываем уведомление с задержкой после конфетти
+            // Показываем уведомление
+            ticketNotification.classList.add('show');
+            
+            // Скрываем через 5 секунд
             setTimeout(() => {
-                ticketNotification.classList.add('show');
-    
-                // Убираем уведомление через 5 секунд
-                setTimeout(() => {
-                    ticketNotification.classList.remove('show');
-                }, 5000);
-            }, 1000);
+                ticketNotification.classList.remove('show');
+            }, 5000);
         } else {
-            console.error('Элемент с id="ticket-notification" не найден в DOM.');
+            console.error('Элемент с id="ticket-notification" не найден.');
         }
     }
 
