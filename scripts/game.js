@@ -24,43 +24,38 @@ const Game = (function() {
             console.error('Элемент с id="chamomile" не найден в DOM.');
             return;
         }
-
-// Отключить контекстное меню на длительное нажатие на мобильных устройствах
-chamomile.addEventListener('contextmenu', function (e) {
-    e.preventDefault(); // Отключить контекстное меню
-}, false);
-
-// Отключить длительное нажатие на мобильных устройствах
-chamomile.addEventListener('touchstart', function (e) {
-    if (e.touches.length > 1) {
-        e.preventDefault(); // Отключить действия при мульти-таче
-    }
-}, false);
-
-// Объявляем переменную для таймера
-let touchDuration;
-
-// Отключаем контекстное меню при долгом нажатии
-chamomile.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-}, false);
-
-// Отключаем действия при мультитаче и предотвращаем долгое нажатие
-chamomile.addEventListener('touchstart', function (e) {
-    if (e.touches.length > 1) {
-        e.preventDefault(); // Отключает действия при мультитаче
-    } else {
-        // Устанавливаем таймер для долгого нажатия
-        touchDuration = setTimeout(() => {
-            e.preventDefault(); // Отключение контекстного меню
-        }, 500); // Время для определения "долгого нажатия"
-    }
-}, false);
-
-// Очистка таймера при отпускании пальца
-chamomile.addEventListener('touchend', function () {
-    clearTimeout(touchDuration);
-}, false);
+    
+        // Отключить контекстное меню на длительное нажатие на мобильных устройствах
+        chamomile.addEventListener('contextmenu', function (e) {
+            e.preventDefault(); // Отключить контекстное меню
+        }, false);
+    
+        // Отключить длительное нажатие на мобильных устройствах
+        chamomile.addEventListener('touchstart', function (e) {
+            if (e.touches.length > 1) {
+                e.preventDefault(); // Отключить действия при мульти-таче
+            }
+        }, false);
+    
+        // Дополнительно: предотвращение длительного нажатия с всплывающим меню
+        let touchDuration;
+        chamomile.addEventListener('touchstart', function (e) {
+            touchDuration = setTimeout(() => {
+                e.preventDefault(); // Предотвратить действия при долгом нажатии
+            }, 500); // Продолжительность, которую вы считаете "долгим нажатием"
+        }, false);
+    
+        chamomile.addEventListener('touchend', function () {
+            clearTimeout(touchDuration); // Очистить таймер при отпускании пальца
+        }, false);
+    
+        // Дополнительно: предотвращение всплывающего меню на долгий тап через pointerdown
+        chamomile.addEventListener('pointerdown', function (e) {
+            if (e.pointerType === 'touch') {
+                e.preventDefault(); // Блокировка всплывающего меню при долгом нажатии
+            }
+        }, false);
+    
         // Обновляем начальное состояние ромашки
         updateEnergyBar();
 
