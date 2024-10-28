@@ -29,11 +29,7 @@ img {
     user-drag: none;
     image-rendering: auto; /* Установить рендеринг по умолчанию */
     touch-action: manipulation; /* Разрешить только клики и манипуляции */
-    pointer-events: auto; /* Разрешить взаимодействие */
-    tap-highlight-color: transparent; /* Скрыть выделение для некоторых браузеров */
-    cursor: pointer; /* Устанавливает курсор как указатель, чтобы показать, что элемент интерактивный */
-    -webkit-touch-callout: none; /* Отключает меню вызова действий на iOS */
-    touch-action: none; /* Полностью отключить любые жесты, включая долгое нажатие */
+    pointer-events: auto;        /* Разрешить взаимодействие */
 }
 
 
@@ -955,27 +951,25 @@ footer button {
 /* Стилизация для подсчета билетов */
 .ticket-notification {
     position: fixed;
-    top: 0;
+    top: -80px; /* Начальное положение за экраном */
     left: 50%;
-    transform: translateX(-50%) translateY(-100%); /* Начальное положение за верхом экрана */
-    width: 80%;
+    transform: translateX(-50%);
+    width: 90%;
     max-width: 300px;
-    padding: 5px;
-    background-color: rgba(128, 128, 128, 0.508);
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.8); /* Темный фон, как в настройках */
     color: #fff;
-    border-radius: 0 0 10px 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    z-index: 150;
-    transition: transform 0.5s ease, opacity 0.5s ease; /* Плавное появление и исчезновение */
-    opacity: 0; /* Скрыто по умолчанию */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    text-align: center;
+    border-radius: 15px; /* Полностью закругленные углы */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0; /* По умолчанию скрыто */
+    transition: top 0.5s ease, opacity 0.5s ease;
 }
 
 .ticket-notification.show {
-    transform: translateX(-50%) translateY(0); /* Смещается вниз на экран */
-    opacity: 1; /* Показать элемент */
+    top: 20px; /* Конечная позиция для видимости */
+    opacity: 1;
 }
 
 .ticket-icon {
