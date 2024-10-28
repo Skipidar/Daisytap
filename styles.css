@@ -29,6 +29,7 @@ img {
     user-drag: none;
     image-rendering: auto; /* Установить рендеринг по умолчанию */
     touch-action: manipulation; /* Разрешить только клики и манипуляции */
+    pointer-events: auto;        /* Разрешить взаимодействие */
 }
 
 
@@ -480,8 +481,8 @@ button img {
 
 .chamomile-glow {
     position: absolute;
-    width: 60%; /* Размер */
-    height: 60%;
+    width: 50%; /* Размер */
+    height: 50%;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
