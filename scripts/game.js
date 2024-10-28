@@ -25,17 +25,29 @@ const Game = (function() {
             return;
         }
 
-        document.getElementById('chamomile').addEventListener('contextmenu', function (e) {
-            e.preventDefault(); // Отключить контекстное меню на правый клик
-        }, false);
-        
-        // Отключить длительное нажатие на мобильных устройствах, но не блокировать обычные клики
-        document.getElementById('chamomile').addEventListener('touchstart', function (e) {
-            if (e.touches.length === 1) {
-                e.stopPropagation(); // Остановить распространение события, но не блокировать его
-            }
-        }, false);
-    
+// Отключить контекстное меню на длительное нажатие на мобильных устройствах
+chamomile.addEventListener('contextmenu', function (e) {
+    e.preventDefault(); // Отключить контекстное меню
+}, false);
+
+// Отключить длительное нажатие на мобильных устройствах
+chamomile.addEventListener('touchstart', function (e) {
+    if (e.touches.length > 1) {
+        e.preventDefault(); // Отключить действия при мульти-таче
+    }
+}, false);
+
+// Дополнительно: предотвращение длительного нажатия с всплывающим меню
+let touchDuration;
+chamomile.addEventListener('touchstart', function (e) {
+    touchDuration = setTimeout(() => {
+        e.preventDefault(); // Предотвратить действия при долгом нажатии
+    }, 500); // Продолжительность, которую вы считаете "долгим нажатием"
+}, false);
+
+chamomile.addEventListener('touchend', function () {
+    clearTimeout(touchDuration); // Очистить таймер при отпускании пальца
+}, false);
         // Обновляем начальное состояние ромашки
         updateEnergyBar();
 
@@ -94,11 +106,9 @@ const Game = (function() {
             const chamomileContainer = document.querySelector('.chamomile-container');
             const glowElement = chamomileContainer.querySelector('.chamomile-glow');
             glowElement.classList.add('active');
-            console.log('Added active class to chamomile-glow');
     
             setTimeout(() => {
                 glowElement.classList.remove('active');
-                console.log('Removed active class from chamomile-glow');
             }, 100); // Соответствует длительности анимации 0.1s
     
     
