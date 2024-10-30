@@ -69,7 +69,12 @@
                 <span id="xp-display" class="xp-text">0 / 100 XP</span> <!-- Независимый текст опыта -->
             </div>
         </div>
-
+        <div id="level-up-modal" class="modal">
+            <div class="modal-content">
+                <h3>Поздравляем, Вы достигли <span id="new-level"></span> уровня!</h3>
+                <p>Подарок: <span id="tickets-earned">2</span> билета <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon"></p>
+            </div>
+        </div>
         <!-- Прибыль в час -->
         <div id="income-counter" class="counter">
             <span data-localize="income_per_hour">Прибыль в час:</span> 
@@ -81,13 +86,13 @@
         <!-- $Daisy -->
         <div id="coin-counter" class="counter">
             <img src="assets/images/goldcoin.webp" alt="$Daisy" class="coin-icon">
-            <span class="number-white" id="coin-count">10000</span> 
+            <span class="number-white" id="coin-count">0</span> 
             <span class="highlight-yellow">$Daisy</span>
         </div>
         
         <div id="spin-coin-counter" class="counter">
             <img src="assets/images/silvercoin.webp" alt="Coin" class="coin-icon">
-            <span class="number-white" id="spin-coin-count">10000</span> 
+            <span class="number-white" id="spin-coin-count">0</span> 
             <span class="highlight-yellow">Coin</span>
         </div>
         
@@ -297,8 +302,8 @@
     <script src="scripts/audio.js"></script>
     <script src="scripts/localization.js"></script>
     <script src="scripts/modal.js"></script>
-    <script src="scripts/shop.js"></script>
     <script src="scripts/game.js"></script>
+    <script src="scripts/shop.js"></script>
     <script src="scripts/mini-game.js"></script>
     <script src="scripts/main.js"></script>
 </body>
