@@ -53,27 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function addTickets(amount) {
-        let currentTickets = parseInt(localStorage.getItem('tickets')) || 0;
-        currentTickets += amount;
-        localStorage.setItem('tickets', currentTickets);
-        updateTicketCount('main-ticket-count'); // Обновляем после добавления
-        updateTicketCount('mini-game-ticket-count'); // Обновляем для мини-игры
-    }
-    
-    function useTickets(amount) {
-        let currentTickets = parseInt(localStorage.getItem('tickets')) || 0;
-        if (currentTickets >= amount) {
-            currentTickets -= amount;
-            localStorage.setItem('tickets', currentTickets);
-            updateTicketCount('main-ticket-count'); // Обновляем после использования
-            updateTicketCount('mini-game-ticket-count'); // Обновляем для мини-игры
-        } else {
-            console.log("Недостаточно билетов.");
-        }
-    }
-    
-
     // Обработчик для кнопки "Старт" первой игры
     const startGameButton = document.getElementById('start-game-1');
     startGameButton.addEventListener('click', function() {

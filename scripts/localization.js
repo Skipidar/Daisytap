@@ -37,7 +37,9 @@ const Localization = (function() {
             'friends_soon': 'Тестовый список друзей скоро будет доступен.',
             'tasks_soon': 'Задания скоро появятся...',
             'your_gift': 'Ваш подарок: <span id="gift-amount">{amount}</span> билетов.',
-            'close': 'Закрыть'
+            'close': 'Закрыть',
+            'level_up_message': 'Поздравляем, вы достигли уровня {level}!',
+            'gift_tickets': 'Ваш подарок: 2 билета.'
         },
         'en': {
             'play_button': 'Play',
@@ -73,7 +75,9 @@ const Localization = (function() {
             'friends_soon': 'Test friend list will be available soon.',
             'tasks_soon': 'Tasks will be available soon...',
             'your_gift': 'Your gift: <span id="gift-amount">{amount}</span> tickets.',
-            'close': 'Close'
+            'close': 'Close',
+            'level_up_message': 'Congratulations, you reached level {level}!',
+            'gift_tickets': 'Your gift: 2 tickets.'
         }
     };
 

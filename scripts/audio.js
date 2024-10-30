@@ -10,7 +10,8 @@ const AudioManager = (function() {
     let moneySound;
     let levelCompleteSound;
     let beeKillSound;
-    let shokBoomSound; // Добавляем переменную для SHOKBOOM.mp3
+    let shokBoomSound; 
+    let levelUpSound; // Новый звук для уровня
 
     let soundEnabled = JSON.parse(localStorage.getItem('soundEnabled'));
     if (soundEnabled === null) soundEnabled = true;
@@ -26,7 +27,8 @@ const AudioManager = (function() {
         moneySound = new Audio('assets/sounds/moneyi.mp3');
         levelCompleteSound = new Audio('assets/sounds/1levelcomplete.mp3');
         beeKillSound = new Audio('assets/sounds/BeeKill.wav');
-        shokBoomSound = new Audio('assets/sounds/SHOKBOOM.mp3'); // Звук SHOKBOOM
+        shokBoomSound = new Audio('assets/sounds/SHOKBOOM.mp3');
+        levelUpSound = new Audio('assets/sounds/levelUpSound.mp3'); // Звук для уровня
 
         // Установка громкости
         backgroundMusic.volume = 0.25;
@@ -39,20 +41,19 @@ const AudioManager = (function() {
         moneySound.volume = 0.2;
         levelCompleteSound.volume = 0.3;
         beeKillSound.volume = 0.2;
-        shokBoomSound.volume = 0.3; // Устанавливаем громкость SHOKBOOM
+        shokBoomSound.volume = 0.3; 
+        levelUpSound.volume = 0.3; 
 
         backgroundMusic.loop = true;
         oneLevelMusic.loop = true;
         electricChaosMusic.loop = true;
 
-        // Автоматическое воспроизведение фоновой музыки
         if (soundEnabled) {
             backgroundMusic.play().catch(error => {
                 console.warn('Автоматическое воспроизведение музыки заблокировано:', error);
             });
         }
 
-        // Обработка кнопки отключения звука
         const soundToggle = document.getElementById('sound-toggle');
         soundToggle.addEventListener('click', toggleSound);
 
@@ -79,7 +80,8 @@ const AudioManager = (function() {
             moneySound.pause();
             levelCompleteSound.pause();
             beeKillSound.pause();
-            shokBoomSound.pause(); // Останавливаем SHOKBOOM при отключении звука
+            shokBoomSound.pause();
+            levelUpSound.pause();
         }
     }
 
@@ -148,6 +150,13 @@ const AudioManager = (function() {
         }
     }
 
+    function playLevelUpSound() {
+        if (soundEnabled) {
+            levelUpSound.currentTime = 0;
+            levelUpSound.play();
+        }
+    }
+
     function playOneLevelMusic() {
         if (soundEnabled) {
             backgroundMusic.pause();
@@ -188,7 +197,8 @@ const AudioManager = (function() {
         playMoneySound,
         playLevelCompleteSound,
         playBeeKillSound,
-        playShokBoomSound, // Добавляем метод для SHOKBOOM
+        playShokBoomSound,
+        playLevelUpSound, // Новый метод для уровня
         playOneLevelMusic,
         pauseOneLevelMusic,
         playElectricChaosMusic,

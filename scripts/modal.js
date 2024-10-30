@@ -1,6 +1,6 @@
 const Modal = (function() {
     function init() {
-        // Закрытие модальных окон при нажатии на крестик
+        // Закрытие модальных окон при нажатии на крестик (если есть)
         document.querySelectorAll('.close-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 closeModal(this.closest('.modal'));
@@ -24,7 +24,6 @@ const Modal = (function() {
         setupFriendsModal();
         setupTasksModal();
         setupGiftModal();
-
     }
 
     function open(modalId) {
@@ -44,6 +43,7 @@ const Modal = (function() {
 
     function closeModal(modal) {
         modal.style.display = 'none';
+        
         // Возвращаем исходный z-index кнопок смены языка и звука
         adjustLanguageAndSoundButtonsZIndex(false);
     }
@@ -158,6 +158,31 @@ const Modal = (function() {
         localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));  // Сохраняем историю в localStorage
     }
 
+    // Функция для открытия модального окна уровня
+    function openLevelUpModal(level, tickets) {
+        const modal = document.getElementById("level-up-modal");
+        const levelSpan = document.getElementById('new-level');
+        const ticketsSpan = document.getElementById('tickets-earned');
+    
+        // Обновляем текстовые значения
+        levelSpan.textContent = level;
+        ticketsSpan.textContent = tickets;
+    
+        // Включаем звук
+        playSound('levelUpSound');  // Замените 'levelUpSound' на нужный идентификатор
+    
+        // Добавляем конфетти
+        createConfetti();  
+    
+        // Отображаем модальное окно
+        modal.classList.add('show');
+    
+        // Скрываем модальное окно через 5 секунд
+        setTimeout(() => {
+            modal.classList.remove('show');
+        }, 5000);
+    }
+
 // Открытие модального окна с анимацией
 function openGameDescriptionModal() {
     const modal = document.getElementById('game-description-modal');
@@ -184,13 +209,12 @@ gameThumbnail.addEventListener('click', openGameDescriptionModal);
 // Обработчик для кнопки закрытия
 document.getElementById('close-game-description').addEventListener('click', closeGameDescriptionModal);
 
-    
+
     return {
         init,
         open,
-        updatePredictionHistory,  // Экспортируем функцию обновления истории
-        savePrediction  // Экспортируем функцию сохранения предсказания
+        updatePredictionHistory,
+        savePrediction,
+        openLevelUpModal
     };
 })();
-
-document.addEventListener('DOMContentLoaded', Modal.init);

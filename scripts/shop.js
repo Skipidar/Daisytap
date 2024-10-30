@@ -23,6 +23,14 @@ const Shop = (function() {
         'fish': {name: 'Fish', price: 5000, currency: '$Daisy', image: 'assets/images/fish.webp', income: 10}
     };
 
+    // 1. Добавляем функцию formatNumber в Shop.js
+    function formatNumber(value) {
+        if (value >= 1e9) return (value / 1e9).toFixed(1) + 'B';
+        if (value >= 1e6) return (value / 1e6).toFixed(1) + 'M';
+        if (value >= 1e3) return (value / 1e3).toFixed(1) + 'K';
+        return value.toString();
+    }
+
     function init() {
         // Инициализация кнопки магазина
         document.getElementById('shop-btn').addEventListener('click', openShop);
@@ -39,7 +47,8 @@ const Shop = (function() {
 
         // Обновляем пассивный доход
         calculateIncomePerHour();
-        document.getElementById('income-per-hour').textContent = incomePerHour;
+        // Используем formatNumber для форматирования дохода
+        document.getElementById('income-per-hour').textContent = formatNumber(incomePerHour);
         localStorage.setItem('incomePerHour', incomePerHour);
 
         // Устанавливаем текущий скин
@@ -73,7 +82,7 @@ const Shop = (function() {
             itemDiv.innerHTML = `
                 <img src="${item.image}" alt="${item.name}" class="shop-item-image">
                 <div>${item.name}</div>
-                <div class="skin-price">${item.price} ${item.currency}</div>
+                <div class="skin-price">${formatNumber(item.price)} ${item.currency}</div> <!-- Форматируем цену -->
                 <div class="skin-level">${getSkinStatus(item.id)}</div>
             `;
             itemDiv.addEventListener('click', () => purchaseOrUpgradeItem(item));
@@ -118,11 +127,13 @@ const Shop = (function() {
         if ((item.currency === '$Daisy' && coins >= item.price) || (item.currency === 'Coin' && spinCoins >= item.price)) {
             if (item.currency === '$Daisy') {
                 coins -= item.price;
-                document.getElementById('coin-count').textContent = coins;
+                // Используем форматирование перед обновлением
+                document.getElementById('coin-count').textContent = formatNumber(coins);
                 localStorage.setItem('coins', coins);
             } else {
                 spinCoins -= item.price;
-                document.getElementById('spin-coin-count').textContent = spinCoins;
+                // Используем форматирование перед обновлением
+                document.getElementById('spin-coin-count').textContent = formatNumber(spinCoins);
                 localStorage.setItem('spinCoins', spinCoins);
             }
             ownedSkins[item.id] = {level: 1, equipped: false};
@@ -146,11 +157,13 @@ const Shop = (function() {
         if ((item.currency === '$Daisy' && coins >= upgradeCost) || (item.currency === 'Coin' && spinCoins >= upgradeCost)) {
             if (item.currency === '$Daisy') {
                 coins -= upgradeCost;
-                document.getElementById('coin-count').textContent = coins;
+                // Используем форматирование перед обновлением
+                document.getElementById('coin-count').textContent = formatNumber(coins);
                 localStorage.setItem('coins', coins);
             } else {
                 spinCoins -= upgradeCost;
-                document.getElementById('spin-coin-count').textContent = spinCoins;
+                // Используем форматирование перед обновлением
+                document.getElementById('spin-coin-count').textContent = formatNumber(spinCoins);
                 localStorage.setItem('spinCoins', spinCoins);
             }
             skin.level += 1;
@@ -176,7 +189,8 @@ const Shop = (function() {
             const skinData = skinsData[skinId];
             incomePerHour += skinData.income * skin.level;
         }
-        document.getElementById('income-per-hour').textContent = incomePerHour;
+        // Используем форматирование перед обновлением
+        document.getElementById('income-per-hour').textContent = formatNumber(incomePerHour);
         localStorage.setItem('incomePerHour', incomePerHour);
     }
 
@@ -188,7 +202,7 @@ const Shop = (function() {
         // Устанавливаем новый скин
         ownedSkins[skinId].equipped = true;
         localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
-    
+
         const chamomile = document.getElementById('chamomile');
         chamomile.style.backgroundImage = `url('${skinsData[skinId].image}')`; // Устанавливаем фоновое изображение
     }
@@ -213,7 +227,7 @@ const Shop = (function() {
         // Обновление баланса билетов
         let tickets = parseInt(document.getElementById('ticket-count').textContent, 10);
         tickets += giftAmount;
-        document.getElementById('ticket-count').textContent = tickets;
+        document.getElementById('ticket-count').textContent = formatNumber(tickets); // Используем форматирование
         localStorage.setItem('tickets', tickets);
     }
 
@@ -221,8 +235,8 @@ const Shop = (function() {
     function updateBalance(newCoins, newSpinCoins) {
         coins = newCoins;
         spinCoins = newSpinCoins;
-        document.getElementById('coin-count').textContent = coins;
-        document.getElementById('spin-coin-count').textContent = spinCoins;
+        document.getElementById('coin-count').textContent = formatNumber(coins); // Используем форматирование
+        document.getElementById('spin-coin-count').textContent = formatNumber(spinCoins); // Используем форматирование
     }
 
     return {

@@ -1,6 +1,13 @@
 const Game = (function() {
-    let coins = parseInt(localStorage.getItem('coins')) || 10000; // Начальное количество $Daisy
-    let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000; // Начальное количество Coin
+    function formatNumber(value) {
+        if (value >= 1e9) return (value / 1e9).toFixed(1) + 'B';
+        if (value >= 1e6) return (value / 1e6).toFixed(1) + 'M';
+        if (value >= 1e3) return (value / 1e3).toFixed(1) + 'K';
+        return value.toString();
+    }
+
+    let coins = parseInt(localStorage.getItem('coins')) || 10000;
+    let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
     let isFlowerClickable = true;
     let lastClickTime = 0;
     let rotationAngle = 0; // Для вращения ромашки
@@ -19,44 +26,56 @@ const Game = (function() {
     let chamomile;
 
     function init() {
+        coins = parseInt(localStorage.getItem('coins')) || 10000;
+        spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
+
+        // Запретить выделение значка настроек
+        const settingsButton = document.getElementById('settings-button');
+        if (settingsButton) {
+            settingsButton.style.userSelect = 'none';
+            settingsButton.style.webkitUserSelect = 'none';
+            settingsButton.style.mozUserSelect = 'none';
+            settingsButton.style.msUserSelect = 'none';
+            settingsButton.style.cursor = 'pointer'; // Курсор указателя
+        }
+
+        // Разрешить нажатие на картинки в меню выбора игр
+        const game1Thumbnail = document.getElementById('game1-thumbnail');
+        const game2Thumbnail = document.getElementById('game2-thumbnail');
+
+        if (game1Thumbnail) {
+            game1Thumbnail.addEventListener('click', () => {
+                document.getElementById('start-game-1').click(); // Запуск первой игры
+            });
+        }
+
+        if (game2Thumbnail) {
+            game2Thumbnail.addEventListener('click', () => {
+                const startGame2Button = document.getElementById('start-game-2');
+                if (startGame2Button && !startGame2Button.disabled) {
+                    startGame2Button.click(); // Запуск второй игры, если кнопка активна
+                }
+            });
+        }
+
         chamomile = document.getElementById('chamomile');
         if (!chamomile) {
             console.error('Элемент с id="chamomile" не найден в DOM.');
             return;
         }
-    
-        // Отключить контекстное меню на длительное нажатие на мобильных устройствах
+
+        // Отключение контекстного меню и длительного нажатия
         chamomile.addEventListener('contextmenu', function (e) {
-            e.preventDefault(); // Отключить контекстное меню
+            e.preventDefault();
         }, false);
-    
-        // Отключить длительное нажатие на мобильных устройствах
-        chamomile.addEventListener('touchstart', function (e) {
-            if (e.touches.length > 1) {
-                e.preventDefault(); // Отключить действия при мульти-таче
-            }
-        }, false);
-    
-        // Дополнительно: предотвращение длительного нажатия с всплывающим меню
-        let touchDuration;
-        chamomile.addEventListener('touchstart', function (e) {
-            touchDuration = setTimeout(() => {
-                e.preventDefault(); // Предотвратить действия при долгом нажатии
-            }, 500); // Продолжительность, которую вы считаете "долгим нажатием"
-        }, false);
-    
-        chamomile.addEventListener('touchend', function () {
-            clearTimeout(touchDuration); // Очистить таймер при отпускании пальца
-        }, false);
-    
-        // Дополнительно: предотвращение всплывающего меню на долгий тап через pointerdown
+
         chamomile.addEventListener('pointerdown', function (e) {
             if (e.pointerType === 'touch') {
-                e.preventDefault(); // Блокировка всплывающего меню при долгом нажатии
+                e.preventDefault();
             }
         }, false);
-    
-        // Обновляем начальное состояние ромашки
+
+        // Обновление начального состояния
         updateEnergyBar();
 
         // Обновление отображения монет и билетов
@@ -72,33 +91,36 @@ const Game = (function() {
         // Обновление прибыли в час
         updateElementText('income-per-hour', incomePerHour);
 
-        // Обработчик клика по ромашке
+        // Обработчики кликов по ромашке
         chamomile.addEventListener('click', handleChamomileClick);
-
-        // Добавление вибро-отклика
         chamomile.addEventListener('click', () => {
             if (navigator.vibrate) {
                 navigator.vibrate(10);
             }
         });
-
-        // Обработчик двойного клика по ромашке (предсказание)
         chamomile.addEventListener('dblclick', handleChamomileDblClick);
 
-        // Инициализация таймера предсказания
+        // Инициализация таймеров
         updatePredictionTimer();
         setInterval(updatePredictionTimer, 1000);
-
-        // Запуск пассивного дохода
         calculatePassiveIncome();
         setInterval(calculatePassiveIncome, 60000); // Каждую минуту
-
-        // Обновление энергии
-        updateEnergyBar();
 
         // Инициализация магазина
         Shop.updateBalance(coins, spinCoins);
     }
+
+    function updateElementText(id, value) {
+        const element = document.getElementById(id);
+        if (element) {
+            const formattedValue = (id === 'coin-count' || id === 'spin-coin-count') ? formatNumber(value) : value;
+            element.textContent = formattedValue;
+        } else {
+            console.error(`Элемент с id="${id}" не найден в DOM.`);
+        }
+    }
+
+    let glowTimeout;
 
     function handleChamomileClick(e) {
         const now = Date.now();
@@ -113,12 +135,15 @@ const Game = (function() {
     
             const chamomileContainer = document.querySelector('.chamomile-container');
             const glowElement = chamomileContainer.querySelector('.chamomile-glow');
+            
+            // Добавляем "активный" класс для эффекта свечения
             glowElement.classList.add('active');
     
-            setTimeout(() => {
-                glowElement.classList.remove('active');
-            }, 100); // Соответствует длительности анимации 0.1s
-    
+            // Сбрасываем таймер, если клики продолжаются
+            clearTimeout(glowTimeout);
+            glowTimeout = setTimeout(() => {
+                glowElement.classList.remove('active'); // Убираем эффект только после затухания
+            }, 1000);
     
             window.energy -= 10;
             if (window.energy < 0) window.energy = 0;
@@ -135,7 +160,6 @@ const Game = (function() {
         }
     }
     
-
     function handleChamomileDblClick() {
         const now = Date.now();
         if (isFlowerClickableForPrediction && now - lastPredictionTime >= 6 * 60 * 60 * 1000) {
@@ -146,7 +170,7 @@ const Game = (function() {
     
             const prediction = getRandomPrediction();
             updateElementText('prediction-title', prediction);
-            Modal.savePrediction(prediction);  // Вызов через объект Modal
+            Modal.savePrediction(prediction);
     
             const earnedCoins = Math.floor(Math.random() * (550 - 250 + 1)) + 250;
             coins += earnedCoins;
@@ -163,7 +187,7 @@ const Game = (function() {
             localStorage.setItem('predictionHistory', JSON.stringify(predictionHistory));
             updatePredictionHistory();
     
-            const ticketAmount = Math.floor(Math.random() * 5) + 1;
+            const ticketAmount = 3;  
             tickets += ticketAmount;
             updateElementText('ticket-count', tickets);
             localStorage.setItem('tickets', tickets);
@@ -223,31 +247,33 @@ const Game = (function() {
         });
     }
 
-// Проверка и создание canvas для конфетти
-let confettiCanvas = document.getElementById('confetti-canvas');
-if (!confettiCanvas) {
-    confettiCanvas = document.createElement('canvas');
-    confettiCanvas.id = 'confetti-canvas';
-    confettiCanvas.style.position = 'fixed';
-    confettiCanvas.style.top = '0';
-    confettiCanvas.style.left = '0';
-    confettiCanvas.style.width = '100vw';
-    confettiCanvas.style.height = '100vh';
-    confettiCanvas.style.pointerEvents = 'none';
-    confettiCanvas.style.zIndex = '1000'; // Высокий z-index для поверх всех окон
-    document.body.appendChild(confettiCanvas);
-}
+    // Проверка и создание canvas для конфетти
+    let confettiCanvas = document.getElementById('confetti-canvas');
+    if (!confettiCanvas) {
+        confettiCanvas = document.createElement('canvas');
+        confettiCanvas.id = 'confetti-canvas';
+        confettiCanvas.style.position = 'fixed';
+        confettiCanvas.style.top = '0';
+        confettiCanvas.style.left = '0';
+        confettiCanvas.style.width = '100vw';
+        confettiCanvas.style.height = '100vh';
+        confettiCanvas.style.pointerEvents = 'none';
+        confettiCanvas.style.zIndex = '1000';
+        document.body.appendChild(confettiCanvas);
+    }
 
-// Функция для запуска конфетти
-function createConfetti() {
-    const confettiInstance = confetti.create(confettiCanvas, { resize: true });
-    confettiInstance({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-    });
-}
+    // Функция для запуска конфетти
+    function createConfetti() {
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const confettiInstance = confetti.create(confettiCanvas, { resize: true });
+        confettiInstance({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+        });
+    }
 
+    
     function animateCoin(x, y) {
         const coin = document.createElement('img');
         coin.src = 'assets/images/silvercoin.webp';
@@ -304,41 +330,38 @@ function createConfetti() {
 
     function showPlusOne(x, y) {
         const plusOne = document.createElement('div');
-        plusOne.textContent = '+1';
-        plusOne.style.position = 'absolute';
+        plusOne.className = 'plus-one';
+        plusOne.textContent = "+1";
+        document.body.appendChild(plusOne);
+    
+        // Устанавливаем начальное положение "+1"
         plusOne.style.left = `${x}px`;
         plusOne.style.top = `${y}px`;
-        plusOne.style.transform = 'translate(-50%, -50%)'; // Центрируем по точке клика
-        plusOne.style.color = '#FFD700'; // Желтый цвет
-        plusOne.style.fontSize = '1.5rem';
-        plusOne.style.fontWeight = 'bold';
-        plusOne.style.pointerEvents = 'none';
-        plusOne.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        plusOne.style.opacity = '1';
-        
-        document.body.appendChild(plusOne);
-        
-        // Анимация: движение вверх и исчезновение
-        setTimeout(() => {
-            plusOne.style.transform = 'translate(-50%, -100%)'; // Сместим вверх
-            plusOne.style.opacity = '0';
-        }, 50);
-        
-        // Удаление элемента после анимации
-        setTimeout(() => {
-            plusOne.remove();
-        }, 550);
+    
+        // Получаем координаты счётчика `spin-coin-count`
+        const target = document.getElementById('spin-coin-count').getBoundingClientRect();
+    
+        // Анимация полета к счётчику монет
+        plusOne.animate([
+            { transform: 'translate(0, 0)', opacity: 1 },
+            { transform: `translate(${target.left - x}px, ${target.top - y}px)`, opacity: 0 }
+        ], {
+            duration: 1000,
+            easing: 'ease-in-out',
+            fill: 'forwards'
+        });
+    
+        // Удаляем элемент после завершения анимации
+        setTimeout(() => plusOne.remove(), 1000);
     }
 
     function startCountdown(seconds) {
-        // Находим или создаем элемент таймера только для "До следующего предсказания"
         const countdownElement = document.getElementById('prediction-timer');
         if (!countdownElement) {
             console.error('Таймер не найден');
             return;
         }
     
-        // Обновляем текст таймера
         countdownElement.textContent = formatTime(seconds);
     
         let remaining = seconds;
@@ -381,43 +404,63 @@ function createConfetti() {
         localStorage.setItem('playerExperience', experience);
     }
 
+    function addTickets(amount) {
+        let currentTickets = parseInt(localStorage.getItem('tickets')) || 0;
+        currentTickets += amount;
+        localStorage.setItem('tickets', currentTickets);
+        updateTicketCount('main-ticket-count'); // Обновляем после добавления
+        updateTicketCount('mini-game-ticket-count'); // Обновляем для мини-игры
+    }
+    
+    function useTickets(amount) {
+        let currentTickets = parseInt(localStorage.getItem('tickets')) || 0;
+        if (currentTickets >= amount) {
+            currentTickets -= amount;
+            localStorage.setItem('tickets', currentTickets);
+            updateTicketCount('main-ticket-count'); // Обновляем после использования
+            updateTicketCount('mini-game-ticket-count'); // Обновляем для мини-игры
+        } else {
+            console.log("Недостаточно билетов.");
+        }
+    }
+
     function levelUp() {
-        level += 1;
+        level += 1;  // Повышение уровня
         experience = 0;
         experienceToNextLevel = level * 100;
         updateElementText('level-number', level);
         localStorage.setItem('playerLevel', level);
-    }
-
-// Обновляем текст и прогресс XP
-function updateLevelProgress() {
-    const progressPercent = (experience / experienceToNextLevel) * 100;
-    const levelProgressElement = document.getElementById('level-progress');
-    const xpDisplayElement = document.getElementById('xp-display'); // Элемент для отображения XP
-
-    if (levelProgressElement && xpDisplayElement) {
-        // Обновляем ширину прогресс-бара
-        levelProgressElement.style.width = `${progressPercent}%`;
-
-        // Обновляем текст внутри полоски прогресса
-        xpDisplayElement.textContent = `${experience} / ${experienceToNextLevel} XP`;
-    }
-}
-
-// Функция для получения опыта (пример)
-function gainXP(amount) {
-    currentXP += amount;
     
-    // Если текущий опыт больше или равен опыту для следующего уровня
-    if (currentXP >= xpForNextLevel) {
-        currentXP = currentXP - xpForNextLevel; // Обнулить лишний опыт
-        xpForNextLevel += 100; // Увеличить требуемый опыт для следующего уровня (пример)
-        document.getElementById('level-number').textContent = parseInt(document.getElementById('level-number').textContent) + 1;
+        // Добавляем билеты и обновляем интерфейс
+        addTickets(2); // Добавляет 2 билета и сохраняет в локальное хранилище
+        updateTicketCount('ticket-count');  // Обновляем счетчик на главном экране
+    
+        // Отображаем модальное окно уровня
+        showLevelUpModal(level, 2);  // 2 — количество билетов, отобразится в модальном окне
     }
 
-    // Обновляем прогресс
-    updateLevelProgress();
-}
+    function updateLevelProgress() {
+        const progressPercent = (experience / experienceToNextLevel) * 100;
+        const levelProgressElement = document.getElementById('level-progress');
+        const xpDisplayElement = document.getElementById('xp-display');
+
+        if (levelProgressElement && xpDisplayElement) {
+            levelProgressElement.style.width = `${progressPercent}%`;
+            xpDisplayElement.textContent = `${experience} / ${experienceToNextLevel} XP`;
+        }
+    }
+
+    function gainXP(amount) {
+        currentXP += amount;
+        
+        if (currentXP >= xpForNextLevel) {
+            currentXP = currentXP - xpForNextLevel;
+            xpForNextLevel += 100;
+            document.getElementById('level-number').textContent = parseInt(document.getElementById('level-number').textContent) + 1;
+        }
+
+        updateLevelProgress();
+    }
 
     function calculatePassiveIncome() {
         const now = Date.now();
@@ -432,10 +475,8 @@ function gainXP(amount) {
         }
     }
 
-    function showTicketNotification() {
+    function showTicketNotification(ticketAmount) {
         const ticketNotification = document.getElementById('ticket-notification');
-        const ticketAmount = 3; // Фиксированное значение билетов
-    
         if (ticketNotification) {
             ticketNotification.innerHTML = `
                 <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">
@@ -454,20 +495,33 @@ function gainXP(amount) {
         }
     }
 
-    function updateElementText(id, value) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = value;
-        } else {
-            console.error(`Элемент с id="${id}" не найден в DOM.`);
-        }
+    // Функция для отображения модального окна уровня
+    function showLevelUpModal(level) {
+        const modal = document.getElementById('level-up-modal');
+        const levelSpan = document.getElementById('new-level');
+        const ticketsSpan = document.getElementById('tickets-earned');
+    
+        // Обновляем текст уровня и количество билетов
+        levelSpan.textContent = level;
+        ticketsSpan.textContent = 2;
+    
+        // Воспроизведение звука и конфетти
+        AudioManager.playLevelUpSound();
+        createConfetti();
+    
+        // Показываем модальное окно
+        modal.classList.add('show');
+    
+        // Автоматическое скрытие окна через 5 секунд
+        setTimeout(() => {
+            modal.classList.remove('show');
+        }, 5000);
     }
 
     return {
         init,
-        updateEnergyBar
+        updateEnergyBar, 
+        addTickets,      // Экспортируем функцию addTickets
+        useTickets        // Экспортируем функцию useTickets
     };
 })();
-
-document.addEventListener('DOMContentLoaded', Game.init);
-
