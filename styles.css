@@ -178,11 +178,11 @@ body {
 
 /* Шестерёнка */
 .settings-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 10vh;
-    height: 5vh;
+    position: fixed; /* Фиксируем кнопку относительно экрана */
+    top: 10px; /* Отступ от верхнего края экрана */
+    right: 15px; /* Отступ от правого края экрана */
+    width: 45px; /* Фиксированная ширина для стабильности */
+    height: 45px; /* Фиксированная высота */
     background-color: transparent;
     border: none;
     cursor: pointer;
@@ -214,12 +214,13 @@ body {
 }
 
 .close-settings {
-    align-self: flex-start; /* Перемещаем крестик влево */
     background: none;
     border: none;
-    font-size: 1.5rem; /* Уменьшенный размер шрифта */
+    font-size: 2rem;
     color: white;
     cursor: pointer;
+    margin-left: auto; /* Перемещает крестик вправо */
+    margin-top: -15px; /* Поднимаем крестик выше */
 }
 
 /* Серые подложки для элементов в меню настроек с уменьшенной высотой и шрифтом */
@@ -1614,3 +1615,32 @@ footer button {
         opacity: 0;
     }
 }
+
+:root {
+    --progress-bar-width: 100%; /* CSS-переменная для ширины анимации */
+}
+
+@keyframes moveAndWaveWithFade {
+    0% { transform: translateX(0) translateY(-10px) rotate(0deg); opacity: 1; }
+    25% { transform: translateX(calc(var(--progress-bar-width) * 0.25)) translateY(-25px) rotate(90deg); opacity: 1; }
+    50% { transform: translateX(calc(var(--progress-bar-width) * 0.5)) translateY(-20px) rotate(180deg); opacity: 1; }
+    75% { transform: translateX(calc(var(--progress-bar-width) * 0.75)) translateY(-15px) rotate(270deg); opacity: 0.8; }
+    100% { transform: translateX(var(--progress-bar-width)) translateY(-20px) rotate(360deg); opacity: 0; } /* Исчезает в конце */
+}
+
+.star-main {
+    position: absolute;
+    color: yellow;
+    font-size: 15px;
+    filter: drop-shadow(0 0 2px rgb(255, 255, 255));
+    animation: moveAndWaveWithFade 1s linear forwards;
+}
+
+.star-trail {
+    position: absolute;
+    color: white;
+    font-size: 10px;
+    opacity: 0.8;
+    transition: opacity 0.3s ease-out;
+}
+
