@@ -1,4 +1,3 @@
-// scripts/shop.js
 const Shop = (function() {
     let coins = parseInt(localStorage.getItem('coins')) || 10000;
     let spinCoins = parseInt(localStorage.getItem('spinCoins')) || 10000;
@@ -23,7 +22,6 @@ const Shop = (function() {
         'fish': {name: 'Fish', price: 5000, currency: '$Daisy', image: 'assets/images/fish.webp', income: 10}
     };
 
-    // 1. Добавляем функцию formatNumber в Shop.js
     function formatNumber(value) {
         if (value >= 1e9) return (value / 1e9).toFixed(1) + 'B';
         if (value >= 1e6) return (value / 1e6).toFixed(1) + 'M';
@@ -32,10 +30,8 @@ const Shop = (function() {
     }
 
     function init() {
-        // Инициализация кнопки магазина
         document.getElementById('shop-btn').addEventListener('click', openShop);
 
-        // Инициализация вкладок магазина
         document.querySelectorAll('.shop-tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
@@ -45,24 +41,33 @@ const Shop = (function() {
             });
         });
 
-        // Обновляем пассивный доход
+        const lastTab = localStorage.getItem('lastShopTab') || 'daisy';
+        loadShopItems(lastTab);
+        
         calculateIncomePerHour();
-        // Используем formatNumber для форматирования дохода
         document.getElementById('income-per-hour').textContent = formatNumber(incomePerHour);
         localStorage.setItem('incomePerHour', incomePerHour);
-
-        // Устанавливаем текущий скин
+        
         setEquippedSkin();
     }
 
     function openShop() {
-        loadShopItems('daisy');
+        const lastTab = localStorage.getItem('lastShopTab') || 'daisy';
+        loadShopItems(lastTab);
+        document.querySelectorAll('.shop-tab').forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.getAttribute('data-tab') === lastTab) {
+                tab.classList.add('active');
+            }
+        });
         Modal.open('shop-modal');
     }
 
     function loadShopItems(tabName) {
         const shopContent = document.getElementById('shop-content');
         shopContent.innerHTML = '';
+
+        localStorage.setItem('lastShopTab', tabName);
 
         let items = [];
         for (let key in skinsData) {
@@ -82,7 +87,7 @@ const Shop = (function() {
             itemDiv.innerHTML = `
                 <img src="${item.image}" alt="${item.name}" class="shop-item-image">
                 <div>${item.name}</div>
-                <div class="skin-price">${formatNumber(item.price)} ${item.currency}</div> <!-- Форматируем цену -->
+                <div class="skin-price">${formatNumber(item.price)} ${item.currency}</div>
                 <div class="skin-level">${getSkinStatus(item.id)}</div>
             `;
             itemDiv.addEventListener('click', () => purchaseOrUpgradeItem(item));
@@ -104,10 +109,8 @@ const Shop = (function() {
 
     function purchaseOrUpgradeItem(item) {
         if (ownedSkins[item.id]) {
-            // Если скин уже куплен, предлагаем улучшить или установить
             showSkinOptions(item);
         } else {
-            // Иначе предлагаем купить
             purchaseItem(item);
         }
     }
@@ -127,12 +130,10 @@ const Shop = (function() {
         if ((item.currency === '$Daisy' && coins >= item.price) || (item.currency === 'Coin' && spinCoins >= item.price)) {
             if (item.currency === '$Daisy') {
                 coins -= item.price;
-                // Используем форматирование перед обновлением
                 document.getElementById('coin-count').textContent = formatNumber(coins);
                 localStorage.setItem('coins', coins);
             } else {
                 spinCoins -= item.price;
-                // Используем форматирование перед обновлением
                 document.getElementById('spin-coin-count').textContent = formatNumber(spinCoins);
                 localStorage.setItem('spinCoins', spinCoins);
             }
@@ -157,12 +158,10 @@ const Shop = (function() {
         if ((item.currency === '$Daisy' && coins >= upgradeCost) || (item.currency === 'Coin' && spinCoins >= upgradeCost)) {
             if (item.currency === '$Daisy') {
                 coins -= upgradeCost;
-                // Используем форматирование перед обновлением
                 document.getElementById('coin-count').textContent = formatNumber(coins);
                 localStorage.setItem('coins', coins);
             } else {
                 spinCoins -= upgradeCost;
-                // Используем форматирование перед обновлением
                 document.getElementById('spin-coin-count').textContent = formatNumber(spinCoins);
                 localStorage.setItem('spinCoins', spinCoins);
             }
