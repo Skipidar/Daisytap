@@ -1,5 +1,5 @@
 const MiniGame = (function () {
-    let gameTime = 10; // 10 секунд для тестирования
+    let gameTime = 60; // 10 секунд для тестирования
     let bees = [];
     let hearts = [];
     let coins = [];
@@ -11,6 +11,9 @@ const MiniGame = (function () {
     let gameCoins = 0; // Это Coin
     let daisyCoins = 0; // Это $Daisy
     let activeCoins = []; // Массив для отслеживания активных монет
+    let allCoins = []; // Массив для всех монет
+    let allDeadBees = []; // Массив для всех мертвых пчел
+    let timeouts = []; // Для хранения всех активных таймаутов
     let currentLevel = 1;
     let isGamePaused = false; // Новый флаг для паузы
     let flower; // Переменная для цветка
@@ -22,24 +25,49 @@ const MiniGame = (function () {
     let isCountdownDone = false;
     let spinCoins = 0; // Глобальная переменная для счётчика монет
     let dpr;
-    
+
     function init() {
         dpr = window.devicePixelRatio || 1;
     }
 
-    function updateGameCoinCount(count) {
-        const gameCoinCountElement = document.getElementById('game-coin-count');
-        if (gameCoinCountElement) {
-            gameCoinCountElement.textContent = count;
-        } else {
-            console.error("Элемент game-coin-count не найден.");
-        }
-    }
-
     function clearGameObjects() {
+        // Очищаем все таймауты
+        timeouts.forEach(timeout => clearTimeout(timeout));
+        timeouts = []; // Обнуляем массив таймаутов
+    
+        // Очистка массива пчел
+        bees.forEach(bee => {
+            bee.element && bee.element.remove();
+        });
         bees = [];
-        hearts = [];
+    
+        // Очистка массива монет
+        coins.forEach(coin => {
+            coin.element && coin.element.remove();
+        });
         coins = [];
+    
+        // Очистка активных монет и удаление их из DOM
+        activeCoins.forEach(coin => {
+            if (coin.element) {
+                coin.element.remove();
+            }
+        });
+        activeCoins = [];
+    
+        // Очистка всех созданных монет
+        allCoins.forEach(coin => {
+            coin && coin.remove();
+        });
+        allCoins = [];
+    
+        // Очистка мертвых пчел
+        allDeadBees.forEach(bee => {
+            bee && bee.remove();
+        });
+        allDeadBees = [];
+
+        isGamePaused = true;
     }
 
     function handleBackButton() {
@@ -127,21 +155,6 @@ const MiniGame = (function () {
     }
 
     function startGameLoop() {
-        function gameLoop() {
-            if (!isCountdownDone || isGamePaused) return; // Прерываем цикл, если игра на паузе
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Очищаем холст
-        
-            // Обновляем объекты игры (цветок, пчелы, сердца, монеты)
-            flower.draw();
-            updateBees(ctx, flower);
-            updateHearts();
-            updateCoins();
-        
-            // Запускаем следующий кадр
-            requestAnimationFrame(gameLoop);
-        }
-    
-        gameLoop(); // Запуск основного игрового цикла
     }
     
 
@@ -498,53 +511,51 @@ flower.image.src = 'assets/images/blasterdaisy.webp';
         const rect = canvas.getBoundingClientRect();
         const xClick = event.clientX - rect.left;
         const yClick = event.clientY - rect.top;
-
-         // Увеличиваем хитбокс пчелы
-    const hitboxPadding = 50; // Увеличиваем область клика на 0 пикселей с каждой стороны
-
-
+    
+        // Увеличиваем хитбокс пчелы
+        const hitboxPadding = 60; // Увеличиваем область клика на 50 пикселей с каждой стороны
+    
         bees.forEach((bee, index) => {
             if (
-                xClick >= bee.x - bee.width / 2 &&
-                xClick <= bee.x + bee.width / 2 &&
-                yClick >= bee.y - bee.height / 2 &&
-                yClick <= bee.y + bee.height / 2
+                xClick >= bee.x - bee.width / 2 - hitboxPadding &&
+                xClick <= bee.x + bee.width / 2 + hitboxPadding &&
+                yClick >= bee.y - bee.height / 2 - hitboxPadding &&
+                yClick <= bee.y + bee.height / 2 + hitboxPadding
             ) {
-        // Поворачиваем цветок к пчеле
-        rotateFlowerToBee(bee.x, bee.y);
-
-        shootBee(bee.x, bee.y); // Стреляем лазером в пчелу
-
+                // Поворачиваем цветок к пчеле
+                rotateFlowerToBee(bee.x, bee.y);
+    
+                // Стреляем лазером в пчелу
+                shootBee(bee.x, bee.y);
+    
+                // Удаляем пчелу из массива
                 bees.splice(index, 1);
-                gameCoins += 1; // Coin
-                totalCoinsEarned += 1;
-
-                            // Сохраняем направление пчелы (слева или справа)
-            const direction = bee.x < canvas.width / 2 ? 'left' : 'right';
-
-            // Добавляем эффект электрического удара перед смертью
-                addElectricShockEffect(bee.x, bee.y, bee.width, bee.height, bee.isLeft ? 'left' : 'right');
-
+                gameCoins += 10; // Coin
+                totalCoinsEarned += 10;
+    
+                // Сохраняем направление пчелы (слева или справа)
+                const direction = bee.x < canvas.width / 2 ? 'left' : 'right';
+    
+                // Добавляем эффект электрического удара перед смертью
+                addElectricShockEffect(bee.x, bee.y, bee.width, bee.height, bee.isFromLeft);
+    
                 updateGameCoinCount();
                 AudioManager.playBeeKillSound();
-
-                    // Добавляем звук SHOKBOOM.mp3 после лазера с небольшой задержкой
-    setTimeout(() => {
-        AudioManager.playShokBoomSound();
-    }, 30); // Задержка в миллисекундах (настройте по необходимости)
-
+    
+                // Добавляем звук SHOKBOOM.mp3 после лазера с небольшой задержкой
+                setTimeout(() => {
+                    AudioManager.playShokBoomSound();
+                }, 30); // Задержка в миллисекундах (настройте по необходимости)
+    
                 if (navigator.vibrate) {
                     navigator.vibrate(100);
                 }
-
-                // Вызов функции появления поджаренной пчелы
-
-          // Через 1.5 секунды превращаем пчелу в обугленную
-                 setTimeout(() => {
-
-                 handleBeeDeath(bee.x, bee.y); // Вызываем функцию смерти пчелы
-        }, 1500);
-
+    
+                // Вызов функции появления поджаренной пчелы через 1.5 секунды
+                setTimeout(() => {
+                    handleBeeDeath(bee.x, bee.y, bee.isFromLeft);
+                }, 1500);
+    
                 // Добавляем анимацию взрыва и монетки
                 createExplosionAnimation(bee.x, bee.y);
                 flyCoinToCounter(bee.x, bee.y);
@@ -876,17 +887,26 @@ function updateTicketCount() {
         resultModal.style.textAlign = 'center';
         resultModal.style.padding = '20px';
         resultModal.style.zIndex = '1000';
-        resultModal.style.borderRadius = '20px'; // Закругляем края
+        resultModal.style.borderRadius = '20px';
         resultModal.innerHTML = `
-        <h2>Уровень завершен!</h2>
-        <p>Вы собрали:</p>
-        <ul style="list-style: none; padding: 0;">
-            <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
-            <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
-        </ul>
-        <button class="continue-btn">Перейти на 2-й уровень</button>
-        <button class="endGameButton">Домой</button>
+            <h2>Уровень завершен!</h2>
+            <p>Вы собрали:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
+                <li><img src="assets/images/goldcoin.webp" alt="$Daisy" width="20"> $Daisy: ${daisyCoins}</li>
+            </ul>
+            <button class="delayed-button continue-btn">Перейти на 2-й уровень</button>
+            <button class="delayed-button endGameButton">Домой</button>
         `;
+        
+        document.body.appendChild(resultModal);
+    
+        // Задержка появления кнопок
+        setTimeout(() => {
+            const buttons = document.querySelectorAll('.delayed-button');
+            buttons.forEach(button => button.classList.add('visible'));
+        }, 1500); // Задержка 3 секунды
+    
         
         const gameScreen = document.getElementById('protect-flower-game');
         gameScreen.appendChild(resultModal);
@@ -915,13 +935,6 @@ function updateTicketCount() {
                         }
                     }, 1000);
                 });
-            });
-        }
-        
-        if (endGameButton) {
-            endGameButton.addEventListener('click', () => { // ИСПРАВЛЕНО
-                resultModal.remove(); // Убираем модальное окно
-                endGame(); // Возвращаемся на главный экран
             });
         }
         
@@ -971,86 +984,33 @@ function updateTicketCount() {
             <button class="next-level-btn" style="background-color: yellow;">Перейти на 2 уровень</button>
             <button class="home-btn" style="background-color: red;">Забрать монеты и закончить</button>
         `;
-        function showLevelCompleteModal() {
-            
-            // Останавливаем игровой процесс
-            isGamePaused = true;
-            clearInterval(beeInterval);
-            clearInterval(coinInterval);
-            clearInterval(heartInterval);
-            clearInterval(gameTimerInterval);
-        
-            clearGameObjects(); // Скрываем все объекты
-        
-            const resultModal = document.createElement('div');
-            resultModal.style.position = 'fixed';
-            resultModal.style.top = '0';
-            resultModal.style.left = '0';
-            resultModal.style.width = '100%';
-            resultModal.style.height = '100%';
-            resultModal.style.display = 'flex';
-            resultModal.style.justifyContent = 'center';
-            resultModal.style.alignItems = 'center';
-            resultModal.style.background = 'radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(111,24,164,1) 100%)'; // Чёрный в центре, фиолетовый по краям
-            resultModal.style.zIndex = '1000';
-            resultModal.style.color = 'white';
-            resultModal.style.padding = '20px';
-        
-            // Вставляем модальное окно на экран
-            const gameScreen = document.getElementById('protect-flower-game');
-            gameScreen.appendChild(resultModal);
-        
-            // Обработка кликов по кнопкам
-            resultModal.querySelector('.victory-button.play').addEventListener('click', () => {
-                resultModal.remove(); // Удаляем модальное окно
-                currentLevel = 1; // Сбрасываем уровень на первый
-                gameCoins = 0; // Сбрасываем количество монет
-                daisyCoins = 0; // Сбрасываем $Daisy
-                clearInterval(beeInterval);
-                clearInterval(coinInterval);
-                clearInterval(heartInterval);
-                clearInterval(gameTimerInterval);
-                clearGameObjects(); // Очищаем все объекты
-        
-                // Сбрасываем флаг паузы и перезапускаем игру
-                isGamePaused = false;
-                isGameRunning = false; // Сбрасываем флаг, что игра закончена
-                startGame(); // Запускаем игру заново
-            });
 
-            resultModal.querySelector('.victory-button.share').addEventListener('click', () => {
-                alert('Функция "Поделиться" в разработке.');
-            });
-        
-            resultModal.querySelector('.victory-button.home').addEventListener('click', () => {
-                resultModal.remove(); // Убираем модальное окно
-                endGame(); // Возвращаемся на главный экран
-            });
-        }
     } else if (level === 2 && lives > 0) {
         // Если прошли второй уровень, показываем поздравление
         resultModal.innerHTML = `
         <div style="
-        position: fixed; 
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%) scale(1.1);
-        width: 100vw; 
-        height: 100vh; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center;
-        background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(111,24,164,1) 100%);
-        z-index: 1000; 
-        color: white; 
-        padding: 0; 
-        margin: 0;
-        text-align: center;
-    ">
-    <div class="yellow-stripes-container"></div> <!-- Контейнер для полосок -->
-        <div style="width: 90%; max-width: 400px;">
-        <h2 class="gradient-text first-line">Поздравляем!</h2>
-        <h2 class="gradient-text second-line">Ромашка спасена!</h2>
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%) scale(1.1);
+            width: 100vw; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            background: radial-gradient(circle, rgba(0,0,0,1) 0%, rgba(111,24,164,1) 100%);
+            z-index: 1000; 
+            color: white; 
+            padding: 0; 
+            margin: 0;
+            text-align: center;
+        ">
+        <div id="victory-animation" style="display: none;">
+        <canvas id="space"></canvas>
+    </div>
+            <div style="width: 90%; max-width: 400px;">
+                <h2 class="gradient-text first-line">Поздравляем!</h2>
+                <h2 class="gradient-text second-line">Ромашка спасена!</h2>
                 <p>Вы собрали:</p>
                 <ul style="list-style: none; padding: 0;">
                     <li><img src="assets/images/silvercoin.webp" alt="Coin" width="20"> Coin: ${gameCoins}</li>
@@ -1059,19 +1019,24 @@ function updateTicketCount() {
     
                 <!-- Кнопки снизу -->
                 <div class="modal-buttons">
-                <button class="victory-button play">Играть <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">(${tickets})</button>
-                <button class="victory-button share">Поделиться</button>
-                <button class="victory-button home">Выход</button>
+                    <button class="victory-button delayed-button play">Играть <img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">(${tickets})</button>
+                    <button class="victory-button delayed-button share">Поделиться</button>
+                    <button class="victory-button delayed-button home">Выход</button>
+                </div>
             </div>
-            </div>
-        `;
+        </div>
+    `;
+    setTimeout(() => {
+        const buttons = resultModal.querySelectorAll('.delayed-button');
+        buttons.forEach(button => button.classList.add('visible'));
+    }, 1500); // Задержка 3 секунды
         
     // Вставляем модальное окно на экран
     const gameScreen = document.getElementById('protect-flower-game');
     gameScreen.appendChild(resultModal);
 
     // Добавляем анимацию жёлтых полосок
-    createFlashAnimation(); // Убедись, что ты вызываешь именно эту функцию!
+    showVictoryAnimation(); // Убедись, что ты вызываешь именно эту функцию!
 
     // Обработка кликов по кнопкам
     resultModal.querySelector('.victory-button.play').addEventListener('click', () => {
@@ -1101,51 +1066,150 @@ function updateTicketCount() {
         endGame(); // Возвращаемся на главный экран
     });
         // Функция для генерации жёлтых полосок (добавляем после showLevelCompleteModal)
-        function createFlashAnimation() {
-            const container = document.querySelector('.yellow-stripes-container');
-            const numStripes = 100; // Увеличенное количество линий
-            const targetRadius = 100; // Радиус невидимого круга в центре
+        function showVictoryAnimation() {
+            const canvas = document.getElementById("space");
+            const c = canvas.getContext("2d");
+            document.getElementById("victory-animation").style.display = 'block';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         
-            for (let i = 0; i < numStripes; i++) {
-                const stripe = document.createElement('div');
-                stripe.classList.add('stripe');
+            let numStars = 1900;
+            let focalLength = canvas.width * 2;
+            let centerX = canvas.width / 2;
+            let centerY = canvas.height / 2;
         
-                // Чередование коротких и длинных линий
-                const isShort = i % 2 === 0; // Чередование короткой и длинной линии
-                const stripeHeight = isShort ? Math.random() * 30 + 10 : Math.random() * 60 + 30; // Короткие 20px-50px, длинные 60px-160px
-                stripe.style.height = `${stripeHeight}px`;
-        
-                // Расчет угла для каждой линии
-                const angle = (i / numStripes) * 360;
-                const radians = angle * (Math.PI / 180); // Конвертация угла в радианы
-        
-                // Расчет начальных координат за пределами экрана
-                const startX = window.innerWidth / 2 + Math.cos(radians) * (window.innerWidth / 2 + 100);
-                const startY = window.innerHeight / 2 + Math.sin(radians) * (window.innerHeight / 2 + 100);
-        
-                stripe.style.left = `${startX}px`;
-                stripe.style.top = `${startY}px`;
-        
-                // Поворот линии под нужным углом
-                stripe.style.transform = `rotate(${angle - 90}deg)`; // Поворот на 90 градусов для правильного направления
-        
-                // Анимация движения линий к невидимому кругу
-                const moveDistanceX = Math.cos(radians) * -(window.innerWidth / 2 - targetRadius);
-                const moveDistanceY = Math.sin(radians) * -(window.innerHeight / 2 - targetRadius);
-        
-                stripe.animate([
-                    { transform: `translate(0, 0) rotate(${angle - 90}deg)`, opacity: 1 },  // Начальная точка
-                    { transform: `translate(${moveDistanceX}px, ${moveDistanceY}px) rotate(${angle - 90}deg)`, opacity: 0 }  // Финиш
-                ], {
-                    duration: Math.random() * 1400 + 1000,  // Быстрая анимация
-                    easing: 'ease-out',
-                    iterations: Infinity,  // Бесконечная анимация
-                    delay: Math.random() * 500  // Случайная задержка до 2 секунд
-                });
-        
-                container.appendChild(stripe);
+            // Функция для генерации случайного цвета
+            function getRandomColor() {
+                const colors = [
+                    "rgba(209, 255, 255, ", // голубовато-белый
+                    "rgba(255, 223, 186, ", // светло-оранжевый
+                    "rgba(255, 192, 203, ", // светло-розовый
+                    "rgba(173, 216, 230, ", // светло-голубой
+                    "rgba(144, 238, 144, "  // светло-зеленый
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
             }
+        
+            // Создаем массив звезд с дополнительными параметрами для плавного появления и случайного цвета
+            let stars = Array.from({ length: numStars }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                z: Math.random() * canvas.width,
+                maxZ: canvas.width,
+                opacity: 0,
+                color: getRandomColor(), // Случайный цвет для каждой звезды
+                rotation1: Math.random() * 2 * Math.PI,
+                rotation2: Math.random() * 2 * Math.PI,
+                rotationSpeed1: (Math.random() * 0.1) + 0.05,
+                rotationSpeed2: -((Math.random() * 0.1) + 0.05),
+                moveSpeed: (Math.random() * 0.3) + 0.1
+            }));
+        
+            // Функция для движения звезд и обновления прозрачности
+            function moveStars() {
+                stars.forEach(star => {
+                    star.z -= star.moveSpeed;
+                    if (star.z <= 0) {
+                        star.z = star.maxZ;
+                        star.opacity = 0;
+                        star.color = getRandomColor(); // Новый случайный цвет при перезапуске звезды
+                    } else {
+                        // Увеличиваем прозрачность для плавного появления
+                        star.opacity = Math.min(1, (star.maxZ - star.z) / star.maxZ);
+                    }
+                    star.rotation1 += star.rotationSpeed1;
+                    star.rotation2 += star.rotationSpeed2;
+                });
+            }
+        
+            // Функция для рисования шестиконечной звезды (звезды Давида)
+            function drawStarOfDavid(ctx, x, y, size, rotation1, rotation2, color, opacity) {
+                const radius = size;
+        
+                ctx.save();
+                ctx.translate(x, y);
+        
+                // Рисуем первый треугольник
+                ctx.rotate(rotation1);
+                ctx.beginPath();
+                for (let i = 0; i < 3; i++) {
+                    const angle = i * (2 * Math.PI / 3);
+                    const pointX = Math.cos(angle) * radius;
+                    const pointY = Math.sin(angle) * radius;
+                    if (i === 0) {
+                        ctx.moveTo(pointX, pointY);
+                    } else {
+                        ctx.lineTo(pointX, pointY);
+                    }
+                }
+                ctx.closePath();
+                ctx.fillStyle = `${color}${opacity})`; // Используем цвет звезды и ее текущую прозрачность
+                ctx.fill();
+        
+                // Рисуем второй треугольник
+                ctx.rotate(rotation2 - rotation1);
+                ctx.beginPath();
+                for (let i = 0; i < 3; i++) {
+                    const angle = i * (2 * Math.PI / 3) + Math.PI;
+                    const pointX = Math.cos(angle) * radius;
+                    const pointY = Math.sin(angle) * radius;
+                    if (i === 0) {
+                        ctx.moveTo(pointX, pointY);
+                    } else {
+                        ctx.lineTo(pointX, pointY);
+                    }
+                }
+                ctx.closePath();
+                ctx.fill();
+        
+                ctx.restore();
+            }
+        
+            // Функция для отрисовки всех звезд
+            function drawStars() {
+                if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    centerX = canvas.width / 2;
+                    centerY = canvas.height / 2;
+                    focalLength = canvas.width * 2;
+                    stars = Array.from({ length: numStars }, () => ({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        z: Math.random() * canvas.width,
+                        maxZ: canvas.width,
+                        opacity: 0,
+                        color: getRandomColor(),
+                        rotation1: Math.random() * 2 * Math.PI,
+                        rotation2: Math.random() * 2 * Math.PI,
+                        rotationSpeed1: (Math.random() * 0.1) + 0.05,
+                        rotationSpeed2: -((Math.random() * 0.1) + 0.05),
+                        moveSpeed: (Math.random() * 0.3) + 0.1
+                    }));
+                }
+        
+                c.clearRect(0, 0, canvas.width, canvas.height);
+        
+                stars.forEach(star => {
+                    const pixelX = (star.x - centerX) * (focalLength / star.z) + centerX;
+                    const pixelY = (star.y - centerY) * (focalLength / star.z) + centerY;
+                    const pixelRadius = 1 * (focalLength / star.z);
+        
+                    drawStarOfDavid(c, pixelX, pixelY, pixelRadius, star.rotation1, star.rotation2, star.color, star.opacity);
+                });
+            }
+        
+            // Функция для запуска анимации
+            function animate() {
+                moveStars();
+                drawStars();
+                requestAnimationFrame(animate);
+            }
+        
+            animate();
         }
+        
+        
         
     } else {
             // Если игрок проиграл, предлагаем начать с первого уровня
@@ -1158,10 +1222,16 @@ function updateTicketCount() {
             </ul>
             <p>Вы потеряли все жизни. Начать заново?</p>
             <div class="button-container">
-            <button class="replay-btn"><img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">Играть</button>
-            <button class="home-btn">Домой</button>
+                <button class="replay-btn delayed-button"><img src="assets/images/Ticket.webp" alt="Билет" class="ticket-icon">Играть</button>
+                <button class="home-btn delayed-button">Домой</button>
             </div>
         `;
+        
+        // Задержка появления кнопок
+        setTimeout(() => {
+            const buttons = resultModal.querySelectorAll('.delayed-button');
+            buttons.forEach(button => button.classList.add('visible'));
+        }, 1500); // Задержка 3 секунды
         }
 
         document.body.appendChild(resultModal);
@@ -1283,64 +1353,57 @@ replayButtons.forEach(button => {
         burnedBee.style.position = 'absolute';
         burnedBee.style.left = `${x}px`;
         burnedBee.style.top = `${y}px`;
-        burnedBee.style.width = '50px'; 
-        burnedBee.style.height = '50px'; 
-        burnedBee.style.zIndex = '999'; 
-        burnedBee.style.pointerEvents = 'none'; // Пчёлы не будут мешать нажатию
+        burnedBee.style.width = '50px';
+        burnedBee.style.height = '50px';
+        burnedBee.style.zIndex = '999';
+        burnedBee.style.pointerEvents = 'none';
     
-        // Сохраняем ориентацию пчелы
         if (isFromLeft) {
-            burnedBee.style.transform = 'scaleX(-1)'; // Отражаем по оси X
+            burnedBee.style.transform = 'scaleX(-1)';
         }
     
         document.body.appendChild(burnedBee);
+        allDeadBees.push(burnedBee);
     
-        // Добавляем эффект тока
         burnedBee.style.animation = 'electricShock 1.5s ease-in-out infinite';
     
-        setTimeout(() => {
-            // Пчела падает медленно вниз, сохраняя ориентацию
+        const deathTimeout = setTimeout(() => {
             burnedBee.animate([
                 { transform: `translateY(0)`, opacity: 1 },
                 { transform: `translateY(${window.innerHeight - y}px)`, opacity: 1 }
             ], {
-                duration: 3000, 
+                duration: 3000,
                 easing: 'ease-in-out',
                 fill: 'forwards'
             });
     
-            setTimeout(() => {
+            const fallTimeout = setTimeout(() => {
                 burnedBee.remove();
             }, 3000);
+            timeouts.push(fallTimeout);
     
-            // Создаем монеты (рандом от 1 до 3 монет)
             let numCoins = Math.floor(Math.random() * 3) + 1;
-            let coinCreated = false; 
+            let coinCreated = false;
     
             for (let i = 0; i < numCoins; i++) {
-                setTimeout(() => {
-                    if (!coinCreated) { // Если золотая монета не создана
-                        if (Math.random() < 0.1) { 
-                            spawnGoldCoin(x + 40, y); // Создаем золотую монету
-                            coinCreated = true; // Отметим, что золотая монета создана
-                        } else {
-                            spawnCollectibleCoin(x, y + (i * 50)); // Создаем обычные монеты
-                        }
+                const coinTimeout = setTimeout(() => {
+                    if (!coinCreated && Math.random() < 0.1) {
+                        spawnGoldCoin(x + 40, y);
+                        coinCreated = true;
                     } else {
-                        spawnCollectibleCoin(x, y + (i * 50)); // Создаем обычные монеты
+                        spawnCollectibleCoin(x, y + (i * 50));
                     }
-                }, i * 500); 
+                }, i * 500);
+                timeouts.push(coinTimeout); // Добавляем таймаут для каждой монеты
             }
         }, 1500);
+        timeouts.push(deathTimeout); // Добавляем таймаут для задержки смерти
     }
     
-    // Функция для создания собираемых серебряных монет
     function spawnCollectibleCoin(x, y) {
-        // Проверка позиции перед созданием монеты
         if (isPositionOccupied(x, y)) {
-            // Если позиция занята, находим другую
-            x += Math.floor(Math.random() * 50) - 25; // Сдвигаем по X
-            y += Math.floor(Math.random() * 50) - 25; // Сдвигаем по Y
+            x += Math.floor(Math.random() * 50) - 25;
+            y += Math.floor(Math.random() * 50) - 25;
         }
     
         const coin = document.createElement('img');
@@ -1350,22 +1413,19 @@ replayButtons.forEach(button => {
         coin.style.top = `${y}px`;
         coin.style.width = '25px';
         coin.style.height = '25px';
-        coin.style.zIndex = '998'; 
+        coin.style.zIndex = '998';
         coin.classList.add('collectible-coin');
     
-        activeCoins.push({ x, y, width: 25, height: 25 }); // Сохраняем позицию монеты
+        activeCoins.push({ x, y, width: 25, height: 25 });
+        allCoins.push(coin);
     
         const handleClick = () => {
             if (coin.classList.contains('collected')) return;
-    
             coin.classList.add('collected');
             coin.style.pointerEvents = 'none';
-    
-            // Добавляем статичную подсветку и запускаем полет
             coin.style.filter = 'brightness(2) drop-shadow(0 0 10px rgba(255, 223, 0, 1))';
             animateCoinToCounter(coin);
-    
-            gameCoins += 1;
+            gameCoins += 10;
             updateGameCoinCount();
             if (navigator.vibrate) {
                 navigator.vibrate(50);
@@ -1375,18 +1435,17 @@ replayButtons.forEach(button => {
         coin.addEventListener('click', handleClick);
         document.body.appendChild(coin);
     
-        setTimeout(() => {
+        const coinRemovalTimeout = setTimeout(() => {
             coin.remove();
-            activeCoins = activeCoins.filter(c => c.x !== x || c.y !== y); // Удаляем позицию из массива
+            activeCoins = activeCoins.filter(c => c.x !== x || c.y !== y);
         }, 3000);
+        timeouts.push(coinRemovalTimeout); // Добавляем таймаут для удаления монеты
     }
     
     function spawnGoldCoin(x, y) {
-        // Проверка позиции перед созданием монеты
         if (isPositionOccupied(x, y)) {
-            // Если позиция занята, находим другую
-            x += Math.floor(Math.random() * 50) - 25; // Сдвигаем по X
-            y += Math.floor(Math.random() * 50) - 25; // Сдвигаем по Y
+            x += Math.floor(Math.random() * 50) - 25;
+            y += Math.floor(Math.random() * 50) - 25;
         }
     
         const goldCoin = document.createElement('img');
@@ -1399,18 +1458,15 @@ replayButtons.forEach(button => {
         goldCoin.style.zIndex = '998';
         goldCoin.classList.add('collectible-coin');
     
-        activeCoins.push({ x: x + 20, y, width: 30, height: 30 }); // Сохраняем позицию монеты
+        activeCoins.push({ x: x + 20, y, width: 30, height: 30 });
+        allCoins.push(goldCoin);
     
         const handleClick = () => {
             if (goldCoin.classList.contains('collected')) return;
-    
             goldCoin.classList.add('collected');
             goldCoin.style.pointerEvents = 'none';
-    
-            // Добавляем статичную подсветку и запускаем полет
             goldCoin.style.filter = 'brightness(2) drop-shadow(0 0 10px rgba(255, 223, 0, 1))';
             animateCoinToCounter(goldCoin);
-    
             daisyCoins += 10;
             updateGameCoinCount();
             if (navigator.vibrate) {
@@ -1421,11 +1477,13 @@ replayButtons.forEach(button => {
         goldCoin.addEventListener('click', handleClick);
         document.body.appendChild(goldCoin);
     
-        setTimeout(() => {
+        const goldCoinRemovalTimeout = setTimeout(() => {
             goldCoin.remove();
-            activeCoins = activeCoins.filter(c => c.x !== x + 20 || c.y !== y); // Удаляем позицию из массива
+            activeCoins = activeCoins.filter(c => c.x !== x + 20 || c.y !== y);
         }, 3000);
+        timeouts.push(goldCoinRemovalTimeout); // Добавляем таймаут для удаления золотой монеты
     }
+    
     
     function animateCoinToCounter(coin) {
         const coinRect = coin.getBoundingClientRect();
