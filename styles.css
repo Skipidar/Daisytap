@@ -1151,22 +1151,34 @@ footer button {
 }
 
 .yellow-stripes-container {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
-    pointer-events: none;
+    pointer-events: none; /* Чтобы элементы не блокировали клики */
+    overflow: hidden;
 }
 
 .stripe {
     position: absolute;
-    width: 4px; /* Ширина линии */
-    background-color: yellow; /* Цвет линии */
-    box-shadow: 0 0 10px rgb(255, 164, 6); /* Подсветка */
-    opacity: 0.5;
-    border-radius: 5px; /* Скругление */
+    width: 2px;
+    background-color: yellow;
+    will-change: transform, opacity; /* Оптимизация для плавной анимации */
+}
+
+/* Анимация движения полосок */
+@keyframes moveStripe {
+    0% {
+        transform: translate(0, 0) rotate(var(--angle));
+        opacity: 1;
+        filter: blur(0px);
+    }
+    100% {
+        transform: translate(calc(var(--distance) * 1px), calc(var(--distance) * 1px)) rotate(var(--angle));
+        opacity: 0;
+        filter: blur(4px);
+    }
 }
 
 /* Оформление кнопок в модальном окне */
@@ -1644,3 +1656,23 @@ footer button {
     transition: opacity 0.3s ease-out;
 }
 
+
+.delayed-button {
+    opacity: 0;
+    transition: opacity 1s ease; /* Плавное появление кнопок за 1 секунду */
+}
+
+.delayed-button.visible {
+    opacity: 1; /* Конечная прозрачность кнопки */
+}
+
+#victory-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-color: transparent;
+    pointer-events: none;
+}
